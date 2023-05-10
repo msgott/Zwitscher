@@ -20,6 +20,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts
+        [HttpGet]
+        [Route("Posts")]
         public async Task<IActionResult> Index()
         {
             var zwitscherContext = _context.Post.Include(p => p.User);
@@ -27,6 +29,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Details/5
+        [HttpGet]
+        [Route("Posts/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -46,6 +50,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Create
+        [HttpGet]
+        [Route("Posts/Create")]
         public IActionResult Create()
         {
             ViewData["UserID"] = new SelectList(_context.User, "Id", "Id");
@@ -56,6 +62,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Posts/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserID,CreatedDate,TextContent")] Post post)
         {
@@ -71,6 +78,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Edit/5
+        [HttpGet]
+        [Route("Posts/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -91,6 +100,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Posts/Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,UserID,CreatedDate,TextContent")] Post post)
         {
@@ -124,6 +134,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Delete/5
+        [HttpGet]
+        [Route("Posts/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -143,7 +155,8 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpDelete]
+        [Route("Posts/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {

@@ -1,13 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Zwitscher.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ZwitscherContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings:ZwitscherContext") ?? throw new InvalidOperationException("Connection string 'ZwitscherContext' not found.")));
 
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Zwitscher API", Version = "v1" });
+});
+
 
 var app = builder.Build();
 
@@ -19,11 +26,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 //CreateDbIfNotExists(app);
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Zwitscher API v1");
+});
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -20,6 +20,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Roles
+        [HttpGet]
+        [Route("Roles")]
         public async Task<IActionResult> Index()
         {
               return _context.Role != null ? 
@@ -28,6 +30,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Roles/Details/5
+        [HttpGet]
+        [Route("Roles/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.Role == null)
@@ -46,6 +50,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Roles/Create
+        [HttpGet]
+        [Route("Roles/Create")]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +61,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Roles/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Role role)
         {
@@ -69,6 +76,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Roles/Edit/5
+        [HttpGet]
+        [Route("Roles/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Role == null)
@@ -88,6 +97,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Roles/Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name")] Role role)
         {
@@ -120,6 +130,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Roles/Delete/5
+        [HttpGet]
+        [Route("Roles/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Role == null)
@@ -138,7 +150,8 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Roles/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpDelete]
+        [Route("Roles/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {

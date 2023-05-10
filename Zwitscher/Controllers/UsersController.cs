@@ -20,6 +20,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users
+        [HttpGet]
+        [Route("Users")]
         public async Task<IActionResult> Index()
         {
             var zwitscherContext = _context.User.Include(u => u.Role);
@@ -27,6 +29,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Details/5
+        [HttpGet]
+        [Route("Users/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -46,6 +50,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Create
+        [HttpGet]
+        [Route("Users/Create")]
         public IActionResult Create()
         {
             ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id");
@@ -56,6 +62,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Users/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
@@ -71,6 +78,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Edit/5
+        [HttpGet]
+        [Route("Users/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -91,6 +100,7 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
@@ -124,6 +134,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Delete/5
+        [HttpGet]
+        [Route("Users/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -143,7 +155,8 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpDelete]
+        [Route("Users/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
