@@ -17,7 +17,6 @@ namespace Zwitscher.Models
         public Guid RoleID { get; set; }
 
         public virtual Role Role { get; set; }
-        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<User> Following { get; set; }
 
 
