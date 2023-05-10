@@ -74,6 +74,7 @@ namespace Zwitscher.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
+
             return View(comment);
         }
 

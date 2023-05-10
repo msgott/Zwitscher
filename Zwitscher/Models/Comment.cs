@@ -9,7 +9,7 @@ namespace Zwitscher.Models
         public Guid PostId { get; set; }
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; }
-        public string CommentText { get; set; }
+        public string CommentText { get; set; } = "";
 
 
         public virtual User? User { get; set; }

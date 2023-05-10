@@ -7,7 +7,7 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Data
 {
-    public class ZwitscherContext : DbContext
+    public class ZwitscherContext : DbContext //DBContext for Entity Framework
     {
         public ZwitscherContext (DbContextOptions<ZwitscherContext> options)
             : base(options)

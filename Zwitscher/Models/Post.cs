@@ -8,11 +8,12 @@ namespace Zwitscher.Models
         public Guid UserID { get; set; }
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; }
-        public string TextContent { get; set; }
+        [StringLength(281)]
+        public string TextContent { get; set; } = "";
 
 
         public virtual User User { get; set; }
 
-        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment>? Comments { get; set; }
     }
 }
