@@ -24,7 +24,7 @@ namespace Zwitscher.Controllers
         [Route("Comments")]
         public async Task<IActionResult> Index()
         {
-            var zwitscherContext = _context.Comment.Include(c => c.User);
+            var zwitscherContext = _context.Comment.Include(c => c.Post).Include(c => c.User);
             return View(await zwitscherContext.ToListAsync());
         }
 
@@ -39,6 +39,7 @@ namespace Zwitscher.Controllers
             }
 
             var comment = await _context.Comment
+                .Include(c => c.Post)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)
@@ -54,6 +55,7 @@ namespace Zwitscher.Controllers
         [Route("Comments/Create")]
         public IActionResult Create()
         {
+            ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id");
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id");
             return View();
         }
@@ -73,8 +75,8 @@ namespace Zwitscher.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id", comment.PostId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
-
             return View(comment);
         }
 
@@ -93,6 +95,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
+            ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id", comment.PostId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
             return View(comment);
         }
@@ -130,6 +133,7 @@ namespace Zwitscher.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id", comment.PostId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
             return View(comment);
         }
@@ -145,6 +149,7 @@ namespace Zwitscher.Controllers
             }
 
             var comment = await _context.Comment
+                .Include(c => c.Post)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)

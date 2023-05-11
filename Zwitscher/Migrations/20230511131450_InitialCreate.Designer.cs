@@ -12,7 +12,7 @@ using Zwitscher.Data;
 namespace Zwitscher.Migrations
 {
     [DbContext(typeof(ZwitscherContext))]
-    [Migration("20230510102752_InitialCreate")]
+    [Migration("20230511131450_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -64,7 +64,8 @@ namespace Zwitscher.Migrations
 
                     b.Property<string>("TextContent")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(281)
+                        .HasColumnType("nvarchar(281)");
 
                     b.Property<Guid>("UserID")
                         .HasColumnType("uniqueidentifier");
@@ -139,7 +140,7 @@ namespace Zwitscher.Migrations
 
             modelBuilder.Entity("Zwitscher.Models.Comment", b =>
                 {
-                    b.HasOne("Zwitscher.Models.Post", null)
+                    b.HasOne("Zwitscher.Models.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -150,6 +151,8 @@ namespace Zwitscher.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
