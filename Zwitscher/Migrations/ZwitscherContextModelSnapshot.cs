@@ -50,6 +50,30 @@ namespace Zwitscher.Migrations
                     b.ToTable("Comment");
                 });
 
+            modelBuilder.Entity("Zwitscher.Models.Media", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Media");
+                });
+
             modelBuilder.Entity("Zwitscher.Models.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -113,6 +137,9 @@ namespace Zwitscher.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ProfilePictureId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("RoleID")
                         .HasColumnType("uniqueidentifier");
 
@@ -127,6 +154,8 @@ namespace Zwitscher.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProfilePictureId");
 
                     b.HasIndex("RoleID");
 
@@ -154,6 +183,13 @@ namespace Zwitscher.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Zwitscher.Models.Media", b =>
+                {
+                    b.HasOne("Zwitscher.Models.Post", null)
+                        .WithMany("Media")
+                        .HasForeignKey("PostId");
+                });
+
             modelBuilder.Entity("Zwitscher.Models.Post", b =>
                 {
                     b.HasOne("Zwitscher.Models.User", "User")
@@ -167,6 +203,10 @@ namespace Zwitscher.Migrations
 
             modelBuilder.Entity("Zwitscher.Models.User", b =>
                 {
+                    b.HasOne("Zwitscher.Models.Media", "ProfilePicture")
+                        .WithMany()
+                        .HasForeignKey("ProfilePictureId");
+
                     b.HasOne("Zwitscher.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleID")
@@ -177,12 +217,16 @@ namespace Zwitscher.Migrations
                         .WithMany("Following")
                         .HasForeignKey("UserId");
 
+                    b.Navigation("ProfilePicture");
+
                     b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.User", b =>

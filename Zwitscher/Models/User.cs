@@ -14,10 +14,12 @@ namespace Zwitscher.Models
         public DateTime Birthday { get; set; }
         public string? Biography { get; set; }
         public bool isLocked { get; set; } = false;
-        public Guid RoleID { get; set; }
 
-        public virtual Role Role { get; set; }
-        public virtual ICollection<User> Following { get; set; }
+        public Guid RoleID { get; set; }
+        public virtual Role? Role { get; set; }
+
+        public virtual Media? ProfilePicture { get; set; }
+        public virtual ICollection<User>? Following { get; set; }
 
 
 

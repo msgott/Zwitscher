@@ -22,5 +22,6 @@ namespace Zwitscher.Data
         public DbSet<Zwitscher.Models.Post> Post { get; set; } = default!;
 
         public DbSet<Zwitscher.Models.Comment> Comment { get; set; } = default!;
+        public DbSet<Zwitscher.Models.Media> Media { get; set; } = default!;
     }
 }

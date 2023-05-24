@@ -13,6 +13,8 @@ namespace Zwitscher.Models
 
 
         public virtual User User { get; set; }
+        
+        public virtual ICollection<Media>? Media { get; set; }
 
         public virtual ICollection<Comment>? Comments { get; set; }
     }

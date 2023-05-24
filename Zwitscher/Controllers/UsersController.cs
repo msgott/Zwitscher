@@ -54,7 +54,7 @@ namespace Zwitscher.Controllers
         [Route("Users/Create")]
         public IActionResult Create()
         {
-            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id");
+            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Name");
             return View();
         }
 
@@ -66,6 +66,7 @@ namespace Zwitscher.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
+            Console.WriteLine("Post Endpoint called, Modelstate: " + ModelState.IsValid);
             if (ModelState.IsValid)
             {
                 user.Id = Guid.NewGuid();
@@ -73,7 +74,7 @@ namespace Zwitscher.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id", user.RoleID);
+            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Name", user.RoleID);
             return View(user);
         }
 
@@ -92,7 +93,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id", user.RoleID);
+            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Name", user.RoleID);
             return View(user);
         }
 
@@ -129,7 +130,7 @@ namespace Zwitscher.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id", user.RoleID);
+            ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Name", user.RoleID);
             return View(user);
         }
 
