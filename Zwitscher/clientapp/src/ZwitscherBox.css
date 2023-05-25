@@ -1,0 +1,40 @@
+.zwitscherBox {
+    padding-bottom: 10px;
+    border-bottom: 8px solid var(--zwitscher-background);
+    padding-right: 10px;
+}
+
+.zwitscherBox > form {
+    display: fex;
+    flex-direction : column;
+}
+
+.zwitscherBox_input {
+    padding: 20px;
+    display: flex;
+}
+
+.zwitscherBox_input > input {
+    flex: 1;
+    margin-left: 20px;
+    font-size: 20px;
+    border: none;
+}
+
+.zwitscherBox__imageInput {
+    border: none;
+    padding: 10px;
+  }
+
+.zwitscherBox_zwitscherButton {
+    background-color:  var(--zwitscher-color) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 900 !important;
+    text-transform: inherit !important;
+    border-radius: 30px !important;
+    width: 80px;
+    height: 40px !important;
+    margin-top: 20px !important;
+    margin-left: auto !important;
+}
