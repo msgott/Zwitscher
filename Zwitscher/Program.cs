@@ -54,7 +54,7 @@ app.MapControllerRoute(
 
 
 
-// React
+// React connect with the page with Localhost/Zwitscher
 var spaPath = "/Zwitscher";
 if (app.Environment.IsDevelopment())
 {
