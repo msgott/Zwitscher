@@ -54,7 +54,7 @@ app.MapControllerRoute(
 
 
 
-// React
+// React use
 var spaPath = "/Zwitscher";
 if (app.Environment.IsDevelopment())
 {
