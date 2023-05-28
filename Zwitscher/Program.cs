@@ -18,6 +18,10 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Zwitscher API", Version = "v1" });
 });
+builder.Services.AddSession(options =>
+{
+    options.Cookie.IsEssential = true; // Sitzungscookies werden als "wesentlich" markiert, um sicherzustellen, dass sie immer gesendet werden
+});
 
 // Necesarry for React SpaStatic Services
 builder.Services.AddSpaStaticFiles(configuration => {
@@ -39,6 +43,7 @@ CreateDbIfNotExists(app);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSession();
 
 app.UseRouting();
 app.UseSwagger();

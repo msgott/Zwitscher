@@ -10,7 +10,7 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
-    public class UsersController : Controller //Controller for Users
+    public class UsersController : Controller //Controller for Users --> Shoud be used for Admins only
     {
         private readonly ZwitscherContext _context;
 

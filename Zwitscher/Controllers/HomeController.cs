@@ -15,6 +15,10 @@ namespace Zwitscher.Controllers
 
         public IActionResult Index()
         {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                ViewBag.Message = HttpContext.Session.GetString("Username");
+            }
             return View();
         }
 
