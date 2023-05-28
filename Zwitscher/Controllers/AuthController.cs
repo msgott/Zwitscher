@@ -38,15 +38,28 @@ namespace Zwitscher.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login([Bind("Username,Password")] User user)
         {
+            Console.WriteLine("Entering Login"+ user.ToString());
             if (ModelState.IsValid)
             {
-                var userInDb = _context.User.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+                Console.WriteLine("Logging in user: " + user.Username);
+                var userInDb = _context.User.FirstOrDefault(u => u.Username == user.Username);
                 if (userInDb != null)
                 {
-                    //ISession session = HttpContext.Session;
-                    //session.SetString("UserId", userInDb.Id.ToString());
-                    //session.SetString("Username", userInDb.Username);
-                    _context.User.Update(userInDb);
+                    Console.WriteLine("User found: " + userInDb.Username);
+                    if (BCrypt.Net.BCrypt.Verify(user.Password, userInDb.Password))
+                    //if (user.Password == userInDb.Password)
+                    {
+                        HttpContext.Session.SetString("UserId", userInDb.Id.ToString());
+                        HttpContext.Session.SetString("Username", userInDb.Username);
+                        HttpContext.Session.SetString("RoleID", userInDb.RoleID.ToString());
+                        HttpContext.Session.SetString("FirstName", userInDb.FirstName);
+                        HttpContext.Session.SetString("LastName", userInDb.LastName);
+                        HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("LoginFailed", "Wrong Password!");
+                    }
                     return RedirectToAction(nameof(Details));
                 }
                 else
@@ -54,12 +67,12 @@ namespace Zwitscher.Controllers
                     ModelState.AddModelError("LoginFailed", "Login failed. Please try again.");
                 }
             }
-            //ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id", user.RoleID);
-            return RedirectToAction(nameof(Register));
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Logout()
         {
+            HttpContext.Session.Clear();
             return RedirectToAction(nameof(Index));
         }
 
@@ -67,7 +80,6 @@ namespace Zwitscher.Controllers
         // GET: Auth/Create
         public IActionResult Register()
         {
-            //ViewData["RoleID"] = new SelectList(_context.Role, "Id", "Id");
             return View();
         }
 
@@ -78,12 +90,28 @@ namespace Zwitscher.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] User user)
         {
+            Console.WriteLine("Entering Registration" + user);
             if (ModelState.IsValid)
             {
-                user.Id = Guid.NewGuid();
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("Registering new user: " + user.Username);
+                var check = _context.User.FirstOrDefault(u => u.Username == user.Username);
+                if (check == null)
+                {
+                    user.Id = Guid.NewGuid();
+                    Console.WriteLine("User Id " + user.Id);
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    user.RoleID = Guid.Parse("735a4145-1525-42fa-f8c5-08db522222ed");
+                    user.isLocked = false;
+                    Console.WriteLine(user.Password);
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                { 
+                    Console.WriteLine("User already exists: " + user.Username);
+                    //ModelState.AddModelError("Username", "Username already exists!");
+                }
             }
             return View(user);
         }
@@ -97,14 +125,12 @@ namespace Zwitscher.Controllers
         [Route("Users/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || HttpContext.Session.Id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();

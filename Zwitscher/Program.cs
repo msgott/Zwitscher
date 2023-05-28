@@ -14,6 +14,10 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Zwitscher API", Version = "v1" });
 });
+builder.Services.AddSession(options =>
+{
+    options.Cookie.IsEssential = true; // Sitzungscookies werden als "wesentlich" markiert, um sicherzustellen, dass sie immer gesendet werden
+});
 
 
 var app = builder.Build();
@@ -30,6 +34,7 @@ CreateDbIfNotExists(app);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSession();
 
 app.UseRouting();
 app.UseSwagger();
