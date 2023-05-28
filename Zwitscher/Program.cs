@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Zwitscher.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Headers;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ZwitscherContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings:ZwitscherContext") ?? throw new InvalidOperationException("Connection string 'ZwitscherContext' not found.")));
@@ -17,6 +21,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSession(options =>
 {
     options.Cookie.IsEssential = true; // Sitzungscookies werden als "wesentlich" markiert, um sicherzustellen, dass sie immer gesendet werden
+});
+
+// Necesarry for React SpaStatic Services
+builder.Services.AddSpaStaticFiles(configuration => {
+    configuration.RootPath = "clientapp/build";
 });
 
 
@@ -47,6 +56,49 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+
+
+// React connect with the page with Localhost/Zwitscher
+
+var spaPath = "/Zwitscher";
+if (app.Environment.IsDevelopment())
+{
+    app.MapWhen(y => y.Request.Path.StartsWithSegments(spaPath), client =>
+    {
+        client.UseSpa(spa =>
+        {
+            spa.UseProxyToSpaDevelopmentServer("https://localhost:4444");
+        });
+    });
+}
+else
+{
+    app.Map(new PathString(spaPath), client =>
+    {
+        client.UseSpaStaticFiles();
+        client.UseSpa(spa => {
+            spa.Options.SourcePath = "clientapp";
+
+            // adds no-store header to index page to prevent deployment issues (prevent linking to old .js files)
+            // .js and other static resources are still cached by the browser
+            spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ResponseHeaders headers = ctx.Context.Response.GetTypedHeaders();
+                    headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
+                    {
+                        NoCache = true,
+                        NoStore = true,
+                        MustRevalidate = true
+                    };
+                }
+            };
+        });
+    });
+}
 
 app.Run();
 

@@ -31,10 +31,10 @@ namespace Zwitscher.Models
         public bool isLocked { get; set; } = false;
 
         public Guid RoleID { get; set; }
+        public virtual Role? Role { get; set; }
 
-        public virtual Role Role { get; set; }
-
-        public virtual ICollection<User> Following { get; set; }
+        public virtual Media? ProfilePicture { get; set; }
+        public virtual ICollection<User>? Following { get; set; }
 
 
 
