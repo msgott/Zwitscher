@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zwitscher.Data;
 using Zwitscher.Models;
@@ -34,20 +27,18 @@ namespace Zwitscher.Controllers
             return View();
         }
 
+        // This method is responsible for the login. To do this, it compares the data from the input field with the database entries.
+        // If a user can be found, his or her data is stored in the HttpContext.Session and can then be called up throughout the application.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login([Bind("Username,Password")] User user)
+        public IActionResult Login([Bind("Username,Password")] String Username, String Password)
         {
-            Console.WriteLine("Entering Login"+ user.ToString());
             if (ModelState.IsValid)
             {
-                Console.WriteLine("Logging in user: " + user.Username);
-                var userInDb = _context.User.FirstOrDefault(u => u.Username == user.Username);
+                var userInDb = _context.User.FirstOrDefault(u => u.Username == Username);
                 if (userInDb != null)
                 {
-                    Console.WriteLine("User found: " + userInDb.Username);
-                    if (BCrypt.Net.BCrypt.Verify(user.Password, userInDb.Password))
-                    //if (user.Password == userInDb.Password)
+                    if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password))
                     {
                         HttpContext.Session.SetString("UserId", userInDb.Id.ToString());
                         HttpContext.Session.SetString("Username", userInDb.Username);
@@ -55,12 +46,12 @@ namespace Zwitscher.Controllers
                         HttpContext.Session.SetString("FirstName", userInDb.FirstName);
                         HttpContext.Session.SetString("LastName", userInDb.LastName);
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                        return RedirectToAction(nameof(Details));
                     }
                     else
                     {
                         ModelState.AddModelError("LoginFailed", "Wrong Password!");
                     }
-                    return RedirectToAction(nameof(Details));
                 }
                 else
                 {
@@ -83,34 +74,28 @@ namespace Zwitscher.Controllers
             return View();
         }
 
-        // POST: Auth/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //This method is used for registration. When a user goes to this page, he or she can create a new account,
+        //which automatically gets the role User. An error is thrown for an existing username.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] User user)
         {
-            Console.WriteLine("Entering Registration" + user);
             if (ModelState.IsValid)
             {
-                Console.WriteLine("Registering new user: " + user.Username);
                 var check = _context.User.FirstOrDefault(u => u.Username == user.Username);
                 if (check == null)
                 {
                     user.Id = Guid.NewGuid();
-                    Console.WriteLine("User Id " + user.Id);
                     user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                     user.RoleID = Guid.Parse("735a4145-1525-42fa-f8c5-08db522222ed");
                     user.isLocked = false;
-                    Console.WriteLine(user.Password);
                     _context.Add(user);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 { 
-                    Console.WriteLine("User already exists: " + user.Username);
-                    //ModelState.AddModelError("Username", "Username already exists!");
+                    ModelState.AddModelError("Username", "Username already exists!");
                 }
             }
             return View(user);
@@ -122,21 +107,24 @@ namespace Zwitscher.Controllers
         }
 
         [HttpGet]
-        [Route("Users/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || HttpContext.Session.Id == null)
+
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                var session_user = await _context.User.FirstOrDefaultAsync(m => m.Id == Guid.Parse(HttpContext.Session.GetString("UserId")));
+                return View(session_user);
+            }
+
+            if (id == null)
             {
                 return NotFound();
             }
-
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            else
             {
-                return NotFound();
+                var user = await _context.User.FirstOrDefaultAsync(m => m.Id == id);
+                return View(user);
             }
-
-            return View(user);
         }
     }
 }
