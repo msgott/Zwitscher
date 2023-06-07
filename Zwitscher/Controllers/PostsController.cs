@@ -20,8 +20,6 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts
-        [HttpGet]
-        [Route("Posts")]
         public async Task<IActionResult> Index()
         {
             var zwitscherContext = _context.Post.Include(p => p.User);
@@ -29,8 +27,6 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Details/5
-        [HttpGet]
-        [Route("Posts/Details")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -50,11 +46,9 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Create
-        [HttpGet]
-        [Route("Posts/Create")]
         public IActionResult Create()
         {
-            ViewData["UserID"] = new SelectList(_context.User, "Id", "Id");
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
             return View();
         }
 
@@ -62,9 +56,8 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Route("Posts/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserID,CreatedDate,TextContent")] Post post)
+        public async Task<IActionResult> Create([Bind("Id,CreatedDate,TextContent,UserId")] Post post)
         {
             if (ModelState.IsValid)
             {
@@ -73,13 +66,11 @@ namespace Zwitscher.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserID"] = new SelectList(_context.User, "Id", "Id", post.UserID);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
             return View(post);
         }
 
         // GET: Posts/Edit/5
-        [HttpGet]
-        [Route("Posts/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -92,7 +83,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserID"] = new SelectList(_context.User, "Id", "Id", post.UserID);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
             return View(post);
         }
 
@@ -100,9 +91,8 @@ namespace Zwitscher.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Route("Posts/Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,UserID,CreatedDate,TextContent")] Post post)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CreatedDate,TextContent,UserId")] Post post)
         {
             if (id != post.Id)
             {
@@ -129,13 +119,11 @@ namespace Zwitscher.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserID"] = new SelectList(_context.User, "Id", "Id", post.UserID);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
             return View(post);
         }
 
         // GET: Posts/Delete/5
-        [HttpGet]
-        [Route("Posts/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Post == null)
@@ -155,8 +143,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Delete/5
-        [HttpDelete]
-        [Route("Posts/Delete")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {

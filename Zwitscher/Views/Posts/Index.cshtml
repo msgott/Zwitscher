@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Zwitscher.Models.Post>
 
 @{
-    ViewData["Title"] = "Posts";
+    ViewData["Title"] = "Index";
 }
 
-<h1>Posts</h1>
+<h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.TextContent)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

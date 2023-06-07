@@ -5,17 +5,19 @@ namespace Zwitscher.Models
     public class Post
     {
         public Guid Id { get; set; }
-        public Guid UserID { get; set; }
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; }
         [StringLength(281)]
         public string TextContent { get; set; } = "";
 
+        //Relation to User (required one to many)
+        public Guid UserId { get; set; }
+        public User User { get; set; } = null!;
 
-        public virtual User User { get; set; }
-        
-        public virtual ICollection<Media>? Media { get; set; }
+        //Relation to Media (optional one to many)
+        public ICollection<Media> Media { get; set; } = new List<Media>();
 
-        public virtual ICollection<Comment>? Comments { get; set; }
+        //Relation to Comments (required one to many)
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

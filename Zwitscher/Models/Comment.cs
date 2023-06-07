@@ -5,14 +5,17 @@ namespace Zwitscher.Models
     public class Comment
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
-        public Guid PostId { get; set; }
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; }
         public string CommentText { get; set; } = "";
 
 
-        public virtual User User { get; set; }
-        public virtual Post Post { get; set; } 
+        //Relation to User (required one to many)
+        public Guid UserId { get; set; }
+        public User User { get; set; } = null!;
+
+        //Relation to Post (required one to many)
+        public Guid PostId { get; set; }
+        public Post Post { get; set; } = null!;
     }
 }

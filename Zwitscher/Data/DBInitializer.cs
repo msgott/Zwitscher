@@ -13,7 +13,7 @@ namespace Zwitscher.Data
             context.Database.EnsureCreated();
             seedRole();
             seedUser();
-            seedPost();
+            //seedPost();
             seedComment();    
 
         }
@@ -95,7 +95,7 @@ namespace Zwitscher.Data
             }
             context.SaveChanges();
         }
-        private static void seedPost()
+        /*private static void seedPost()
         {
             //Seed the Post Table 
             if (context.Post.Any()) // Look for any Posts.
@@ -126,6 +126,7 @@ namespace Zwitscher.Data
             }
             context.SaveChanges();
         }
+        */
         private static void seedComment()
         {
             //Seed the Comment Table 

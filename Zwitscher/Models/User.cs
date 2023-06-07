@@ -30,12 +30,21 @@ namespace Zwitscher.Models
 
         public bool isLocked { get; set; } = false;
 
+
+        //Relation to Role (Required one to many)
         public Guid RoleID { get; set; }
-        public virtual Role? Role { get; set; }
+        public Role Role { get; set; } = null!;
 
-        public virtual Media? ProfilePicture { get; set; }
-        public virtual ICollection<User>? Following { get; set; }
+        //Relation to Media (Optional one to one)
+        public Guid? MediaId { get; set; }
+        public Media? ProfilePicture { get; set; }
 
+        //Relation to Follower (optional many to many)
+        public List<User> Following { get; } = new();
+        public List<User> FollowedBy { get; } = new();
+
+        //Relation to Posts (required one to many)
+        public ICollection<Post> Posts { get; } = new List<Post>();
 
 
     }
