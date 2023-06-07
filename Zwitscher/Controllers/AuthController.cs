@@ -7,11 +7,13 @@ namespace Zwitscher.Controllers
 {
     public class AuthController : Controller // Controller for login and register
     {
+        private readonly ILogger<AuthController> _logger;
         private readonly ZwitscherContext _context;
 
-        public AuthController(ZwitscherContext context)
+        public AuthController(ZwitscherContext context, ILogger<AuthController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Auth
@@ -38,7 +40,7 @@ namespace Zwitscher.Controllers
                 var userInDb = _context.User.FirstOrDefault(u => u.Username == Username);
                 if (userInDb != null)
                 {
-                    if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password))
+                    if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password) && userInDb.isLocked == false)
                     {
                         HttpContext.Session.SetString("UserId", userInDb.Id.ToString());
                         HttpContext.Session.SetString("Username", userInDb.Username);
@@ -46,10 +48,12 @@ namespace Zwitscher.Controllers
                         HttpContext.Session.SetString("FirstName", userInDb.FirstName);
                         HttpContext.Session.SetString("LastName", userInDb.LastName);
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                        _logger.LogInformation($"User {userInDb.Username} logged in.");
                         return RedirectToAction(nameof(Details));
                     }
                     else
                     {
+                        _logger.LogInformation($"User {userInDb.Username} tried to log in with wrong password or is locked.");
                         ModelState.AddModelError("LoginFailed", "Wrong Password!");
                     }
                 }
