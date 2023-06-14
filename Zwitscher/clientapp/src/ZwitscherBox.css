@@ -7,6 +7,8 @@
 .zwitscherBox > form {
     display: fex;
     flex-direction : column;
+    border-radius: 9px;
+    margin-left: 15px;
 }
 
 .zwitscherBox_input {
@@ -18,10 +20,15 @@
     flex: 1;
     margin-left: 20px;
     font-size: 20px;
-    border: none;
+    border: 1px;
+    border-radius: 9px;
 }
 
-.zwitscherBox__imageInput {
+::placeholder {
+    color: black;
+  }
+
+.zwitscherBox_imageInput {
     border: none;
     padding: 10px;
   }
@@ -33,8 +40,10 @@
     font-weight: 900 !important;
     text-transform: inherit !important;
     border-radius: 30px !important;
-    width: 80px;
+    width: 150px;
     height: 40px !important;
     margin-top: 20px !important;
-    margin-left: auto !important;
+    margin-left: 32% !important;
+    margin-bottom: 5px !important;
+    background-color: grey !important;
 }

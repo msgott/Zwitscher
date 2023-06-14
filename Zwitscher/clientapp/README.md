@@ -2,7 +2,29 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# Make sure to install npm and node 
+
+
+npm install -g npm
+
+check installation with
+
+npm -v 
+node -v
+
+Navigate into the clientapp folder e.g. zwitscher/clientapp and type "npm start".
+
+as soon as the server loaded the page you can access the react page with "https://localhost:yourport/Zwitscher"
+
+The Suffix is "/Zwitscher" and it is necessary to be cautious for capitalized letters!
+A suffix is the part added to the end of a word and for URL-Adresses it is added with: a foreslash plus word for example: "https://localhost:yourport/Zwitscher"
+
+
+Note: Check if you added your port number for "yourport" and should an error occur search for the package.json file in zwitscher/clientapp and press ctr + s and try again.
+
+
+
+## Available Scripts from zwitscher/clientapp
 
 In the project directory, you can run:
 
