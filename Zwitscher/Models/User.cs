@@ -30,10 +30,13 @@ namespace Zwitscher.Models
 
         public bool isLocked { get; set; } = false;
 
+        [DataType(DataType.Date)]
+        public DateTime CreatedDate { get;} = DateTime.Now;
+
 
         //Relation to Role (Required one to many)
-        public Guid RoleID { get; set; }
-        public Role Role { get; set; } = null!;
+        public Guid? RoleID { get; set; }
+        public Role? Role { get; set; } = null!;
 
         //Relation to Media (Optional one to one)
         public Guid? MediaId { get; set; }

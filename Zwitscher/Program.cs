@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Zwitscher.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Headers;
+using Zwitscher.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ZwitscherContext>(options =>
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<ZwitscherContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Zwitscher API", Version = "v1" });
@@ -56,7 +58,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapHub<UserHub>("/userHub");
 
 
 
