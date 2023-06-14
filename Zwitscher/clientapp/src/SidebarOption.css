@@ -6,7 +6,6 @@
 }
 
 .sidebarOption:hover {
-    background-color: aliceblue;
     border-radius: 30px;
     color: var(--zwitscher-color);
     transition: color 100ms ease-out;

@@ -1,0 +1,49 @@
+.sidebar {
+    flex: 0.15;
+    min-width: 15%;
+    margin-top: 20px;
+    padding: 0;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  
+  .sidebarList {
+    width: 100%;
+    height: auto;
+    padding: 0;
+    box-sizing: border-box;
+    margin-top: 20px;
+  }
+  
+  .sidebarList .row {
+    width: 100%;
+    height: 60px;
+    list-style-type: none;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .row .icon {
+    flex: 30%;
+    display:grid;
+    place-items: center;
+  }
+  
+  .row .text {
+    flex: 70%;
+  }
+  
+  .row:hover {
+    cursor: pointer;
+    border-radius: 30px;
+    transition: color 100ms ease-out;
+  }
+
+  .row .text{
+    font-weight: 800;
+    font-size: 20px;
+  }
+

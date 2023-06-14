@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="clientapp\src\Components\Header\" />
     <Folder Include="Media\" />
   </ItemGroup>
 	

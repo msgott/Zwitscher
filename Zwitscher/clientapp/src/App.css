@@ -1,13 +1,174 @@
 body {
-  --zwitscher-color: #50b7f5;
-  --zwitscher-background: #e6ecf0;
+
+  --zwitscher-color-lightmode: #04335c;
+  --zwitscher-background-lightmode: #e6ecf0;
+
+  --zwitscher-color-darkmode: white;
+  --zwitscher-background-darkmode: #3a3939;
+}
+
+.beginning{
+
+}
+#dark {
+  background-color: #3a3939;
+}
+
+#light {
+  background-color: white;
+
 }
 
 .app {
   display: flex;
   height: 100vh;
-  max-width: 1300px;
-  margin-left: auto;
-  margin-right:auto;
-  padding: 0 10px;
+  padding: 0 5%;
+}
+#dark .app{
+  background-color: #3a3939;
+}
+
+#light .app{
+  background-color: white;
+
+}
+
+.header-app {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#dark .Header-app {
+  background-color: #3a3939;
+}
+#light .Header-app {
+  background-color: white;
+}
+
+.zwitscher_icon span{
+
+}
+#dark .zwitscher_icon span{
+  color: #e6ecf0;
+  
+}
+#light .zwitscher_icon span{
+  color: black;
+}
+
+
+.sidebar {
+  
+}
+#dark .sidebar {
+  background-color: #201c1c;
+  color: #d1d1d1;
+}
+#light .sidebar {
+  background-color: aquamarine;
+}
+
+.sidebarList {
+
+}
+#dark .sidebarList{
+  background-color:#201c1c ;
+  color: #d1d1d1;
+}
+#light .sidebarList{
+  background-color: aquamarine;
+}
+
+
+.sidebarOption:hover{
+
+}
+#dark .sidebarOption:hover{
+  color:#d1d1d1;
+  background-color: #302c2c;
+}
+#light .sidebarOption:hover{
+  background-color: #f5f8fa;
+}
+
+.sidebarButton {
+
+}
+#dark .sidebarButton{ 
+  background-color: rgb(102, 102, 102) !important;
+}
+#light .sidebarButton {
+  background-color: rgb(2, 93, 129)!important;
+}
+
+.feed {
+
+}
+#dark .feed {
+  background-color: #252525;
+  color: #d5d5d5;
+}
+#light .feed {
+  background-color: white;
+  
+}
+
+.feed_header {
+
+}
+#dark .feed_header{
+  background-color: #252525;
+  color: #d5d5d5;
+}
+#light .feed_header{
+  background-color: white;
+}
+
+
+.widgets {
+}
+#dark .widgets {
+  background-color: #3a3939;
+}
+
+#light .widgets {
+  background-color: white;
+}
+
+.widgets_input {
+
+}
+#dark .widgets_input{
+  background-color: #d1d1d1;
+}
+#light .widgets_input {
+  background-color: #f5f8fa;
+}
+
+.zwitscherBox > form {
+}
+
+#dark .zwitscherBox > form {
+  background-color: #302c2c;
+}
+#light .zwitscherBox > form {
+  background-color:#f5f8fa;
+}
+
+.zwitscherBox_input > input {
+
+}
+#dark .zwitscherBox_input > input {
+  background-color: #d1d1d1;
+}
+#light .zwitscherBox_input > input {
+  background-color: white;
+}
+
+.marginContainer{
+  margin-bottom: 50px;
+}
+#dark .marginContainer{
+  background-color: #04335c;
+  
 }

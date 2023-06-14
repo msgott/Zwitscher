@@ -3,16 +3,13 @@
 }
 
 .feed {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-
-.feed {
-    flex: 0.4;
+    flex: 0.85;
     border-right: 1px solid var(--zwitscher-background);
     min-width: fit-content; /*Always needs to fit the content*/
     overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    border-radius: 30px;
 }
 
 .feed_header {
