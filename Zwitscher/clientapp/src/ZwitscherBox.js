@@ -3,7 +3,7 @@ import './ZwitscherBox.css';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 {/*
-import {db} from './firebase';
+import {db} from './Firebase';
 import { getDocs, collection, addDoc } from "firebase/firestore";
 */}
 
