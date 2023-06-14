@@ -28,6 +28,7 @@ function Header() {
         />
       </div>
 
+      {/*Hello button to figure out how to access Users2 data*/}
       <button onClick={async () => {
     try {
         const response = await fetch('/Users2');

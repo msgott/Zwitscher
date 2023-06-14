@@ -9,7 +9,7 @@ import FiberNewIcon from '@mui/icons-material/FiberNew';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import Button from '@mui/material/Button';
 import {Link, Switch, Route } from 'react-router-dom';
-import { SidebarData } from "./SidebarData";
+import { SidebarData } from "./SidebarData"; {/*Access this file and go through it with a map function to build the sidebar*/}
 
 function Sidebar() {
   return (
