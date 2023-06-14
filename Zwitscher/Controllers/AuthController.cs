@@ -82,10 +82,17 @@ namespace Zwitscher.Controllers
         //which automatically gets the role User. An error is thrown for an existing username.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] User user)
+        //public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] User user)
+        public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] String LastName, String FirstName, String Username, String Password, DateTime Birthday)
         {
+            User user = new User();
             if (ModelState.IsValid)
             {
+                user.LastName = LastName;
+                user.FirstName = FirstName;
+                user.Username = Username;
+                user.Password = Password;
+                user.Birthday = Birthday;
                 var check = _context.User.FirstOrDefault(u => u.Username == user.Username);
                 if (check == null)
                 {
