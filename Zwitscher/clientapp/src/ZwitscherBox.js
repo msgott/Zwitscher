@@ -2,28 +2,19 @@ import React, {useState} from 'react';
 import './ZwitscherBox.css';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+{/*
 import {db} from './Firebase';
 import { getDocs, collection, addDoc } from "firebase/firestore";
+*/}
 
 
 function ZwitscherBox() {
   const [zwitscherMessage, setZwitscherMessage] = useState('');
   const [zwitscherImage, setZwitscherImage] = useState('');
 
-  const postsCollectionRef = collection(db, "posts");
+  {/*With firebase:
 
-  {/*const sendZwitscher = e => {
-    e.preventDefault(); 
-    db.collection('posts').add({
-      name: "Johnny Depp",
-      text: zwitscherMessage,
-      image: zwitscherImage,
-      avatar: "https://nationaltoday.com/wp-content/uploads/2022/05/107-Johnny-Depp-1200x834.jpg.webp",
-    });
-    setZwitscherMessage("");
-    setZwitscherImage("");};*/}
-  
-    {/*Reset the Input field*/}
+    const postsCollectionRef = collection(db, "posts");
 
     const sendZwitscher = async () => {
       try {
@@ -40,6 +31,8 @@ function ZwitscherBox() {
       setZwitscherMessage("");
       setZwitscherImage("");
     }
+*/}
+  
   
 
   return (
@@ -52,14 +45,27 @@ function ZwitscherBox() {
                  placeholder="What's going on?"
                  type="text" />
             </div>
+
+            {/*Input field connected to the useState method to set and assign the value for "zwitscherImage". An Image link will be 
+            provided here and will be stored
+
             <input
              onChange={(e) => setZwitscherImage(e.target.value)}
              className="zwitscherBox_imageInput"
              value={zwitscherImage}
              placeholder='optional: image'
              type='text' />
-            {/*<input className="zwitscherBox_imageInput" placeholder="Optional: Enter image URL" type="text"/>*/}
-            <Button onClick={sendZwitscher} type='submit' className="zwitscherBox_zwitscherButton">Zwitscher</Button>
+            
+            */}
+            
+            {/*Less functional input field for Images, DUMMY*/}
+            <input className="zwitscherBox_imageInput" placeholder="Optional: Enter image URL" type="text"/>
+
+            {/*sendZwitscher function call to create a new "zwitscher/message/tweed". 
+            It will also be visable in the database after the function call. The Author,
+            Image etc. still hardcoded at this point*/}
+            
+            {/*<Button onClick={sendZwitscher} type='submit' className="zwitscherBox_zwitscherButton">Zwitscher</Button>*/}
         </form>
     </div>
   );

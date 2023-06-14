@@ -7,9 +7,12 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PublishIcon from "@mui/icons-material/Publish";
 import { goToProfileContext } from './AppZwitscher';
 
+
+{/*The hard coded stuff from the Feed components will be entered here as props/ name,text etc.*/}
 function Post({ name, text, image, avatar }) {
     const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
 
+    {/*Function needs to be replaced later but maybe beneficial to understand routing in react?*/}
     const handleClick = () => {
         setGoToProfile(true);
     };

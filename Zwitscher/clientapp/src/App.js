@@ -11,7 +11,7 @@ import Trending from './pages/Trending';
 
 
 function App() {
-
+{/*App function is above AppZwitscher so that routing will function for all componants from AppZwitscher component on (Sidebar, Feed etc.) */}
   return (
     <Routes>
       <Route path='/*' element = {<AppZwitscher />} />

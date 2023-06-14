@@ -13,7 +13,7 @@ import sidebarZwitscher_Icon from './Images/Zwitscher_Logo.png';
 import { BrowserRouter as Router, Link, Switch, Route } from 'react-router-dom';
 
 
-
+{/*!!!!Currently not used as the sidebar but still available as a component!!!!!*/}
 
 
 function Sidebar() {

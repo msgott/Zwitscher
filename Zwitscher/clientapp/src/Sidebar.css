@@ -1,3 +1,5 @@
+{/*!!!!Currently not used as the sidebar but still available as a component!!!!!*/}
+
 .sidebar {
     border-right: 1px solid var(--zwitscher-background);
     flex:0.15;
