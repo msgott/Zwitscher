@@ -91,14 +91,7 @@ namespace Zwitscher.Controllers
             return View();
         }
 
-        [HttpGet]
-        [Route("Users2")]
-        public JsonResult JSONtest()
-        {
-            Console.WriteLine("called Endpoint");
-            List<User> temp = _context.User.ToList();
-            return Json(temp);
-        }
+        
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
