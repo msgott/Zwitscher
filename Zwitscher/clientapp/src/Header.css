@@ -1,0 +1,64 @@
+.Header {
+  height: 175px;
+  display: flex;
+  justify-content: space-between;
+
+  flex-direction: row;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+#light {
+  background-color: white;
+}
+#black {
+  background-color: black;
+}
+
+.Logo {
+  padding-top: 10px;
+  padding-bottom: 50px;
+  cursor: pointer;
+  display:flex;
+  align-items: center;
+  flex-grow: 1;
+  width: 10%;
+}
+
+.Logo_Text {
+  color:black;
+  cursor: pointer;
+  text-align:center;
+  align-self: center;
+  font-size: 56px;
+  font-weight: bold;
+  margin-top:95px;
+
+}
+
+.Login-Toggle{
+  width:10%;
+  display:flex;
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-left: 50px;
+}
+
+.Login_Icon {
+  transform: scale(2);
+  cursor: pointer;
+}
+  #light .Login_Icon{
+  color:#01385f;
+}
+#dark .Login_Icon{
+  color:grey;
+}
+#dark .Login_Icon:hover{
+  color:white;
+  transition: color 1000ms ease-out;
+}
+
+.toggle{
+  margin-top: 15px;
+}

@@ -1,6 +1,6 @@
 .post {
     display: flex;
-    align-items: flex-start;
+
     border-bottom: 1px solid var(--zwitscher-background);
     padding-bottom: 10px;
   }
@@ -8,18 +8,73 @@
   .post_body {
     flex: 1;
     padding: 10px;
+ 
   }
   
   .post_body > img {
     border-radius: 20px;
+    
   }
   
   .post_footer {
     display: flex;
-    justify-content: space-between;
+    justify-content:space-around;
     margin-top: 20px;
+    align-items: center;
+    background-color: aquamarine;
+    border-radius: 8px;
+    height: 38px;
   }
+  #dark .post_footer {
+    background-color: #3a3939;
+  }
+
+  .post_footer .chat-icon{
+    cursor: pointer;
+    font-size: 24px!important;
+  }
+
+  .post_footer .chat-icon:hover{
+    color: white;
+    font-size: 26px !important;
+  }
+
+  .post_footer .repeat-icon{
+    cursor: pointer;
+    font-size: 24px!important;
+  }
+
+  .post_footer .repeat-icon:hover{
+    color: white;
+    font-size: 26px !important;
+  }
+
+  .post_footer .favorite-icon{
+    cursor: pointer;
+    font-size: 24px!important;
+  }
+
+  .post_footer .favorite-icon:hover{
+    color: white;
+    font-size: 26px !important;
+  }
+
+  .post_footer .publish-icon{
+    cursor: pointer;
+    font-size: 24px!important;
+    padding: 20 0;
+  }
+
+  .post_footer .publish-icon:hover{
+    color: white;
+    font-size: 26px !important;
+  }
+
   
+.post_footer >svg{
+  margin-right: 10px;
+}
+
   .post_headerDescription {
     margin-bottom: 10px;
     font-size: 15px;

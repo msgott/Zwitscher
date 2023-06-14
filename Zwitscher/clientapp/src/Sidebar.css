@@ -1,10 +1,11 @@
 .sidebar {
     border-right: 1px solid var(--zwitscher-background);
-    flex: 0.3;
-    min-width: 250px;
+    flex:0.15;
+    min-width: 15%;
     margin-top: 20px;
-    padding-left: 125px;
-    padding-right: 20px;
+    padding: 0 20px;
+    border-radius: 20px;
+    
 }
 
 .sidebarZwitscher_Icon {
@@ -12,8 +13,8 @@
     margin-bottom: 20px;
 }
 
-.sidebarZwitscher {
-    background-color:  var(--zwitscher-color) !important;
+/* background-color:  var(--zwitscher-color) !important;    */
+.sidebarButton {
     border:none !important;
     color: white !important;
     font-weight: 900  !important;
