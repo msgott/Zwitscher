@@ -30,6 +30,87 @@
         </dd>
     </dl>
 </div>
+<hr />
+<div style="border: 1px solid black;">
+    Post hat folgende Kommentare
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Text
+                </th>
+
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Comment>)ViewData["Comments"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CommentText)
+                    </td>
+
+
+
+                    <td style="visibility: hidden;">
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    Post hat folgende Votes 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    UserId
+                </th>
+
+
+                <th>ist Upvote</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Vote>)ViewData["Votes"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isUpVote)
+                    </td>
+
+
+
+                    <td style="visibility: hidden;">
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

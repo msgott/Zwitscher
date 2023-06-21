@@ -34,7 +34,7 @@ namespace Zwitscher.Migrations
 
                     b.HasIndex("FollowingId");
 
-                    b.ToTable("UserUser");
+                    b.ToTable("UserFollowers", (string)null);
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Comment", b =>
@@ -157,7 +157,7 @@ namespace Zwitscher.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleID")
+                    b.Property<Guid?>("RoleID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Username")
@@ -177,6 +177,30 @@ namespace Zwitscher.Migrations
                     b.HasIndex("RoleID");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Zwitscher.Models.Vote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isUpVote")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Vote");
                 });
 
             modelBuilder.Entity("UserUser", b =>
@@ -203,7 +227,7 @@ namespace Zwitscher.Migrations
                         .IsRequired();
 
                     b.HasOne("Zwitscher.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -241,13 +265,30 @@ namespace Zwitscher.Migrations
 
                     b.HasOne("Zwitscher.Models.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleID");
 
                     b.Navigation("ProfilePicture");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Zwitscher.Models.Vote", b =>
+                {
+                    b.HasOne("Zwitscher.Models.Post", "Post")
+                        .WithMany("Votes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Zwitscher.Models.User", "User")
+                        .WithMany("Votes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Media", b =>
@@ -260,6 +301,8 @@ namespace Zwitscher.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Media");
+
+                    b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Role", b =>
@@ -269,7 +312,11 @@ namespace Zwitscher.Migrations
 
             modelBuilder.Entity("Zwitscher.Models.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Posts");
+
+                    b.Navigation("Votes");
                 });
 #pragma warning restore 612, 618
         }

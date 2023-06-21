@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Zwitscher.Models.Media>
+
+@{
+    ViewData["Title"] = "Media";
+}
+
+<h1>Media</h1>
+
+<p>
+    <a asp-action="Upload">Upload new</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Preview
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilePath)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img style="width: 30px; height: 30px;" src="~/Media/@item.FileName">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FileName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FilePath)
+                </td>
+                
+
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+

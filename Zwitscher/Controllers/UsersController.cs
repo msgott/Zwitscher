@@ -29,7 +29,11 @@ namespace Zwitscher.Controllers
         [Route("Users")]
         public async Task<IActionResult> Index()
         {
-            var zwitscherContext = _dbContext.User.Include(u => u.Role);
+            var zwitscherContext = _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.Following)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.ProfilePicture);
             return View(await zwitscherContext.ToListAsync());
         }
         [HttpGet]
@@ -73,12 +77,21 @@ namespace Zwitscher.Controllers
 
             var user = await _dbContext.User
                 .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
-
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
             return View(user);
         }
 
@@ -88,6 +101,7 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name");
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id");
             return View();
         }
 
@@ -111,6 +125,7 @@ namespace Zwitscher.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
             return View(user);
         }
 
@@ -130,6 +145,7 @@ namespace Zwitscher.Controllers
                 return NotFound();
             }
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
             return View(user);
         }
 
@@ -139,7 +155,7 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        public async Task<IActionResult> Edit(Guid id, IFormFile file, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
             if (id != user.Id)
             {
@@ -150,6 +166,31 @@ namespace Zwitscher.Controllers
             {
                 try
                 {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                    string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                    //string fileName = Path.GetFileName(file.FileName);
+                    string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    Media image = new Media
+                    {
+                        Id = tempID,
+                        FileName = fileName,
+                        FilePath = filePath
+                    };
+
+                    _dbContext.Media.Add(image);
+                    user.ProfilePicture = image;
+                    }
+                    user.Role = await _dbContext.Role.FindAsync(user.RoleID);
+                    
                     _dbContext.Update(user);
                     await _dbContext.SaveChangesAsync();
                 }
@@ -167,6 +208,7 @@ namespace Zwitscher.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
             return View(user);
         }
 
@@ -182,6 +224,8 @@ namespace Zwitscher.Controllers
 
             var user = await _dbContext.User
                 .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -192,7 +236,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Users/Delete/5
-        [HttpDelete]
+        [HttpPost]
         [Route("Users/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -201,9 +245,14 @@ namespace Zwitscher.Controllers
             {
                 return Problem("Entity set 'ZwitscherContext.User'  is null.");
             }
-            var user = await _dbContext.User.FindAsync(id);
+            var user = await _dbContext.User
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user != null)
             {
+                user.FollowedBy.Clear();
+                user.Following.Clear();
                 _dbContext.User.Remove(user);
             }
             

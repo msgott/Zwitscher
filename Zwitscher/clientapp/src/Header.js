@@ -30,7 +30,8 @@ function Header() {
 
       {/*Hello button to figure out how to access Users2 data*/}
       <button onClick={async () => {
-    try {
+                  try {
+        //Not working because Users2 Endpoint not implemented remotely
         const response = await fetch('/Users2');
         const data = await response.json();
         console.log(data[0].LastName);

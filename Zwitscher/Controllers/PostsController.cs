@@ -36,12 +36,15 @@ namespace Zwitscher.Controllers
 
             var post = await _context.Post
                 .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Votes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
                 return NotFound();
             }
-
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
             return View(post);
         }
 
@@ -49,6 +52,7 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
+
             return View();
         }
 

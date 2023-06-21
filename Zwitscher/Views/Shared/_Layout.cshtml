@@ -42,7 +42,16 @@
                             <a class="nav-link text-dark" asp-controller="Comments" asp-action="Index">Comments</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Media" asp-action="Index">Media</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Media" asp-action="Upload">Media-Upload</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Votes" asp-action="Index">Votes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="~/Zwitscher">New-Frontend</a>
                         </li>
                         @{
                             var username = Context.Session.GetString("Username");
@@ -55,7 +64,7 @@
                         }
                         else
                         {
-                            <li class="nav-item">
+                            <li class="nav-item" style="right:0;left: auto;">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Index">Login</a>
                             </li>
                         }
