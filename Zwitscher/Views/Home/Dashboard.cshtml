@@ -1,0 +1,269 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="/css/Dashboard.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="grid-container">
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-title">
+          <div class="sidebar-brand">
+            <span class="material-icons-outlined">inventory</span>Zwitscher
+          </div>
+          <span class="material-icons-outlined" onclick="closeSidebar()">close</span>
+        </div>
+
+        <ul class="sidebar-list">
+          <li class="sidebar-list-item">
+            <a href="https://localhost:7160/Home/Dashboard">
+              <span class="material-icons-outlined">dashboard</span> Dashboard
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="https://localhost:7160/Users">
+              <span class="material-icons-outlined">people</span>Users
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="https://localhost:7160/Roles">
+              <span class="material-icons-outlined">inventory_2</span>Role Manager
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="https://localhost:7160/Posts">
+              <span class="material-icons-outlined">fact_check</span> Posts
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="https://localhost:7160/Comments">
+              <span class="material-icons-outlined">comment</span> Comments
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="#" target="_blank">
+              <span class="material-icons-outlined">poll</span> Reports
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="#" target="_blank">
+              <span class="material-icons-outlined">settings</span> Settings
+            </a>
+          </li>
+        </ul>
+      </aside>
+      <!-- End Sidebar -->
+
+      <!-- Main -->
+      <main class="main-container">
+        <div class="main-title">
+          <p class="font-weight-bold">DASHBOARD</p>
+        </div>
+
+        <div class="main-cards">
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">NUMBER OF USERS</p>
+              <span class="material-icons-outlined text-black">person_outline</span>
+            </div>
+            <span class="text-primary font-weight-bold">@ViewBag.TotalUsers</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">NUMBER OF NEW USERS - 14 DAYS</p>
+              @{/*Whenever the amount of all users exceeds the amount of the previous 14 days, we will render 
+              a trending up, otherwise we will render a trending down*/}
+              <span class="material-icons-outlined text-orange">trending_up</span>
+            </div>
+            <span class="text-primary font-weight-bold">@ViewBag.totalNewUsersFourteen</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">MODERATORS</p>
+              <span class="material-icons-outlined text-violett">local_police</span>
+            </div>
+            <span class="text-primary font-weight-bold">9</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">ADMINS</p>
+              <span class="material-icons-outlined text-red">gavel</span>
+            </div>
+            <span class="text-primary font-weight-bold">6</span>
+          </div>
+
+
+          <div class="card" style= "border-left: 7px solid #000000">
+            <div class="card-inner">
+              <p class="text-primary">ZWITSCHERS</p>
+              <span class="material-icons-outlined text-black">email</span>
+            </div>
+            <span class="text-primary font-weight-bold">@ViewBag.TotalPosts</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">NEW ZWITSCHERS - 14 DAYS</p>
+              @{/*Whenever the amount of all posts exceeds the amount of the previous 14 days, we will render 
+              a trending up, otherwise we will render a trending down*/}
+              <span class="material-icons-outlined text-orange">trending_up</span>
+            </div>
+            <span class="text-primary font-weight-bold">583</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">AVG. ZWITSCHER RATE - 30 DAYS</p>
+              <span class="material-icons-outlined text-violett">functions</span>
+            </div>
+            <span class="text-primary font-weight-bold">@ViewBag.AveragePosts</span>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <p class="text-primary">BANNED USERS</p>
+              <span class="material-icons-outlined text-red">pan_tool</span>
+            </div>
+            <span class="text-primary font-weight-bold">9</span>
+          </div>
+        </div>
+
+        <div class="charts">
+
+          <div class="charts-card">
+            <p class="chart-title">MOST FAMOUS USER</p>
+            <p class="chart-name">Allen Alvarez</p>
+            <div id="bar-chart"></div>
+          </div>
+
+          <div class="charts-card">
+            <p class="chart-title">MOST HATED USER </p>
+            <p class="chart-name">Lukas Meyer</p>
+            <div id="area-chart"></div>
+          </div>
+
+        </div>
+        <div class="container">
+          <div class="half">
+            <canvas id="myChart2"></canvas>
+          </div>
+          <div class="half">
+            <canvas id="myChart1"></canvas>
+          </div>
+        </div>
+        <div>
+        <canvas id="line-chart"></canvas>
+        </div>
+
+
+
+
+      </main>
+      <!-- End Main -->
+
+    </div>
+
+    <!-- Scripts -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      const ctx = document.getElementById('myChart2');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['January', 'February', 'March', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+          datasets: [{
+            label: 'New Users',
+            data: [12, 19, 3, 5, 2, 3,8,10,45,80,150,180],
+            borderWidth: 1
+          },{
+            label: 'Users',
+            data: [122, 141, 143, 148, 150, 153,161,171,216,296,446,626],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script>
+      var xValues = ["Männlich", "Weiblich", "Verwirrt"];
+      var yValues = [55, 44, 1];
+      var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+      ];
+
+      new Chart("myChart1", {
+        type: "doughnut",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: "Prozentualer Anteil Geschlechter"
+          }
+        }
+      });
+    </script>
+
+
+    <script
+    src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
+<script>
+	new Chart(document.getElementById("line-chart"), {
+		type : 'line',
+		data : {
+			labels : ['January', 'February', 'March', 'May', 'June', 'July', 'August',
+       'September','October', 'November', 'December'],
+			datasets : [
+					{
+						data : [ 186, 205, 1321, 1516, 2107,
+								2191, 3133, 3221, 4783, 5478, 5485,5601 ],
+						label : "AVG Zwitscher Month 2021 ",
+						borderColor : "#3cba9f",
+						fill : false
+					},
+          {
+						data : [ 5500, 6000, 5540, 6500, 6987,
+								6587, 6650, 7341, 7840, 7420, 7810 ],
+						label : "AVG Zwitscher Month 2022 ",
+						borderColor : "#04b3bf",
+						fill : false
+					}]
+		},
+		options : {
+			title : {
+				display : true,
+				text : 'Chart JS Line Chart Example'
+			}
+		}
+	});
+</script>
+  </body>
+</html>

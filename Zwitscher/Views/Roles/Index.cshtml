@@ -4,32 +4,92 @@
     ViewData["Title"] = "Roles";
 }
 
-<h1>Roles</h1>
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="/css/Roles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="content-container">
+        <div class="content-container-left"> 
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            <!-- Sidebar -->
+            <aside id="sidebar">
+                <div class="sidebar-title">
+                    <div class="sidebar-brand">
+                        <span class="material-icons-outlined">inventory</span>Zwitscher
+                    </div>
+                </div>
+
+                <ul class="sidebar-list">
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Home/Dashboard">
+                            <span class="material-icons-outlined">dashboard</span> Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Users">
+                            <span class="material-icons-outlined">people</span>Users
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Roles">
+                            <span class="material-icons-outlined">inventory_2</span>Role Manager
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Posts">
+                            <span class="material-icons-outlined">fact_check</span> Posts
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Comments">
+                            <span class="material-icons-outlined">comment</span> Comments
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="#" target="_blank">
+                            <span class="material-icons-outlined">poll</span> Reports
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                            <span class="material-icons-outlined">settings</span> Settings
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+        <div class="content-container-right">
+            <div class="main-title">
+                <p class="font-weight-bold">Roles</p>
+            </div>
+            <p>
+                <a asp-action="Create">Create New</a>
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+            }
+                </tbody>
+            </table>
+        <script src="~/js/Dashboard.js" asp-append-version="true"></script>
+</body>
+</html>
