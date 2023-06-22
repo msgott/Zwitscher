@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Zwitscher.Models
 {
+    
     public class User
     {
         public Guid Id { get; set; }
@@ -66,5 +67,10 @@ namespace Zwitscher.Models
 
         //Relation to Vote (required one to many)
         public ICollection<Vote> Votes { get; set; } = new List<Vote>();
+
+        public override string ToString()
+        {
+            return FirstName + " " + LastName;
+        }
     }
 }

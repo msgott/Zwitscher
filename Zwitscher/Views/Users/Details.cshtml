@@ -9,7 +9,19 @@
 <div>
     <h4>User</h4>
     <hr />
+    @{
+        if (Model.ProfilePicture.FileName is null || Model.ProfilePicture.FileName.Equals(""))
+        {
+            <img style="width: 300px; height: 300px;" src="~/Media/real-placeholder.png" alt="" />
+        }
+        else
+        {
+            <img style="width: 300px; height: 300px;" src="~/Media/@Model.ProfilePicture.FileName" alt="" />
+        }
+    }
     <dl class="row">
+        
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.LastName)
         </dt>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
 using Zwitscher.Data;
 using Zwitscher.Hubs;
@@ -82,6 +83,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Posts)
                 .Include(u => u.Comments)
                 .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -253,6 +255,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Role)
                 .Include(u => u.FollowedBy)
                 .Include(u => u.Following)
+                .Include(u => u.ProfilePicture)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -275,11 +278,22 @@ namespace Zwitscher.Controllers
             var user = await _dbContext.User
                 .Include(u => u.FollowedBy)
                 .Include(u => u.Following)
+                .Include(u => u.ProfilePicture)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (user != null)
             {
                 user.FollowedBy.Clear();
                 user.Following.Clear();
+                if (user.ProfilePicture != null)
+                {
+                    user.ProfilePicture.User = null;
+                    if (Path.Exists(user.ProfilePicture.FilePath))
+                    {
+                        System.IO.File.Delete(user.ProfilePicture.FilePath);
+                    }
+                    _dbContext.Media.Remove(user.ProfilePicture);
+                    user.ProfilePicture = null;
+                }
                 _dbContext.User.Remove(user);
             }
             

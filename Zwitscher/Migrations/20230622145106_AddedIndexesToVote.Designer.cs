@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zwitscher.Data;
 
@@ -11,9 +12,11 @@ using Zwitscher.Data;
 namespace Zwitscher.Migrations
 {
     [DbContext(typeof(ZwitscherContext))]
-    partial class ZwitscherContextModelSnapshot : ModelSnapshot
+    [Migration("20230622145106_AddedIndexesToVote")]
+    partial class AddedIndexesToVote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
