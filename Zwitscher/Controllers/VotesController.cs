@@ -61,6 +61,8 @@ namespace Zwitscher.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,isUpVote,UserId,PostId")] Vote vote)
         {
+            
+            
             if (ModelState.IsValid)
             {
                 vote.Id = Guid.NewGuid();

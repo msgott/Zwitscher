@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Zwitscher.Models
@@ -10,6 +12,8 @@ namespace Zwitscher.Models
         public string FilePath { get; set; } = "";
 
         [NotMapped] // This attribute tells Entity Framework to ignore this property during database operations
+        [ValidateNever]
+        [BindNever]
         public IFormFile File { get; set; } = null!;
 
         //Relation to User (optional one to one)

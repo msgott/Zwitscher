@@ -1,5 +1,5 @@
 ﻿
-
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -92,6 +92,8 @@ namespace Zwitscher.Controllers
             }
 
             var media = await _context.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (media == null)
             {
@@ -110,9 +112,27 @@ namespace Zwitscher.Controllers
             {
                 return Problem("Entity set 'ZwitscherContext.Media'  is null.");
             }
-            var media = await _context.Media.FindAsync(id);
+            var media = await _context.Media
+                .Include (m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (media != null)
             {
+                if(media.User is not null)
+                {
+                    
+                    //media.User.ProfilePicture = null;
+                    //media.User.MediaId = null;
+                    media.User.ProfilePicture = null;
+                    media.User = null;
+                    await _context.SaveChangesAsync();
+                }
+                if (media.Post is not null)
+                {
+                    media.Post.Media.Remove(media);
+                    media.Post = null;
+                    await _context.SaveChangesAsync();
+                }
                 if (Path.Exists(media.FilePath))
                 {
                     System.IO.File.Delete(media.FilePath);

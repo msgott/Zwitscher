@@ -101,7 +101,6 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name");
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id");
             return View();
         }
 
@@ -113,13 +112,37 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Users/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        public async Task<IActionResult> Create(IFormFile file, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
-            Console.WriteLine("Post Endpoint called, Modelstate: " + ModelState.IsValid);
-            Console.WriteLine(ModelState.Values.SelectMany(v => v.Errors));
+            ModelState.Remove("file");
             if (ModelState.IsValid)
             {
+                if (file != null && file.Length > 0)
+                {
+                    Guid tempID = Guid.NewGuid();
+
+                    string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                    //string fileName = Path.GetFileName(file.FileName);
+                    string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    Media image = new Media
+                    {
+                        Id = tempID,
+                        FileName = fileName,
+                        FilePath = filePath
+                    };
+
+                    _dbContext.Media.Add(image);
+                    user.ProfilePicture = image;
+                }
+
                 user.Id = Guid.NewGuid();
+                user.CreatedDate = DateTime.Now;
                 _dbContext.Add(user);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -139,7 +162,9 @@ namespace Zwitscher.Controllers
                 return NotFound();
             }
 
-            var user = await _dbContext.User.FindAsync(id);
+            var user = await _dbContext.User
+                .Include(u => u.ProfilePicture)
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -161,9 +186,11 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-
+            
+            ModelState.Remove("file");
             if (ModelState.IsValid)
             {
+                
                 try
                 {
                     if (file != null && file.Length > 0)

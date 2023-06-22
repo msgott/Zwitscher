@@ -23,6 +23,7 @@ namespace Zwitscher.Data
 
         public DbSet<Zwitscher.Models.Comment> Comment { get; set; } = default!;
         public DbSet<Zwitscher.Models.Media> Media { get; set; } = default!;
+        public DbSet<Zwitscher.Models.Vote> Vote { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -30,6 +31,5 @@ namespace Zwitscher.Data
                 .WithMany(u => u.Following)
                 .UsingEntity(j => j.ToTable("UserFollowers"));
         }
-        public DbSet<Zwitscher.Models.Vote> Vote { get; set; } = default!;
     }
 }

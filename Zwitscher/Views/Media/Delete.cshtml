@@ -32,9 +32,33 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FilePath)
         </dd>
+        @{
+            if(Model.User is not null)
+            {
+                <dt class="col-sm-2">
+                    Als Profilbild bei User
+
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.User.Id)
+                </dd>
+            }
+            if (Model.Post is not null)
+            {
+                <dt class="col-sm-2">
+                    Als Media bei Post
+
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.PostId)
+                    
+                </dd>
+            }
+        }
         
     </dl>
     <hr />
+
 
     <form asp-action="Delete" asp-route-id="@Model.Id">
         <input type="hidden" asp-for="Id" />

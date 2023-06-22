@@ -39,7 +39,7 @@ namespace Zwitscher.Models
 
         [DisplayName("Erstellungsdatum")]
         [DataType(DataType.Date)]
-        public DateTime CreatedDate { get;} = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
 
         //Relation to Role (Required one to many)
