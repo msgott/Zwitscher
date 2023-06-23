@@ -4,44 +4,111 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="/css/Votes.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="content-container">
+        <div class="content-container-left"> 
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.isUpVote)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Post)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.isUpVote)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Post.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            <!-- Sidebar -->
+            <aside id="sidebar">
+                <div class="sidebar-title">
+                    <div class="sidebar-brand">
+                        <span class="material-icons-outlined">inventory</span> Zwitscher
+                    </div>
+                </div>
+
+                <ul class="sidebar-list">
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Home/Dashboard">
+                            <span class="material-icons-outlined">dashboard</span> Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Users">
+                            <span class="material-icons-outlined">people</span> Users
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Roles">
+                            <span class="material-icons-outlined">inventory_2</span> Role Manager
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Posts">
+                            <span class="material-icons-outlined">fact_check</span> Posts
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Comments">
+                            <span class="material-icons-outlined">comment</span> Comments
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Votes">
+                            <span class="material-icons-outlined">poll</span> Votes
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="~/Zwitscher">
+                            <span class="material-icons-outlined">home</span> Home
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="#">
+                            <span class="material-icons-outlined">settings</span> Settings
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+        <div class="content-container-right">
+            <div class="main-title">
+                <h4 class="font-weight-bold">Votes</h4>
+            </div>
+            <p>
+                <a asp-action="Create">Create New</a>
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.isUpVote)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.User)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Post)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.isUpVote)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Post.Id)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+            }
+                </tbody>
+            </table>
+        </div>    
+        <script src="~/js/Dashboard.js" asp-append-version="true"></script>
+</body>
+</html>
