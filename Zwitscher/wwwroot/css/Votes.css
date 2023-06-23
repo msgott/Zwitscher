@@ -33,7 +33,7 @@ body {
 }
 
 .font-weight-bold {
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
 /* ---------- Content ---------- */
@@ -112,11 +112,11 @@ body {
   display: inline !important;
   position: absolute;
   /*
-      the z-index of the ApexCharts is 11
-      we want the z-index of the sidebar higher so that
-      the charts are not showing over the sidebar 
-      on small screens
-    */
+          the z-index of the ApexCharts is 11
+          we want the z-index of the sidebar higher so that
+          the charts are not showing over the sidebar 
+          on small screens
+        */
   z-index: 12 !important;
 }
 

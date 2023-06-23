@@ -17,7 +17,7 @@
             <aside id="sidebar">
                 <div class="sidebar-title">
                     <div class="sidebar-brand">
-                        <span class="material-icons-outlined">inventory</span>Zwitscher
+                        <span class="material-icons-outlined">inventory</span> Zwitscher
                     </div>
                 </div>
 
@@ -29,12 +29,12 @@
                     </li>
                     <li class="sidebar-list-item">
                         <a href="https://localhost:7160/Users">
-                            <span class="material-icons-outlined">people</span>Users
+                            <span class="material-icons-outlined">people</span> Users
                         </a>
                     </li>
                     <li class="sidebar-list-item">
                         <a href="https://localhost:7160/Roles">
-                            <span class="material-icons-outlined">inventory_2</span>Role Manager
+                            <span class="material-icons-outlined">inventory_2</span> Role Manager
                         </a>
                     </li>
                     <li class="sidebar-list-item">
@@ -48,11 +48,17 @@
                         </a>
                     </li>
                     <li class="sidebar-list-item">
-                        <a href="#" target="_blank">
-                            <span class="material-icons-outlined">poll</span> Reports
+                        <a href="https://localhost:7160/Votes">
+                            <span class="material-icons-outlined">poll</span> Votes
                         </a>
                     </li>
                     <li class="sidebar-list-item">
+                        <a href="~/Zwitscher">
+                            <span class="material-icons-outlined">home</span> Home
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="#">
                             <span class="material-icons-outlined">settings</span> Settings
                         </a>
                     </li>
@@ -61,7 +67,7 @@
         </div>
         <div class="content-container-right">
             <div class="main-title">
-                <p class="font-weight-bold">Roles</p>
+                <h4 class="font-weight-bold">Roles</h4>
             </div>
             <p>
                 <a asp-action="Create">Create New</a>
@@ -90,6 +96,7 @@
             }
                 </tbody>
             </table>
+        </div>    
         <script src="~/js/Dashboard.js" asp-append-version="true"></script>
 </body>
 </html>

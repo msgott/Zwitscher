@@ -4,55 +4,124 @@
     ViewData["Title"] = "Media";
 }
 
-<h1>Media</h1>
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="/css/Media.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="content-container">
+        <div class="content-container-left"> 
 
-<p>
-    <a asp-action="Upload">Upload new</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Preview
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FileName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FilePath)
-            </th>
+            <!-- Sidebar -->
+            <aside id="sidebar">
+                <div class="sidebar-title">
+                    <div class="sidebar-brand">
+                        <span class="material-icons-outlined">inventory</span> Zwitscher
+                    </div>
+                </div>
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <img style="width: 30px; height: 30px;" src="~/Media/@item.FileName">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FileName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FilePath)
-                </td>
-                
+                <ul class="sidebar-list">
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Home/Dashboard">
+                            <span class="material-icons-outlined">dashboard</span> Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Users">
+                            <span class="material-icons-outlined">people</span> Users
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Roles">
+                            <span class="material-icons-outlined">inventory_2</span> Role Manager
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Posts">
+                            <span class="material-icons-outlined">fact_check</span> Posts
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Comments">
+                            <span class="material-icons-outlined">comment</span> Comments
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Votes">
+                            <span class="material-icons-outlined">poll</span> Votes
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="https://localhost:7160/Media">
+                            <span class="material-icons-outlined">perm_media</span> Media
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item">
+                        <a href="~/Zwitscher">
+                            <span class="material-icons-outlined">home</span> Home
+                        </a>
+                    </li>
+                    <li class="sidebar-list-item sidebar-fixed-item">
+                        <a href="#">
+                            <span class="material-icons-outlined">settings</span> Settings
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+        <div class="content-container-right">
+            <div class="main-title">
+                <p class="font-weight-bold">Media</p>
+            </div>
+            <p>
+                <a asp-action="Upload">Upload new</a>
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Preview
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FileName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FilePath)
+                        </th>
 
-                <td>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img style="width: 30px; height: 30px;" src="~/Media/@item.FileName">
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FileName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FilePath)
+                            </td>
+                            
 
-
-
+                            <td>
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>    
+        <script src="~/js/Dashboard.js" asp-append-version="true"></script>
+</body>
+</html>
