@@ -10,7 +10,7 @@
     <h4>User</h4>
     <hr />
     @{
-        if (Model.ProfilePicture.FileName is null || Model.ProfilePicture.FileName.Equals(""))
+        if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
         {
             <img style="width: 300px; height: 300px;" src="~/Media/real-placeholder.png" alt="" />
         }
@@ -33,6 +33,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Gender)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Gender)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Username)

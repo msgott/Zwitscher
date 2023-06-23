@@ -114,7 +114,7 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Users/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile file, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        public async Task<IActionResult> Create(IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
             ModelState.Remove("file");
             if (ModelState.IsValid)
@@ -182,7 +182,7 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, IFormFile file, [Bind("Id,LastName,FirstName,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        public async Task<IActionResult> Edit(Guid id, IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
             if (id != user.Id)
             {

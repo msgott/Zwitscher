@@ -87,6 +87,15 @@ namespace Zwitscher.Controllers
             //int totalBanned = _context.User.Count(u => u.isLocked == true); 
             //ViewBag.totalBanned = totalBanned;
 
+            //GENDER STATISTIC
+            int maleUsers=_context.User.Count(u => u.Gender == Models.User.Genders.Männlich);
+            int femaleUsers = _context.User.Count(u => u.Gender == Models.User.Genders.Weiblich);
+            int diverseUsers = _context.User.Count(u => u.Gender == Models.User.Genders.Divers);
+           
+
+            ViewBag.GenderStatisticMale = maleUsers;
+            ViewBag.GenderStatisticFemale = femaleUsers;
+            ViewBag.GenderStatisticDiverse = diverseUsers;
 
             return View();
         }

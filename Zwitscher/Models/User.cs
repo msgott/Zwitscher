@@ -6,21 +6,28 @@ namespace Zwitscher.Models
     
     public class User
     {
+        public enum Genders
+        {
+            Männlich,
+            Weiblich,
+            Divers
+        }
+
         public Guid Id { get; set; }
 
         [Required]
         [DisplayName("Nachname")]
-        [StringLength(50, MinimumLength =3 , ErrorMessage = "The name must be between 3 and 50 characters long.")]
-        public string LastName { get; set; }
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "The name must be between 3 and 50 characters long.")]
+        public string LastName { get; set; } = "";
 
         [Required]
         [DisplayName("Vorname")]
         [StringLength(50, MinimumLength =3 , ErrorMessage = "The name must be between 3 and 50 characters long.")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = "";
 
         [Required]
         [StringLength(50, MinimumLength =3 , ErrorMessage = "The username must be between 3 and 50 characters long.")]
-        public string Username { get; set; }
+        public string Username { get; set; } = "";
 
         [Required]
         [DisplayName("Passwort")]
@@ -40,7 +47,12 @@ namespace Zwitscher.Models
 
         [DisplayName("Erstellungsdatum")]
         [DataType(DataType.Date)]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; }
+
+        [Required]
+        [DisplayName("Geschlecht")]
+        public Genders? Gender { get; set; }
+
 
 
         //Relation to Role (Required one to many)
@@ -72,5 +84,7 @@ namespace Zwitscher.Models
         {
             return FirstName + " " + LastName;
         }
+
+
     }
 }
