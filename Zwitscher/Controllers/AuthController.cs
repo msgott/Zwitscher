@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Zwitscher.Data;
 using Zwitscher.Models;
+using System.Text.Json;
+using System.Data;
 
 namespace Zwitscher.Controllers
 {
@@ -42,9 +44,12 @@ namespace Zwitscher.Controllers
                 {
                     if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password) && userInDb.isLocked == false)
                     {
+                        var role = _context.Role.FirstOrDefault(r => r.Id == userInDb.RoleID);
+
                         HttpContext.Session.SetString("UserId", userInDb.Id.ToString());
                         HttpContext.Session.SetString("Username", userInDb.Username);
                         HttpContext.Session.SetString("RoleID", userInDb.RoleID.ToString());
+                        HttpContext.Session.SetString("RoleName", role.Name);
                         HttpContext.Session.SetString("FirstName", userInDb.FirstName);
                         HttpContext.Session.SetString("LastName", userInDb.LastName);
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
@@ -65,12 +70,61 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [Route("Api/Login")]
+        public string LoginUser(String Username, String Password)
+        {
+            if (ModelState.IsValid)
+            {
+                var userInDb = _context.User.FirstOrDefault(u => u.Username == Username);
+                if (userInDb != null)
+                {
+                    if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password) && userInDb.isLocked == false)
+                    {
+                        var role = _context.Role.FirstOrDefault(r => r.Id == userInDb.RoleID);
+
+                        HttpContext.Session.SetString("UserId", userInDb.Id.ToString());
+                        HttpContext.Session.SetString("Username", userInDb.Username);
+                        HttpContext.Session.SetString("RoleID", userInDb.RoleID.ToString());
+                        HttpContext.Session.SetString("RoleName", role.Name);
+                        HttpContext.Session.SetString("FirstName", userInDb.FirstName);
+                        HttpContext.Session.SetString("LastName", userInDb.LastName);
+                        HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                        _logger.LogInformation($"User {userInDb.Username} logged in.");
+
+                        var result = new{ Username = userInDb.Username, RoleName = role.Name};
+
+                        return JsonSerializer.Serialize(result);
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"User {userInDb.Username} tried to log in with wrong password or is locked.");
+                        ModelState.AddModelError("LoginFailed", "Wrong Password!");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("LoginFailed", "Login failed. Please try again.");
+                }
+            }
+            return "{\"Success\": false}";
+        }
+
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [HttpGet]
+        [Route("Api/Logout")]
+        public void LogoutUser()
+        {
+            HttpContext.Session.Clear();
+            Redirect("/Zwitscher");
+        }
 
         // GET: Auth/Create
         public IActionResult Register()
@@ -99,7 +153,8 @@ namespace Zwitscher.Controllers
                 {
                     user.Id = Guid.NewGuid();
                     user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                    user.RoleID = Guid.Parse("735a4145-1525-42fa-f8c5-08db522222ed");
+                    var role = _context.Role.FirstOrDefault(u => u.Name == "User");
+                    user.RoleID = role.Id;
                     user.isLocked = false;
                     _context.Add(user);
                     await _context.SaveChangesAsync();
@@ -111,6 +166,50 @@ namespace Zwitscher.Controllers
                 }
             }
             return View(user);
+        }
+
+        [HttpPost]
+        [Route("Api/Register")]
+        public async Task<string> RegisterUser(string LastName, String FirstName, int Gender, String Username, String Password, DateTime Birthday)
+        {
+            User user = new User();
+            if (ModelState.IsValid)
+            {
+                user.LastName = LastName;
+                user.FirstName = FirstName;
+                user.Gender = (Models.User.Genders)Gender;
+                user.Username = Username;
+                user.Password = Password;
+                user.Birthday = Birthday;
+                user.CreatedDate = DateTime.Now;
+                var check = _context.User.FirstOrDefault(u => u.Username == user.Username);
+                if (check == null)
+                {
+                    user.Id = Guid.NewGuid();
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    var role = _context.Role.FirstOrDefault(u => u.Name == "User");
+                    user.RoleID = role.Id;
+                    user.isLocked = false;
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+
+                    HttpContext.Session.SetString("UserId", user.Id.ToString());
+                    HttpContext.Session.SetString("Username", user.Username);
+                    HttpContext.Session.SetString("RoleID", user.RoleID.ToString());
+                    HttpContext.Session.SetString("RoleName", role.Name);
+                    HttpContext.Session.SetString("FirstName", user.FirstName);
+                    HttpContext.Session.SetString("LastName", user.LastName);
+                    HttpContext.Session.SetString("Birthday", user.Birthday.ToString());
+
+                    var result = new { Username = Username, RoleName = role.Name };
+                    return JsonSerializer.Serialize(result);
+                }
+                else
+                {
+                    ModelState.AddModelError("Username", "Username already exists!");
+                }
+            }
+            return "{\"Success\": false}";
         }
 
         private bool UserExists(Guid id)
