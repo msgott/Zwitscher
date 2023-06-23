@@ -83,13 +83,14 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] User user)
-        public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] String LastName, String FirstName, String Username, String Password, DateTime Birthday)
+        public async Task<IActionResult> Register([Bind("LastName,FirstName,Username,Password,Birthday")] String LastName, String FirstName, int Gender, String Username, String Password, DateTime Birthday)
         {
             User user = new User();
             if (ModelState.IsValid)
             {
                 user.LastName = LastName;
                 user.FirstName = FirstName;
+                user.Gender = (Models.User.Genders)Gender;
                 user.Username = Username;
                 user.Password = Password;
                 user.Birthday = Birthday;
