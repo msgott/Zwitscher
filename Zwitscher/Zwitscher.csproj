@@ -24,10 +24,6 @@
   <ItemGroup>
     <Folder Include="clientapp\src\Components\Header\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Media\placeholder2.png" />
-  </ItemGroup>
 	
 	
     <!--React components -->

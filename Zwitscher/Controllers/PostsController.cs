@@ -25,7 +25,10 @@ namespace Zwitscher.Controllers
         {
             var zwitscherContext = _context.Post
                 .Include(p => p.User)
-                .Include(p => p.Votes);
+                .Include(p => p.Votes)
+                .Include(p => p.Comments)
+                .Include(p => p.Media);
+            
             
             return View(await zwitscherContext.ToListAsync());
         }
@@ -65,12 +68,41 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TextContent,UserId")] Post post)
+        public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,UserId")] Post post)
         {
+            
+            ModelState.Remove("files");
             ModelState.Remove("CreatedDate");
             ModelState.Remove("User");
             if (ModelState.IsValid)
             {
+                foreach (IFormFile file in files)
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _context.Media.Add(image);
+                        post.Media.Add(image);
+                    }
+                }
+
                 post.Id = Guid.NewGuid();
                 post.CreatedDate = DateTime.Now;
                 _context.Add(post);
@@ -162,9 +194,29 @@ namespace Zwitscher.Controllers
             {
                 return Problem("Entity set 'ZwitscherContext.Post'  is null.");
             }
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Post
+                .Include(post => post.User)
+                .Include(post => post.Comments)
+                .Include(post => post.Media)
+                .FirstOrDefaultAsync(p=> p.Id == id);
             if (post != null)
             {
+                /*foreach (Comment c in post.Comments)
+                {
+                    c.User = null;
+                    post.Comments.Remove(c);
+                    _context.Comment.Remove(c);
+                }*/
+                foreach (Media m in post.Media)
+                {
+                    m.Post = null;
+                    if (Path.Exists(m.FilePath))
+                    {
+                        System.IO.File.Delete(m.FilePath);
+                    }
+                    _context.Media.Remove(m);
+                }
+                post.Media.Clear();
                 _context.Post.Remove(post);
             }
             

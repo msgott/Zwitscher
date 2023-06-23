@@ -94,6 +94,12 @@
                                 @Html.DisplayNameFor(model => model.User)
                             </th>
                             <th>
+                                Anzahl Kommentare
+                            </th>
+                            <th>
+                                Anzahl Medien
+                            </th>
+                            <th>
                                 Rating
                             </th>
                             <th>
@@ -116,6 +122,12 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.User.FirstName)
+                                </td>
+                                <td>
+                                    @Html.Encode(item.Comments.Count)
+                                </td>
+                                <td>
+                                    @Html.Encode(item.Media.Count)
                                 </td>
                                 <td>
                                     @Html.Encode(item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==true).Count - item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==false).Count)
