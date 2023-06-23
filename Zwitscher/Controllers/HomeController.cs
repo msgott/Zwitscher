@@ -56,22 +56,26 @@ namespace Zwitscher.Controllers
             // NUMBER OF NEW USERS - 14 DAYS
             DateTime fourteenDaysAgo = DateTime.Now.AddDays(-14);
 
-            int totalNewUsersFourteen = _context.Post.Count(p => p.CreatedDate >= fourteenDaysAgo);
+            int totalNewUsersFourteen = _context.User.Count(p => p.CreatedDate >= fourteenDaysAgo);
             ViewBag.totalNewUsersFourteen = totalNewUsersFourteen;
 
             // MODERATORS
-            //int totalModerators = _context.User.Count(u => u.Role == 'Moderator'); // Count the number of users with the "Moderator" role
-            //ViewBag.totalModerators = totalModerators;
+            int totalModerators = _context.User.Include(u => u.Role).Count(u => u.Role.Name == "Moderator"); // Count the number of users with the "Moderator" role
+            ViewBag.totalModerators = totalModerators;
 
             // ADMINS
-            //int totalModerators = _context.User.Count(u => u.Role == 'Administrator');
-            //ViewBag.totalModerators = totalModerators;
+            int totalAdmins = _context.User.Include(u=> u.Role).Count(u => u.Role.Name== "Administrator");
+            ViewBag.totalAdmins = totalAdmins;
 
             // Total Posts (Zwitschers) 
             int totalPosts = _context.Post.Count();
             ViewBag.totalPosts = totalPosts;
 
+
             // NEW ZWITSCHERS - 14 DAYS
+
+            int newZwitschersFourteen = _context.Post.Count(p => p.CreatedDate >= fourteenDaysAgo);
+            ViewBag.newZwitschersFourteen = newZwitschersFourteen;
 
             // AVG. ZWITSCHER RATE - 30 DAYS
             DateTime thirtyDaysAgo = DateTime.Now.AddDays(-900); // change to 30 whenever there are some posts available
@@ -84,8 +88,13 @@ namespace Zwitscher.Controllers
             ViewBag.AveragePosts = averagePosts;
 
             // BANNED USERS
-            //int totalBanned = _context.User.Count(u => u.isLocked == true); 
-            //ViewBag.totalBanned = totalBanned;
+            int totalBanned = _context.User.Count(u => u.isLocked == true); 
+            ViewBag.totalBanned = totalBanned;
+
+            //MOST FAMOUS USER
+            List<User> userOrderedByFollowedBy = _context.User.OrderBy(u => u.FollowedBy.Count).ToList<User>();
+            string mostFamousUser = userOrderedByFollowedBy.Last().Username;
+            ViewBag.mostFamousUser = mostFamousUser;
 
             //GENDER STATISTIC
             int maleUsers=_context.User.Count(u => u.Gender == Models.User.Genders.Männlich);

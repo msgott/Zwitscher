@@ -99,7 +99,7 @@
               <p class="text-primary">MODERATORS</p>
               <span class="material-icons-outlined text-violett">local_police</span>
             </div>
-            <span class="text-primary font-weight-bold">9</span>
+                    <span class="text-primary font-weight-bold">@ViewBag.totalModerators</span>
           </div>
 
           <div class="card">
@@ -107,7 +107,7 @@
               <p class="text-primary">ADMINS</p>
               <span class="material-icons-outlined text-red">gavel</span>
             </div>
-            <span class="text-primary font-weight-bold">6</span>
+                    <span class="text-primary font-weight-bold">@ViewBag.totalAdmins</span>
           </div>
 
 
@@ -126,7 +126,7 @@
               a trending up, otherwise we will render a trending down*/}
               <span class="material-icons-outlined text-orange">trending_up</span>
             </div>
-            <span class="text-primary font-weight-bold">583</span>
+            <span class="text-primary font-weight-bold">@ViewBag.newZwitschersFourteen</span>
           </div>
 
           <div class="card">
@@ -142,7 +142,7 @@
               <p class="text-primary">BANNED USERS</p>
               <span class="material-icons-outlined text-red">pan_tool</span>
             </div>
-            <span class="text-primary font-weight-bold">9</span>
+                    <span class="text-primary font-weight-bold">@ViewBag.totalBanned</span>
           </div>
         </div>
 
@@ -150,7 +150,7 @@
 
           <div class="charts-card">
             <p class="chart-title">MOST FAMOUS USER</p>
-            <p class="chart-name">Allen Alvarez</p>
+                    <p class="chart-name">@ViewBag.mostFamousUser</p>
             <div id="bar-chart"></div>
           </div>
 
