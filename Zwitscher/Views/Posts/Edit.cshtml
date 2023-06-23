@@ -10,14 +10,23 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            Medien:
+            @{
+                foreach(Media m in Model.Media)
+                {
+                    <img style="width: 50px; height: 50px;" src="~/Media/@m.FileName" alt="" />
+                }
+            }
+            <br />
+            
             <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                <label class="control-label">Medien hinzufügen</label>
+                <input name="files" type="file" class="form-control" multiple="multiple" accept="image/png, image/gif, image/jpeg" />
             </div>
+            
             <div class="form-group">
                 <label asp-for="TextContent" class="control-label"></label>
                 <input asp-for="TextContent" class="form-control" />

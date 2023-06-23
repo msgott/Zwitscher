@@ -121,7 +121,9 @@ namespace Zwitscher.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Post
+                .Include(p => p.Media)
+                .FirstOrDefaultAsync(p=> p.Id==id);
             if (post == null)
             {
                 return NotFound();
@@ -135,17 +137,46 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CreatedDate,TextContent,UserId")] Post post)
+        public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,UserId")] Post post)
         {
             if (id != post.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("files");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
                 try
                 {
+                    foreach (IFormFile file in files)
+                    {
+                        if (file != null && file.Length > 0)
+                        {
+                            Guid tempID = Guid.NewGuid();
+
+                            string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                            //string fileName = Path.GetFileName(file.FileName);
+                            string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+
+                            Media image = new Media
+                            {
+                                Id = tempID,
+                                FileName = fileName,
+                                FilePath = filePath
+                            };
+
+                            _context.Media.Add(image);
+                            post.Media.Add(image);
+                        }
+                    }
                     _context.Update(post);
                     await _context.SaveChangesAsync();
                 }
