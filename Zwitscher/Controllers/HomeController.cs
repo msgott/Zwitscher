@@ -47,6 +47,50 @@ namespace Zwitscher.Controllers
             return View();
         }
 
+        public IActionResult Dashboard()
+        {
+            // Total User
+            int totalUsers = _context.User.Count();
+            ViewBag.TotalUsers = totalUsers;
+
+            // NUMBER OF NEW USERS - 14 DAYS
+            DateTime fourteenDaysAgo = DateTime.Now.AddDays(-14);
+
+            int totalNewUsersFourteen = _context.Post.Count(p => p.CreatedDate >= fourteenDaysAgo);
+            ViewBag.totalNewUsersFourteen = totalNewUsersFourteen;
+
+            // MODERATORS
+            //int totalModerators = _context.User.Count(u => u.Role == 'Moderator'); // Count the number of users with the "Moderator" role
+            //ViewBag.totalModerators = totalModerators;
+
+            // ADMINS
+            //int totalModerators = _context.User.Count(u => u.Role == 'Administrator');
+            //ViewBag.totalModerators = totalModerators;
+
+            // Total Posts (Zwitschers) 
+            int totalPosts = _context.Post.Count();
+            ViewBag.totalPosts = totalPosts;
+
+            // NEW ZWITSCHERS - 14 DAYS
+
+            // AVG. ZWITSCHER RATE - 30 DAYS
+            DateTime thirtyDaysAgo = DateTime.Now.AddDays(-900); // change to 30 whenever there are some posts available
+
+            int totalPostsThirty = _context.Post.Count(p => p.CreatedDate >= thirtyDaysAgo);
+            int numberOfDays = (DateTime.Now - thirtyDaysAgo).Days; 
+            double averagePosts = (double)totalPostsThirty / numberOfDays;
+            averagePosts = Math.Round(averagePosts, 3); // max. three decimal places
+
+            ViewBag.AveragePosts = averagePosts;
+
+            // BANNED USERS
+            //int totalBanned = _context.User.Count(u => u.isLocked == true); 
+            //ViewBag.totalBanned = totalBanned;
+
+
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
