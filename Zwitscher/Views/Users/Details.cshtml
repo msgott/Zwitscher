@@ -9,7 +9,19 @@
 <div>
     <h4>User</h4>
     <hr />
+    @{
+        if (Model.ProfilePicture.FileName is null || Model.ProfilePicture.FileName.Equals(""))
+        {
+            <img style="width: 300px; height: 300px;" src="~/Media/real-placeholder.png" alt="" />
+        }
+        else
+        {
+            <img style="width: 300px; height: 300px;" src="~/Media/@Model.ProfilePicture.FileName" alt="" />
+        }
+    }
     <dl class="row">
+        
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.LastName)
         </dt>
@@ -59,6 +71,212 @@
             @Html.DisplayFor(model => model.Role.Id)
         </dd>
     </dl>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+User folgt folgenden Usern
+<table class="table">
+    <thead>
+        <tr>           
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (List<User>)ViewData["Following"])
+        {
+            <tr>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+
+
+                    <td style="visibility: hidden;">
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+User hat folgende Follower
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (List<User>)ViewData["FollowedBy"])
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+
+
+                    <td style="visibility: hidden;">
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+User hat folgende Posts
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Text
+            </th>
+           
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (List<Post>)ViewData["Posts"])
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TextContent)
+                </td>
+                
+
+
+                    <td style="visibility: hidden;">
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+User hat folgende Kommentare
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Text
+            </th>
+
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (List<Comment>)ViewData["Comments"])
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CommentText)
+                </td>
+
+
+
+                    <td style ="visibility: hidden;">
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User hat folgende Votes getätigt
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    PostId
+                </th>
+
+
+                <th>ist Upvote</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Vote>)ViewData["Votes"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isUpVote)
+                    </td>
+
+
+
+                    <td style="visibility: hidden;">
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

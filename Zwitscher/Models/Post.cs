@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Zwitscher.Models
 {
@@ -12,6 +13,7 @@ namespace Zwitscher.Models
 
         //Relation to User (required one to many)
         public Guid UserId { get; set; }
+        
         public User User { get; set; } = null!;
 
         //Relation to Media (optional one to many)
@@ -19,5 +21,8 @@ namespace Zwitscher.Models
 
         //Relation to Comments (required one to many)
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        //Relation to Vote (required one to many)
+        public ICollection<Vote> Votes { get; set; } = new List<Vote>();
     }
 }

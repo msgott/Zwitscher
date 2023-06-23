@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Zwitscher.Data;
 using Zwitscher.Models;
 
@@ -22,7 +23,10 @@ namespace Zwitscher.Controllers
         // GET: Posts
         public async Task<IActionResult> Index()
         {
-            var zwitscherContext = _context.Post.Include(p => p.User);
+            var zwitscherContext = _context.Post
+                .Include(p => p.User)
+                .Include(p => p.Votes);
+            
             return View(await zwitscherContext.ToListAsync());
         }
 
@@ -36,12 +40,15 @@ namespace Zwitscher.Controllers
 
             var post = await _context.Post
                 .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Votes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
                 return NotFound();
             }
-
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
             return View(post);
         }
 
@@ -49,6 +56,7 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
+
             return View();
         }
 
@@ -57,11 +65,14 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CreatedDate,TextContent,UserId")] Post post)
+        public async Task<IActionResult> Create([Bind("Id,TextContent,UserId")] Post post)
         {
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
                 post.Id = Guid.NewGuid();
+                post.CreatedDate = DateTime.Now;
                 _context.Add(post);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

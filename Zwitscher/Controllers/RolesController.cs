@@ -150,7 +150,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Roles/Delete/5
-        [HttpDelete]
+        [HttpPost]
         [Route("Roles/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

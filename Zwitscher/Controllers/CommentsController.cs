@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
 using Zwitscher.Data;
 using Zwitscher.Models;
@@ -66,11 +67,14 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Comments/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,PostId,CreatedDate,CommentText")] Comment comment)
+        public async Task<IActionResult> Create([Bind("Id,UserId,PostId,CommentText")] Comment comment)
         {
+            ModelState.Remove("Post");
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
                 comment.Id = Guid.NewGuid();
+                comment.CreatedDate = DateTime.Now;
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -161,7 +165,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Comments/Delete/5
-        [HttpDelete]
+        [HttpPost]
         [Route("Comments/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -170,9 +174,26 @@ namespace Zwitscher.Controllers
             {
                 return Problem("Entity set 'ZwitscherContext.Comment'  is null.");
             }
-            var comment = await _context.Comment.FindAsync(id);
+            var comment = await _context.Comment
+                .Include (c => c.Post)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (comment != null)
             {
+                if (comment.User is not null)
+                {
+
+                    //media.User.ProfilePicture = null;
+                    //media.User.MediaId = null;
+                    comment.User.Comments.Remove(comment);
+                    comment.User = null;
+                }
+                if (comment.Post is not null)
+                {
+                    comment.Post.Comments.Remove(comment);
+                    comment.Post = null;
+                }
+
                 _context.Comment.Remove(comment);
             }
             

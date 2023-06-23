@@ -4,7 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-
 <!DOCTYPE html>
     <head>
         <link rel="stylesheet" href="/css/Posts.css" asp-append-version="true" />
@@ -65,27 +64,39 @@
                     </div>
 
                     <div class="table-container">
-                    <p>
-                        <a asp-action="Create">Create New</a>
-                    </p>
-                    <table class="table">
-                        <thead>
+                <p>
+                    <a asp-action="Create">Create New</a>
+                </p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Id)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CreatedDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TextContent)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.User)
+                            </th>
+                            <th>
+                                Rating
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
                             <tr>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.CreatedDate)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.TextContent)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.User)
-                                </th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                    @foreach (var item in Model) {
-                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.CreatedDate)
                                 </td>
@@ -96,14 +107,17 @@
                                     @Html.DisplayFor(modelItem => item.User.FirstName)
                                 </td>
                                 <td>
+                                    @Html.Encode(item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==true).Count - item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==false).Count)
+                                </td>
+                                <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                                 </td>
                             </tr>
-                    }
-                        </tbody>
-                    </table>
+                        }
+                    </tbody>
+                </table>
                 </div>
              </div>
                 <script src="~/js/Dashboard.js" asp-append-version="true"></script>
