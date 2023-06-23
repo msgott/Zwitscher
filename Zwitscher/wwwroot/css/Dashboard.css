@@ -102,6 +102,11 @@
   list-style-type: none;
 }
 
+.sidebar-list > a {
+  text-decoration: none;
+  color: #9799ab;
+}
+
 .sidebar-list-item {
   padding: 20px 20px 20px 20px;
 }
@@ -109,11 +114,6 @@
 .sidebar-list-item:hover {
   background-color: rgba(255, 255, 255, 0.2);
   cursor: pointer;
-}
-
-.sidebar-list-item > a {
-  text-decoration: none;
-  color: #9799ab;
 }
 
 .sidebar-responsive {
