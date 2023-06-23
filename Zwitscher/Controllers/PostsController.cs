@@ -259,5 +259,116 @@ namespace Zwitscher.Controllers
         {
           return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        //-------------------------------------------------------------------------------------------
+        [HttpGet]
+        [Route("API/Posts")]
+        public async Task<JsonResult> PostsList()
+        {
+            if (_context.Post == null)
+            {
+                return Json("Error - Context not there");
+            }
+
+            var posts = await _context.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .Include(u => u.Comments)
+                .ToListAsync();
+            if (posts == null || posts.Count == 0)
+            {
+                return Json("Error - No Posts");
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+
+            foreach (Post post in posts)
+            {
+                string postID = post.Id.ToString();                
+                string user_username = post.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null? "" : (await _context.Media.FindAsync(post.User.MediaId)).FileName;
+                DateTime createdDate = post.CreatedDate;
+                int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
+                int commentCount = post.Comments.Count;
+
+                List<string> mediaList = new List<string>();
+                    
+                if (post.Media is not null)
+                {
+                    foreach (Media media in post.Media)
+                    {
+                        mediaList.Add(media.FileName);
+                    }
+                    
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "postID", postID },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate },
+                    { "rating", rating },
+                    { "commentCount", commentCount },
+                    { "mediaList", mediaList }
+
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+
+        [HttpGet]
+        [Route("API/Posts/Comments")]
+        public async Task<JsonResult> PostsList(Guid? id)
+        {
+            if (id == null || _context.Post == null)
+            {
+                return Json("Error - Context not there");
+            }
+
+            var post = await _context.Post                
+                .Include(u => u.Comments)
+                .FirstAsync(u => u.Id == id);
+            if (post == null)
+            {
+                return Json("Error - No Post");
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+            List<Comment> comments = (await _context.Comment
+                .Include(c => c.User)
+                .ToListAsync<Comment>()).FindAll(c => c.PostId == post.Id);
+            foreach (Comment c in comments)
+            {
+
+                string commentId = c.Id.ToString();
+                string user_username = c.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(c.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(c.User.MediaId)).FileName;
+                DateTime createdDate = c.CreatedDate;
+                string commentText = c.CommentText;
+
+               
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "commentId", commentId },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate },
+                    { "commentText", commentText }
+                    
+
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
     }
 }

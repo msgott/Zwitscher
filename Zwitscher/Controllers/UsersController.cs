@@ -305,5 +305,121 @@ namespace Zwitscher.Controllers
         {
           return (_dbContext.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+//--------------------------------------------------------------------------------------------------------------------
+        // GET: API/User?id..
+        [HttpGet]
+        [Route("API/User")]
+        public async Task<JsonResult> Profile(Guid? id)
+        {
+            if (id == null || _dbContext.User == null)
+            {
+                return Json("Error - Context not there");
+            }
+
+            var user = await _dbContext.User
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.ProfilePicture)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null)
+            {
+                return Json("Error - ID not found");
+                
+            }
+
+            string userID = user.Id.ToString();
+            string lastname = user.LastName;
+            string firstname = user.FirstName;
+            string username = user.Username;
+            DateTime birthday = user.Birthday;
+            string biography = user.Biography is null? "": user.Biography;
+            string gender = user.Gender is null ? "" : user.Gender.ToString();
+            int followedCount = user.Following.Count();
+            int followerCount = user.FollowedBy.Count();
+            string pbFileName = "";
+            if (user.ProfilePicture is not null) {
+                pbFileName = user.ProfilePicture.FileName; 
+            }
+
+            Dictionary<string, Object> result = new Dictionary<string, Object>
+            {
+                { "userID", userID },
+                { "lastname", lastname },
+                { "firstname", firstname },
+                { "username", username },
+                { "birthday", birthday },
+                { "biography", biography },
+                { "gender", gender },
+                { "followedCount", followedCount },
+                { "followerCount", followerCount },
+                { "pbFileName", pbFileName }
+            };
+
+           
+            return Json(result);
+        }
+
+        // GET: API/Users
+        [HttpGet]
+        [Route("API/Users")]
+        public async Task<JsonResult> UsersList()
+        {
+            if (_dbContext.User == null)
+            {
+                return Json("Error - Context not there");
+            }
+
+            var users = await _dbContext.User
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.ProfilePicture)
+                .ToListAsync();
+            if (users == null || users.Count == 0)
+            {
+                return Json("Error - No Users");
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+
+            foreach (User user in users) {
+                string userID = user.Id.ToString();
+                string lastname = user.LastName;
+                string firstname = user.FirstName;
+                string username = user.Username;
+                DateTime birthday = user.Birthday;
+                string biography = user.Biography is null ? "" : user.Biography;
+                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                int followedCount = user.Following.Count();
+                int followerCount = user.FollowedBy.Count();
+                string pbFileName = "";
+                if (user.ProfilePicture is not null)
+                {
+                    pbFileName = user.ProfilePicture.FileName;
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "userID", userID },
+                    { "lastname", lastname },
+                    { "firstname", firstname },
+                    { "username", username },
+                    { "birthday", birthday },
+                    { "biography", biography },
+                    { "gender", gender },
+                    { "followedCount", followedCount },
+                    { "followerCount", followerCount },
+                    { "pbFileName", pbFileName }
+
+                };
+                results.Add(result);
+            }
+        
+            return Json(results);
+        }
+
+
     }
+
+
 }
