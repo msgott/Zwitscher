@@ -145,6 +145,7 @@ namespace Zwitscher.Controllers
 
                 user.Id = Guid.NewGuid();
                 user.CreatedDate = DateTime.Now;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 _dbContext.Add(user);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -159,6 +160,12 @@ namespace Zwitscher.Controllers
         [Route("Users/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
         {
+            //Role Based Authentication for Mod and Admin
+            //if (HttpContext.Session.GetString("RoleName") != "Moderator" && HttpContext.Session.GetString("RoleName") != "Administrator") return Unauthorized();
+            //id based Authentication
+            //if (Guid.Parse(HttpContext.Session.GetString("UserId")) != id) return Unauthorized();
+            
+
             if (id == null || _dbContext.User == null)
             {
                 return NotFound();
@@ -184,6 +191,7 @@ namespace Zwitscher.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
+
             if (id != user.Id)
             {
                 return NotFound();
@@ -219,7 +227,7 @@ namespace Zwitscher.Controllers
                     user.ProfilePicture = image;
                     }
                     user.Role = await _dbContext.Role.FindAsync(user.RoleID);
-                    
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                     _dbContext.Update(user);
                     await _dbContext.SaveChangesAsync();
                 }
@@ -310,11 +318,11 @@ namespace Zwitscher.Controllers
         // GET: API/User?id..
         [HttpGet]
         [Route("API/User")]
-        public async Task<JsonResult> Profile(Guid? id)
+        public async Task<ActionResult> Profile(Guid? id)
         {
             if (id == null || _dbContext.User == null)
             {
-                return Json("Error - Context not there");
+                return BadRequest();
             }
 
             var user = await _dbContext.User
@@ -324,7 +332,7 @@ namespace Zwitscher.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
-                return Json("Error - ID not found");
+                return NotFound();
                 
             }
 
@@ -363,11 +371,11 @@ namespace Zwitscher.Controllers
         // GET: API/Users
         [HttpGet]
         [Route("API/Users")]
-        public async Task<JsonResult> UsersList()
+        public async Task<ActionResult> UsersList()
         {
             if (_dbContext.User == null)
             {
-                return Json("Error - Context not there");
+                return BadRequest();
             }
 
             var users = await _dbContext.User
@@ -377,7 +385,7 @@ namespace Zwitscher.Controllers
                 .ToListAsync();
             if (users == null || users.Count == 0)
             {
-                return Json("Error - No Users");
+                return NotFound();
 
             }
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();

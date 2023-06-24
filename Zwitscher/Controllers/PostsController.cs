@@ -23,6 +23,7 @@ namespace Zwitscher.Controllers
         // GET: Posts
         public async Task<IActionResult> Index()
         {
+            Console.WriteLine(HttpContext.Session.GetString("UserId"));
             var zwitscherContext = _context.Post
                 .Include(p => p.User)
                 .Include(p => p.Votes)
@@ -263,24 +264,27 @@ namespace Zwitscher.Controllers
         //-------------------------------------------------------------------------------------------
         [HttpGet]
         [Route("API/Posts")]
-        public async Task<JsonResult> PostsList()
+        public async Task<ActionResult> PostsList()
         {
             if (_context.Post == null)
             {
-                return Json("Error - Context not there");
+                return BadRequest();
             }
 
             var posts = await _context.Post
                 .Include(u => u.User)
                 .Include(u => u.Media)
                 .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .ToListAsync();
             if (posts == null || posts.Count == 0)
             {
-                return Json("Error - No Posts");
+                return NotFound();
 
             }
+            
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null? Guid.NewGuid().ToString(): HttpContext.Session.GetString("UserId"));
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
 
             foreach (Post post in posts)
@@ -291,7 +295,9 @@ namespace Zwitscher.Controllers
                 DateTime createdDate = post.CreatedDate;
                 int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
                 int commentCount = post.Comments.Count;
-
+                string postText = post.TextContent;
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID).User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID).isUpVote ? "true": "false"): "null";
                 List<string> mediaList = new List<string>();
                     
                 if (post.Media is not null)
@@ -311,24 +317,27 @@ namespace Zwitscher.Controllers
                     { "createdDate", createdDate },
                     { "rating", rating },
                     { "commentCount", commentCount },
-                    { "mediaList", mediaList }
+                    { "currentUserVoted", currentUserVoted },
+                    { "userVoteIsUpvote", userVoteIsUpvote },
+                    { "mediaList", mediaList },
+                    { "postText", postText }
 
 
                 };
                 results.Add(result);
             }
-
+            
             return Json(results);
         }
 
 
         [HttpGet]
         [Route("API/Posts/Comments")]
-        public async Task<JsonResult> PostsList(Guid? id)
+        public async Task<ActionResult> PostsList(Guid? id)
         {
             if (id == null || _context.Post == null)
             {
-                return Json("Error - Context not there");
+                return BadRequest();
             }
 
             var post = await _context.Post                
@@ -336,7 +345,7 @@ namespace Zwitscher.Controllers
                 .FirstAsync(u => u.Id == id);
             if (post == null)
             {
-                return Json("Error - No Post");
+                return NotFound();
 
             }
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
@@ -369,6 +378,140 @@ namespace Zwitscher.Controllers
             }
 
             return Json(results);
+        }
+
+        [HttpPost]
+        [Route("API/Posts/Vote")]
+        public async Task<ActionResult> ManageVotes(Guid? postId, bool IsUpVote = true) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+             if((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (postId == null || _context.Post == null)
+            {
+                return BadRequest();
+            }
+            
+
+            var post = await _context.Post
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .FirstAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            List<Vote> postVotes = post.Votes.ToList();
+            if(postVotes.Find(v=> v.User.Id == userID) != null)
+            {//User hat schon Vote für diesen Post abgegeben
+                Vote vote = postVotes.Find(v => v.User.Id == userID);
+
+                if (vote.isUpVote && IsUpVote)
+                {
+                    _context.Remove(vote);
+                    await _context.SaveChangesAsync();
+                }else if(!vote.isUpVote && IsUpVote)
+                {
+                    vote.isUpVote = true;
+                    _context.Update(vote);
+                    await _context.SaveChangesAsync();
+                }else if(vote.isUpVote && !IsUpVote)
+                {
+                    vote.isUpVote = false;
+                    _context.Update(vote);
+                    await _context.SaveChangesAsync();
+                }
+                else if (!vote.isUpVote && !IsUpVote)
+                {
+                    _context.Remove(vote);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {//User hat noch keinen Vote zu diesem Post abgegeben
+                Vote vote = new Vote();
+                vote.Id = Guid.NewGuid();
+                vote.isUpVote = IsUpVote;
+                vote.PostId = post.Id;
+                vote.UserId = userID;
+                _context.Add(vote);
+                await _context.SaveChangesAsync(); 
+            }
+
+            
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("API/Posts/Comment/Add")]
+        public async Task<ActionResult> AddCommentToPost(Guid? postId, string CommentText="") //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (postId == null || _context.Post == null || CommentText is null)
+            {
+                return BadRequest();
+            }
+
+
+            var post = await _context.Post
+                .Include(u => u.Comments)
+                .ThenInclude(c => c.User)
+                .FirstAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Comment comment = new Comment();
+            comment.Id = Guid.NewGuid();
+            comment.CommentText = CommentText;
+            comment.UserId = userID;
+            comment.PostId = post.Id;
+
+            comment.Post = post;
+            _context.Add(comment);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("API/Posts/Comment/Remove")]
+        public async Task<ActionResult> RemoveCommentFromPost(Guid postId, Guid commentId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (postId == null || _context.Post == null)
+            {
+                return BadRequest();
+            }
+
+
+            var post = await _context.Post
+                .Include(u => u.Comments)
+                .ThenInclude(c => c.User)
+                .FirstAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Comment comment = post.Comments.ToList().Find(c => c.Id == commentId);
+            if (comment is null) return BadRequest();
+            if (comment.UserId != userID) return Unauthorized();
+
+            post.Comments.Remove(comment);
+            _context.Remove(comment);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
         }
     }
 }

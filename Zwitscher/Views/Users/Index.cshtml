@@ -129,7 +129,7 @@
                     </thead>
                     <tbody>
                 @foreach (var item in Model) {
-                        <tr onclick="location.href = '@Url.Action("Details","Users",new {@id = item.Id})'">
+                        <tr class="trhover" onclick="location.href = '@Url.Action("Details","Users",new {@id = item.Id})'">
                                 <td>
                                     @{
                                         if (item.ProfilePicture is not null)
