@@ -94,6 +94,9 @@
                                 @Html.DisplayNameFor(model => model.User)
                             </th>
                             <th>
+                                @Html.DisplayNameFor(model => model.IsPublic)
+                            </th>
+                            <th>
                                 Anzahl Kommentare
                             </th>
                             <th>
@@ -121,7 +124,10 @@
                                     @Html.DisplayFor(modelItem => item.TextContent)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.User.FirstName)
+                                    @Html.DisplayFor(modelItem => item.User.FirstName)  @Html.DisplayFor(modelItem => item.User.LastName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IsPublic)
                                 </td>
                                 <td>
                                     @Html.Encode(item.Comments.Count)

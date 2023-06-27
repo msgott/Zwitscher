@@ -84,6 +84,8 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Comments)
                 .Include(u => u.Votes)
                 .Include(u => u.ProfilePicture)
+                .Include(u=> u.Blocking)
+                .Include(u => u.BlockedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -94,6 +96,8 @@ namespace Zwitscher.Controllers
             ViewData["Posts"] = user.Posts;
             ViewData["Comments"] = user.Comments;
             ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
             return View(user);
         }
 
@@ -424,6 +428,344 @@ namespace Zwitscher.Controllers
             }
         
             return Json(results);
+        }
+
+        [HttpGet]
+        [Route("API/Users/Following")]
+        public async Task<ActionResult> GetFollowedUsers(Guid? UserID) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (_dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+
+            var userid = new Guid();
+            if (UserID is not null)
+            {
+                userid = (Guid)UserID;
+            }
+            else
+                userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User u = await _dbContext.User.Include(u => u.Following).FirstAsync(p => p.Id == userid);
+
+            if (u is null) return Unauthorized();
+
+            var users = u.Following;
+            if (users == null)
+            {
+                return NotFound();
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+
+            foreach (User user in users)
+            {
+                string userID = user.Id.ToString();
+                string lastname = user.LastName;
+                string firstname = user.FirstName;
+                string username = user.Username;
+                DateTime birthday = user.Birthday;
+                string biography = user.Biography is null ? "" : user.Biography;
+                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                int followedCount = user.Following.Count();
+                int followerCount = user.FollowedBy.Count();
+                string pbFileName = "";
+                if (user.ProfilePicture is not null)
+                {
+                    pbFileName = user.ProfilePicture.FileName;
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "userID", userID },
+                    { "lastname", lastname },
+                    { "firstname", firstname },
+                    { "username", username },
+                    { "birthday", birthday },
+                    { "biography", biography },
+                    { "gender", gender },
+                    { "followedCount", followedCount },
+                    { "followerCount", followerCount },
+                    { "pbFileName", pbFileName }
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        [HttpGet]
+        [Route("API/Users/FollowedBy")]
+        public async Task<ActionResult> GetFollowedByUsers(Guid? UserID) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (_dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+            var userid = new Guid();
+            if (UserID is not null)
+            {
+                userid = (Guid)UserID;
+            }else 
+            userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User u = await _dbContext.User.Include(u => u.FollowedBy).FirstAsync(p => p.Id == userid);
+
+            if (u is null) return Unauthorized();
+
+            var users = u.FollowedBy;
+            if (users == null)
+            {
+                return NotFound();
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+
+            foreach (User user in users)
+            {
+                string userID = user.Id.ToString();
+                string lastname = user.LastName;
+                string firstname = user.FirstName;
+                string username = user.Username;
+                DateTime birthday = user.Birthday;
+                string biography = user.Biography is null ? "" : user.Biography;
+                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                int followedCount = user.Following.Count();
+                int followerCount = user.FollowedBy.Count();
+                string pbFileName = "";
+                if (user.ProfilePicture is not null)
+                {
+                    pbFileName = user.ProfilePicture.FileName;
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "userID", userID },
+                    { "lastname", lastname },
+                    { "firstname", firstname },
+                    { "username", username },
+                    { "birthday", birthday },
+                    { "biography", biography },
+                    { "gender", gender },
+                    { "followedCount", followedCount },
+                    { "followerCount", followerCount },
+                    { "pbFileName", pbFileName }
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        [HttpPost]
+        [Route("API/Users/Following/Add")]
+        public async Task<ActionResult> AddFollowingToUser(Guid userToFollowId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (userToFollowId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToFollow = await _dbContext.User
+                .Include(u => u.Following)
+                .Include(u => u.FollowedBy)
+                .FirstAsync(p => p.Id == userToFollowId);
+            if (userToFollow == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User user = await _dbContext.User.Include(u=>u.Following).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToFollow.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+            
+            if(user.Following.Contains(userToFollow)) return NotFound();
+            user.Following.Add(userToFollow);
+            _dbContext.Update(user);            
+            await _dbContext.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("API/Users/Following/Remove")]
+        public async Task<ActionResult> RemoveFollowingToUser(Guid userToUnfollowId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (userToUnfollowId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToUnfollow = await _dbContext.User
+                .Include(u => u.Following)
+                .Include(u => u.FollowedBy)
+                .FirstAsync(p => p.Id == userToUnfollowId);
+            if (userToUnfollow == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User user = await _dbContext.User.Include(u => u.Following).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToUnfollow.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.Following.Contains(userToUnfollow)) return NotFound();
+            user.Following.Remove(userToUnfollow);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("API/Users/Blocking")]
+        public async Task<ActionResult> GetBlockedUsers() //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (_dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            
+            Guid userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User u = await _dbContext.User.Include(u => u.Blocking).FirstAsync(p => p.Id == userid);
+            
+            if (u is null) return Unauthorized();
+
+            var users = u.Blocking;
+            if (users == null)
+            {
+                return NotFound();
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+
+            foreach (User user in users)
+            {
+                string userID = user.Id.ToString();
+                string lastname = user.LastName;
+                string firstname = user.FirstName;
+                string username = user.Username;
+                DateTime birthday = user.Birthday;
+                string biography = user.Biography is null ? "" : user.Biography;
+                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                int followedCount = user.Following.Count();
+                int followerCount = user.FollowedBy.Count();
+                string pbFileName = "";
+                if (user.ProfilePicture is not null)
+                {
+                    pbFileName = user.ProfilePicture.FileName;
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "userID", userID },
+                    { "lastname", lastname },
+                    { "firstname", firstname },
+                    { "username", username },
+                    { "birthday", birthday },
+                    { "biography", biography },
+                    { "gender", gender },
+                    { "followedCount", followedCount },
+                    { "followerCount", followerCount },
+                    { "pbFileName", pbFileName }
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        [HttpPost]
+        [Route("API/Users/Blocking/Add")]
+        public async Task<ActionResult> AddBlockingToUser(Guid userToBlockId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (userToBlockId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToBlock = await _dbContext.User
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToBlockId);
+            if (userToBlock == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User user = await _dbContext.User.Include(u => u.Blocking).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToBlock.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (user.Blocking.Contains(userToBlock)) return NotFound();
+            user.Blocking.Add(userToBlock);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("API/Users/Blocking/Remove")]
+        public async Task<ActionResult> RemoveBlockingToUser(Guid userToUnblockId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (userToUnblockId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToUnblock = await _dbContext.User
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToUnblockId);
+            if (userToUnblock == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            User user = await _dbContext.User.Include(u => u.Blocking).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToUnblock.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.Blocking.Contains(userToUnblock)) return NotFound();
+            user.Blocking.Remove(userToUnblock);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            return Ok();
         }
 
 

@@ -84,6 +84,9 @@
                             @Html.DisplayNameFor(model => model.CreatedDate)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.Id)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.CommentText)
                         </th>
                         <th>
@@ -91,6 +94,9 @@
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Post)
+                        <th>
+                                @Html.DisplayNameFor(model => model.commentsComment)
+                        </th>
                         </th>
                         <th></th>
                     </tr>
@@ -103,13 +109,19 @@
                                 @Html.DisplayFor(modelItem => item.CreatedDate)
                             </td>
                             <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
                                 @Html.DisplayFor(modelItem => item.CommentText)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.User.Id)
+                                @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Post.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.commentsCommentId)
                             </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

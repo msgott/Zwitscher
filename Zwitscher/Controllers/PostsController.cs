@@ -69,7 +69,7 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,UserId")] Post post)
+        public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId")] Post post)
         {
             
             ModelState.Remove("files");
@@ -138,7 +138,7 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,UserId")] Post post)
+        public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,IsPublic,UserId")] Post post)
         {
             if (id != post.Id)
             {
@@ -360,8 +360,9 @@ namespace Zwitscher.Controllers
                 string user_profilePicture = (await _context.Media.FindAsync(c.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(c.User.MediaId)).FileName;
                 DateTime createdDate = c.CreatedDate;
                 string commentText = c.CommentText;
+                bool loggedInUserIsCreator = c.UserId.ToString() == HttpContext.Session.GetString("UserId");
 
-               
+
 
                 Dictionary<string, Object> result = new Dictionary<string, Object>
                 {
@@ -369,8 +370,9 @@ namespace Zwitscher.Controllers
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
                     { "createdDate", createdDate },
-                    { "commentText", commentText }
-                    
+                    { "commentText", commentText },
+                    { "loggedInUserIsCreator", loggedInUserIsCreator }
+
 
 
                 };

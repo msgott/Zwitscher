@@ -11,6 +11,8 @@ namespace Zwitscher.Models
         [StringLength(281)]
         public string TextContent { get; set; } = "";
 
+        public bool IsPublic { get; set; } = true;
+
         //Relation to User (required one to many)
         public Guid UserId { get; set; }
         

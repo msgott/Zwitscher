@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zwitscher.Data;
 
@@ -11,9 +12,11 @@ using Zwitscher.Data;
 namespace Zwitscher.Migrations
 {
     [DbContext(typeof(ZwitscherContext))]
-    partial class ZwitscherContextModelSnapshot : ModelSnapshot
+    [Migration("20230627185057_AddedBlockedUsers")]
+    partial class AddedBlockedUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,13 +68,10 @@ namespace Zwitscher.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("commentsCommentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -79,8 +79,6 @@ namespace Zwitscher.Migrations
                     b.HasIndex("PostId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("commentsCommentId");
 
                     b.ToTable("Comment");
                 });
@@ -267,7 +265,9 @@ namespace Zwitscher.Migrations
                 {
                     b.HasOne("Zwitscher.Models.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Zwitscher.Models.User", "User")
                         .WithMany("Comments")
@@ -275,15 +275,9 @@ namespace Zwitscher.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Zwitscher.Models.Comment", "commentsComment")
-                        .WithMany("commentedBy")
-                        .HasForeignKey("commentsCommentId");
-
                     b.Navigation("Post");
 
                     b.Navigation("User");
-
-                    b.Navigation("commentsComment");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Media", b =>
@@ -338,11 +332,6 @@ namespace Zwitscher.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Zwitscher.Models.Comment", b =>
-                {
-                    b.Navigation("commentedBy");
                 });
 
             modelBuilder.Entity("Zwitscher.Models.Media", b =>

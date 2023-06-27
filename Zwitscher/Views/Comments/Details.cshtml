@@ -26,7 +26,7 @@
             @Html.DisplayNameFor(model => model.User)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
+            @Html.DisplayFor(model => model.User.FirstName) @Html.DisplayFor(model => model.User.LastName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Post)
@@ -34,8 +34,59 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Post.Id)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.commentsComment)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.commentsComment.Id)
+        </dd>
     </dl>
 </div>
+<hr />
+<div style="border: 1px solid black;">
+    Kommentar hat folgende Kommentare
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CommentText)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.commentsComment.Id)
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Comment>)ViewData["commentedBy"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CommentText)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.commentsComment.Id)
+                    </td>
+
+
+                    <td style="visibility: hidden;">
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

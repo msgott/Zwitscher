@@ -42,12 +42,15 @@ namespace Zwitscher.Controllers
             var comment = await _context.Comment
                 .Include(c => c.Post)
                 .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .Include(c => c.commentsComment)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)
             {
                 return NotFound();
             }
-
+            ViewData["commentedBy"] = comment.commentedBy;
+            
             return View(comment);
         }
 
@@ -205,5 +208,128 @@ namespace Zwitscher.Controllers
         {
           return (_context.Comment?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+        //---------------------------------------------------------------------------------------------
+        [HttpGet]
+        [Route("API/Comments/Comments")]
+        public async Task<ActionResult> CommentsList(Guid? id)
+        {
+            if (id == null || _context.Comment == null)
+            {
+                return BadRequest();
+            }
+
+            var c = await _context.Comment
+                .Include(u => u.commentedBy)
+                .ThenInclude(c => c.User)
+                .FirstAsync(u => u.Id == id);
+            if (c == null)
+            {
+                return NotFound();
+
+            }
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+            List<Comment> comments = c.commentedBy;
+            foreach (Comment comment in comments)
+            {
+
+                string commentId = comment.Id.ToString();
+                string user_username = comment.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(comment.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(comment.User.MediaId)).FileName;
+                DateTime createdDate = comment.CreatedDate;
+                string commentText = comment.CommentText;
+                bool loggedInUserIsCreator = comment.UserId.ToString() == HttpContext.Session.GetString("UserId");
+
+
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "commentId", commentId },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate },
+                    { "commentText", commentText },
+                    { "loggedInUserIsCreator", loggedInUserIsCreator }
+
+
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        [HttpGet]
+        [Route("API/Comments/Comment/Add")]
+        public async Task<ActionResult> AddCommentToComment(Guid? commentId, string CommentText = "") //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (commentId == null || _context.Comment == null || CommentText is null)
+            {
+                return BadRequest();
+            }
+
+
+            var comment = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .ThenInclude(c => c.User)
+                .FirstAsync(p => p.Id == commentId);
+            if (comment == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Comment c = new Comment();
+            c.Id = Guid.NewGuid();
+            c.CommentText = CommentText;
+            c.UserId = userID;
+            c.commentsCommentId = comment.Id;
+
+            c.commentsComment = comment;
+            _context.Add(c);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("API/Comments/Comment/Remove")]
+        public async Task<ActionResult> RemoveCommentFromPost(Guid commentId, Guid commentToRemoveId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (commentId == null || _context.Comment == null)
+            {
+                return BadRequest();
+            }
+
+
+            var c = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .ThenInclude(c => c.User)
+                .FirstAsync(p => p.Id == commentId);
+            if (c == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Comment comment = c.commentedBy.ToList().Find(c => c.Id == commentToRemoveId);
+            if (comment is null) return BadRequest();
+            if (comment.UserId != userID && c.UserId != userID) return Unauthorized();
+
+            c.commentedBy.Remove(comment);
+            _context.Remove(comment);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
+        }
     }
+
 }

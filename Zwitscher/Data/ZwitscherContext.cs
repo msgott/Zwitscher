@@ -30,6 +30,10 @@ namespace Zwitscher.Data
                 .HasMany(u => u.FollowedBy)
                 .WithMany(u => u.Following)
                 .UsingEntity(j => j.ToTable("UserFollowers"));
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.BlockedBy)
+                .WithMany(u => u.Blocking)
+                .UsingEntity(j => j.ToTable("UserBlockers"));
 
             modelBuilder.Entity<Vote>()
             .HasIndex(v => new { v.UserId, v.PostId })

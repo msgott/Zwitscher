@@ -12,6 +12,7 @@ namespace Zwitscher.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly ZwitscherContext _context;
 
+        //Constructor
         public AuthController(ZwitscherContext context, ILogger<AuthController> logger)
         {
             _context = context;
@@ -19,6 +20,8 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Auth
+        // For MVC Frontend
+        // Returns the Login View
         public async Task<IActionResult> Index()
         {
             var zwitscherContext = _context.User.Include(u => u.Role);
@@ -26,11 +29,16 @@ namespace Zwitscher.Controllers
         }
 
 
+        // GET: Auth/Login
+        // For MVC Frontend
+        // Returns the Login View
         public IActionResult Login()
         {
             return View();
         }
 
+        // POST: /Auth/Login
+        // For MVC Frontend
         // This method is responsible for the login. To do this, it compares the data from the input field with the database entries.
         // If a user can be found, his or her data is stored in the HttpContext.Session and can then be called up throughout the application.
         [HttpPost]

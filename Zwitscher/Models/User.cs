@@ -71,6 +71,12 @@ namespace Zwitscher.Models
         [DisplayName("Follower")]
         public List<User> FollowedBy { get; } = new();
 
+        //Relation to Blocked (optional many to many)
+        [DisplayName("Folgt")]
+        public List<User> Blocking { get; } = new();
+        [DisplayName("Follower")]
+        public List<User> BlockedBy { get; } = new();
+
         //Relation to Posts (required one to many)
         public ICollection<Post> Posts { get; } = new List<Post>();
 
