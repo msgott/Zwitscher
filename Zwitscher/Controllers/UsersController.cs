@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Hubs;
 using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
+    [Moderator]
     public class UsersController : Controller //Controller for Users --> Shoud be used for Admins only
     {
         private readonly ZwitscherContext _dbContext;
@@ -158,6 +160,7 @@ namespace Zwitscher.Controllers
         // GET: Users/Edit/5
         [HttpGet]
         [Route("Users/Edit")]
+        [Admin]
         public async Task<IActionResult> Edit(Guid? id)
         {
             //Role Based Authentication for Mod and Admin

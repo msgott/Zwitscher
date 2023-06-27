@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
 
@@ -47,6 +48,7 @@ namespace Zwitscher.Controllers
             return View();
         }
 
+        [Moderator]
         public IActionResult Dashboard()
         {
             // Total User
