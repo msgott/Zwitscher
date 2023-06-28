@@ -180,6 +180,8 @@ namespace Zwitscher.Controllers
             var comment = await _context.Comment
                 .Include (c => c.Post)
                 .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .Include(c => c.commentsComment)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (comment != null)
             {
@@ -259,7 +261,7 @@ namespace Zwitscher.Controllers
             return Json(results);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("API/Comments/Comment/Add")]
         public async Task<ActionResult> AddCommentToComment(Guid? commentId, string CommentText = "") //Only works while logged in!
         {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Hubs;
@@ -187,6 +188,7 @@ namespace Zwitscher.Controllers
             }
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
             ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            
             return View(user);
         }
 
@@ -693,6 +695,86 @@ namespace Zwitscher.Controllers
                     { "followedCount", followedCount },
                     { "followerCount", followerCount },
                     { "pbFileName", pbFileName }
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+        [HttpGet]
+        [Route("API/Users/Posts")]
+        public async Task<ActionResult> GetUsersPosts(Guid? id) 
+        {
+            
+           
+            if (_dbContext.User == null)
+            {
+                return BadRequest();
+            }
+            var userid = new Guid();
+            if (id is not null)
+            {
+                userid = (Guid)id;
+            }
+            else userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
+
+            User u = await _dbContext.User
+                .Include(u => u.Posts)
+                .FirstAsync(p => p.Id == userid);
+
+            if (u is null) return Unauthorized();
+
+            var posts = await _dbContext.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .ToListAsync();
+            posts = posts.FindAll(p => p.UserId == userid);
+            if (posts == null || posts.Count == 0)
+            {
+                return NotFound();
+
+            }
+
+            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+            foreach (Post post in posts)
+            {
+                string postID = post.Id.ToString();
+                string user_username = post.User.Username;
+                string user_profilePicture = (await _dbContext.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _dbContext.Media.FindAsync(post.User.MediaId)).FileName;
+                DateTime createdDate = post.CreatedDate;
+                int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
+                int commentCount = post.Comments.Count;
+                string postText = post.TextContent;
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userid) is not null && post.Votes.ToList().Find(v => v.User.Id == userid).User.Id == userid);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userid).isUpVote ? "true" : "false") : "null";
+                List<string> mediaList = new List<string>();
+
+                if (post.Media is not null)
+                {
+                    foreach (Media media in post.Media)
+                    {
+                        mediaList.Add(media.FileName);
+                    }
+
+                }
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "postID", postID },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate },
+                    { "rating", rating },
+                    { "commentCount", commentCount },
+                    { "currentUserVoted", currentUserVoted },
+                    { "userVoteIsUpvote", userVoteIsUpvote },
+                    { "mediaList", mediaList },
+                    { "postText", postText }
+
 
                 };
                 results.Add(result);

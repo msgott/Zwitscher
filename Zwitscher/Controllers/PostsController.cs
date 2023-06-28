@@ -329,6 +329,108 @@ namespace Zwitscher.Controllers
             
             return Json(results);
         }
+        [HttpPost]
+        [Route("API/Posts/Add")]
+        public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId")] Post post) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (_context.Post == null)
+            {
+                return BadRequest();
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            post.UserId = userID;
+            ModelState.Remove("files");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+            if (ModelState.IsValid)
+            {
+                foreach (IFormFile file in files)
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _context.Media.Add(image);
+                        post.Media.Add(image);
+                    }
+                }
+
+                post.Id = Guid.NewGuid();
+                post.CreatedDate = DateTime.Now;
+                _context.Add(post);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            
+            return ValidationProblem();
+        }
+        // POST: Posts/Delete/5
+        [HttpDelete]
+        [Route("API/Posts/Remove")]
+        public async Task<IActionResult> DeletePost(Guid id)
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (_context.Post == null)
+            {
+                return BadRequest();
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+
+            
+            var post = await _context.Post
+                .Include(post => post.User)
+                .Include(post => post.Comments)
+                .Include(post => post.Media)
+                .Include(post => post.Votes)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if(post is null) return NotFound();
+            if (post.Id != id || post.UserId != userID) return Unauthorized();
+
+            
+                /*foreach (Comment c in post.Comments)
+                {
+                    c.User = null;
+                    post.Comments.Remove(c);
+                    _context.Comment.Remove(c);
+                }*/
+                foreach (Media m in post.Media)
+                {
+                    m.Post = null;
+                    if (Path.Exists(m.FilePath))
+                    {
+                        System.IO.File.Delete(m.FilePath);
+                    }
+                    _context.Media.Remove(m);
+                }
+                post.Media.Clear();
+                _context.Post.Remove(post);
+            
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
 
         [HttpGet]
@@ -497,6 +599,10 @@ namespace Zwitscher.Controllers
             var post = await _context.Post
                 .Include(u => u.Comments)
                 .ThenInclude(c => c.User)
+                .Include(u => u.Comments)
+                .ThenInclude(c => c.commentedBy)
+                .Include(u => u.Comments)
+                .ThenInclude(c => c.commentsComment)
                 .FirstAsync(p => p.Id == postId);
             if (post == null)
             {

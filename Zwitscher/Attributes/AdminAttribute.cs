@@ -12,7 +12,7 @@ namespace Zwitscher.Attributes
 
             if (roleName != "Administrator")
             {
-                context.Result = new RedirectResult("/Zwitscher");
+                context.Result = new RedirectResult("/Zwitscher"); //Redirect zu React Frontend
             }
 
             base.OnActionExecuting(context);
