@@ -43,7 +43,7 @@ if (!app.Environment.IsDevelopment())
 CreateDbIfNotExists(app);
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 

@@ -15,7 +15,6 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
-    [Moderator]
     public class UsersController : Controller //Controller for Users --> Shoud be used for Admins only
     {
         private readonly ZwitscherContext _dbContext;

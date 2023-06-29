@@ -100,7 +100,7 @@ namespace Zwitscher.Controllers
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
                         _logger.LogInformation($"User {userInDb.Username} logged in.");
 
-                        var result = new{ Username = userInDb.Username, RoleName = role.Name};
+                        var result = new{ Username = userInDb.Username, RoleName = role.Name, Success = true};
 
                         return JsonSerializer.Serialize(result);
                     }
@@ -115,7 +115,7 @@ namespace Zwitscher.Controllers
                     ModelState.AddModelError("LoginFailed", "Login failed. Please try again.");
                 }
             }
-            return "{\"Success\": false}";
+            return JsonSerializer.Serialize(new { Username = "", RoleName = "", Success = false });
         }
 
 
@@ -209,7 +209,7 @@ namespace Zwitscher.Controllers
                     HttpContext.Session.SetString("LastName", user.LastName);
                     HttpContext.Session.SetString("Birthday", user.Birthday.ToString());
 
-                    var result = new { Username = Username, RoleName = role.Name };
+                    var result = new { Username = Username, RoleName = role.Name, Success = true };
                     return JsonSerializer.Serialize(result);
                 }
                 else
@@ -217,7 +217,7 @@ namespace Zwitscher.Controllers
                     ModelState.AddModelError("Username", "Username already exists!");
                 }
             }
-            return "{\"Success\": false}";
+            return JsonSerializer.Serialize(new { Username = "", RoleName = "", Success = false });
         }
 
         private bool UserExists(Guid id)
