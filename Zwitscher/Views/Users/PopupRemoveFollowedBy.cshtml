@@ -1,0 +1,36 @@
+﻿@model Zwitscher.Models.User
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Nutzer entfernen</h1>
+
+
+<hr />
+
+    <div >
+
+        <form asp-controller="Users" asp-action="RemoveFollowedByFromUser" enctype="multipart/form-data">
+
+
+            <input type="hidden" name="userID" value="@Model.Id" />
+            <input type="hidden" name="userToRemoveId" value="@ViewBag.usertoremove" />
+            <div class="form-group">
+                Sicher, dass Sie diesen Nutzer aus der Liste entfernen wollen?
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="entfernen" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

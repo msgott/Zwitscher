@@ -164,7 +164,7 @@ namespace Zwitscher.Controllers
         // GET: Users/Edit/5
         [HttpGet]
         [Route("Users/Edit")]
-        [Admin]
+        //[Admin] //for Development deactivated
         public async Task<IActionResult> Edit(Guid? id)
         {
             //Role Based Authentication for Mod and Admin
@@ -179,7 +179,15 @@ namespace Zwitscher.Controllers
             }
 
             var user = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
                 .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
@@ -187,7 +195,13 @@ namespace Zwitscher.Controllers
             }
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
             ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
             return View(user);
         }
 
@@ -321,8 +335,678 @@ namespace Zwitscher.Controllers
         {
           return (_dbContext.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+        //-----------------------------------------------MVC User FollowedBy----------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> PopupAddFollowedBy( Guid userID)
+        {
+           
+            var user = await _dbContext.User.Include(u => u.FollowedBy).FirstOrDefaultAsync(user => user.Id == userID);
+            //can send some data also.  
+            List<User> tempList = user.FollowedBy;
+            tempList.Add(user);
+            SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList),"Id","");
+            ViewData["users"] = tempSelectList;
+            return PartialView("PopupAddFollowedBy", _dbContext.User.Include(p=> p.FollowedBy).ToList().Find(us => us.Id == user.Id));
+            
+
+            
+        }
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveFollowedBy(Guid userID, Guid UserToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.FollowedBy).FirstOrDefaultAsync(user => user.Id == userID);
+              
+            
+            ViewData["usertoremove"] = UserToRemoveId;
+            return PartialView("PopupRemoveFollowedBy", user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddFollowedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        {
+
+            if (userToAddId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToAdd = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToAddId);
+            if (userToAdd == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.FollowedBy).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToAdd.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (user.FollowedBy.Contains(userToAdd)) return NotFound();
+            user.FollowedBy.Add(userToAdd);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveFollowedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (userToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToRemove = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToRemoveId);
+            if (userToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.FollowedBy).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToRemove.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.FollowedBy.Contains(userToRemove)) return NotFound();
+            user.FollowedBy.Remove(userToRemove);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User Following----------------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> PopupAddFollowing(Guid userID)
+        {
+            
+            var user = await _dbContext.User.Include(u => u.Following).FirstOrDefaultAsync(user => user.Id == userID);
+            //can send some data also.  
+            List<User> tempList = user.Following;
+            tempList.Add(user);
+            SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
+            ViewData["users"] = tempSelectList;
+            return PartialView("PopupAddFollowing", _dbContext.User.Include(p => p.Following).ToList().Find(us => us.Id == user.Id));
+
+
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveFollowing(Guid userID, Guid UserToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.Following).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["usertoremove"] = UserToRemoveId;
+            return PartialView("PopupRemoveFollowing", user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddFollowingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        {
+
+            if (userToAddId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToAdd = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToAddId);
+            if (userToAdd == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Following).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToAdd.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (user.Following.Contains(userToAdd)) return NotFound();
+            user.Following.Add(userToAdd);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveFollowingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (userToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToRemove = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToRemoveId);
+            if (userToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Following).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToRemove.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.Following.Contains(userToRemove)) return NotFound();
+            user.Following.Remove(userToRemove);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User BlockedBy----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupAddBlockedBy(Guid userID)
+        {
+
+            var user = await _dbContext.User.Include(u => u.BlockedBy).FirstOrDefaultAsync(user => user.Id == userID);
+            //can send some data also.  
+            List<User> tempList = user.BlockedBy;
+            tempList.Add(user);
+            SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
+            ViewData["users"] = tempSelectList;
+            return PartialView("PopupAddBlockedBy", _dbContext.User.Include(p => p.BlockedBy).ToList().Find(us => us.Id == user.Id));
+
+
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveBlockedBy(Guid userID, Guid UserToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.BlockedBy).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["usertoremove"] = UserToRemoveId;
+            return PartialView("PopupRemoveBlockedBy", user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddBlockedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        {
+
+            if (userToAddId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToAdd = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToAddId);
+            if (userToAdd == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.BlockedBy).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToAdd.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (user.BlockedBy.Contains(userToAdd)) return NotFound();
+            user.BlockedBy.Add(userToAdd);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveBlockedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (userToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToRemove = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToRemoveId);
+            if (userToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.BlockedBy).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToRemove.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.BlockedBy.Contains(userToRemove)) return NotFound();
+            user.BlockedBy.Remove(userToRemove);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User Blocking----------------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> PopupAddBlocking(Guid userID)
+        {
+
+            var user = await _dbContext.User.Include(u => u.Blocking).FirstOrDefaultAsync(user => user.Id == userID);
+            //can send some data also.  
+            List<User> tempList = user.Blocking;
+            tempList.Add(user);
+            SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
+            ViewData["users"] = tempSelectList;
+            return PartialView("PopupAddBlocking", _dbContext.User.Include(p => p.Blocking).ToList().Find(us => us.Id == user.Id));
+
+
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveBlocking(Guid userID, Guid UserToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.Blocking).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["usertoremove"] = UserToRemoveId;
+            return PartialView("PopupRemoveBlocking", user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddBlockingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        {
+
+            if (userToAddId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToAdd = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToAddId);
+            if (userToAdd == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Blocking).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToAdd.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (user.Blocking.Contains(userToAdd)) return NotFound();
+            user.Blocking.Add(userToAdd);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveBlockingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (userToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userToRemove = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstAsync(p => p.Id == userToRemoveId);
+            if (userToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Blocking).FirstAsync(p => p.Id == userID);
+            if (user.Id == userToRemove.Id) return BadRequest();
+            if (user is null) return Unauthorized();
+
+            if (!user.Blocking.Contains(userToRemove)) return NotFound();
+            user.Blocking.Remove(userToRemove);
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User Post----------------------------------------------------------------------
+        
+        [HttpPost]
+        public async Task<IActionResult> PopupRemovePost(Guid userID, Guid postToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["postToRemove"] = postToRemoveId;
+            return PartialView("PopupRemovePost", user);
+
+        }
+
+        
+
+        [HttpPost]
+        public async Task<ActionResult> RemovePostFromUser(Guid userID, Guid postToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (postToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var postToRemove = await _dbContext.Post
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.User)
+                .Include(u => u.Media)                
+                .FirstAsync(p => p.Id == postToRemoveId);
+            if (postToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Posts).FirstAsync(p => p.Id == userID);
+            
+            if (user is null) return Unauthorized();
+
+            if (!user.Posts.Contains(postToRemove)) return NotFound();
+            user.Posts.Remove(postToRemove);
+            _dbContext.Update(user);
+            _dbContext.Remove(postToRemove);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User Comment----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveComment(Guid userID, Guid commentToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["commentToRemove"] = commentToRemoveId;
+            return PartialView("PopupRemoveComment", user);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveCommentFromUser(Guid userID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (commentToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var CommentToRemove = await _dbContext.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .Include(u => u.Post)
+                .Include(u => u.User)
+                .FirstAsync(p => p.Id == commentToRemoveId);
+            if (CommentToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Comments).FirstAsync(p => p.Id == userID);
+
+            if (user is null) return Unauthorized();
+
+            if (!user.Comments.Contains(CommentToRemove)) return NotFound();
+            user.Comments.Remove(CommentToRemove);
+            _dbContext.Update(user);
+            _dbContext.Remove(CommentToRemove);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+        //-----------------------------------------------MVC User Vote----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveVote(Guid userID, Guid voteToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["voteToRemove"] = voteToRemoveId;
+            return PartialView("PopupRemoveVote", user);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveVoteFromUser(Guid userID, Guid voteToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (voteToRemoveId == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var voteToRemove = await _dbContext.Vote
+                .Include(u => u.User)
+                .Include(u => u.Post)                
+                .FirstAsync(p => p.Id == voteToRemoveId);
+            if (voteToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            User user = await _dbContext.User.Include(u => u.Votes).FirstAsync(p => p.Id == userID);
+
+            if (user is null) return Unauthorized();
+
+            if (!user.Votes.Contains(voteToRemove)) return NotFound();
+            user.Votes.Remove(voteToRemove);
+            _dbContext.Update(user);
+            _dbContext.Remove(voteToRemove);
+            await _dbContext.SaveChangesAsync();
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
+
+
+        //-----------------------------------------------API---------------------------------------------------------------------
         // GET: API/User?id..
         [HttpGet]
         [Route("API/User")]
@@ -571,7 +1255,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Following/Add")]
-        public async Task<ActionResult> AddFollowingToUser(Guid userToFollowId) //Only works while logged in!
+        public async Task<ActionResult> AddFollowingToUser1(Guid userToFollowId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -606,7 +1290,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Following/Remove")]
-        public async Task<ActionResult> RemoveFollowingToUser(Guid userToUnfollowId) //Only works while logged in!
+        public async Task<ActionResult> RemoveFollowingToUser1(Guid userToUnfollowId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -638,6 +1322,8 @@ namespace Zwitscher.Controllers
 
             return Ok();
         }
+
+       
 
         [HttpGet]
         [Route("API/Users/Blocking")]
@@ -784,7 +1470,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Blocking/Add")]
-        public async Task<ActionResult> AddBlockingToUser(Guid userToBlockId) //Only works while logged in!
+        public async Task<ActionResult> AddBlockingToUser1(Guid userToBlockId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -819,7 +1505,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Blocking/Remove")]
-        public async Task<ActionResult> RemoveBlockingToUser(Guid userToUnblockId) //Only works while logged in!
+        public async Task<ActionResult> RemoveBlockingToUser1(Guid userToUnblockId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();

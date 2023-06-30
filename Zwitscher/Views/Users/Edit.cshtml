@@ -23,7 +23,16 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
+                @{
+                if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
+                {
                 <label  class="control-label">Profilbild Upload</label>
+                    }
+                    else
+                    {
+                        <label class="control-label">Profilbild ersetzen</label>
+                    }
+                }
                 <input name="file" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" />
             </div>
             <div class="form-group">
@@ -78,11 +87,596 @@
         </form>
     </div>
 </div>
+<hr />
+<div style="border: 1px solid black;">
+    User folgt folgenden Usern
+    <br />
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
 
+                <th>
+                    <button class="btn btn-outline-success btn-sm" onclick="openAddFollowingModal()">+</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<User>)ViewData["Following"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveFollowingModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User hat folgende Follower
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+
+                <th><button class="btn btn-outline-success btn-sm" onclick="openAddFollwedByModal()">+</button></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<User>)ViewData["FollowedBy"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveFollwedByModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User ist von folgenden Usern geblockt
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+
+                <th><button class="btn btn-outline-success btn-sm" onclick="openAddBlockedByModal()">+</button></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<User>)ViewData["BlockedBy"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveBlockedByModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                         </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User blockiert folgende User
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+
+                <th><button class="btn btn-outline-success btn-sm" onclick="openAddBlockingModal()">+</button></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<User>)ViewData["Blocking"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveBlockingModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
+<div style="border: 1px solid black;">
+    User hat folgende Posts
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Text
+                </th>
+
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Post>)ViewData["Posts"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TextContent)
+                    </td>
+
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemovePostModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User hat folgende Kommentare
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Text
+                </th>
+
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Comment>)ViewData["Comments"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CommentText)
+                    </td>
+
+
+
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveCommentModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div style="border: 1px solid black;">
+    User hat folgende Votes getätigt
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    PostId
+                </th>
+
+
+                <th>ist Upvote</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Vote>)ViewData["Votes"])
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isUpVote)
+                    </td>
+
+
+
+                    <td >
+                        <button class="btn btn-outline-danger btn-sm" onclick="openRemoveVoteModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<div id="partialModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Beziehung verwalten</h5>
+                <button type="button" class="close" onclick="closeModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    
+       //-------------------------------------------FollowedBy-------------------------------------
+        const openAddFollwedByModal = function () {
+        
+            var id = "@Html.DisplayFor(item => item.Id)";
+        console.log(id);
+            $.ajax({
+                type: "POST",
+            url: "/Users/PopupAddFollowedBy",
+            data: { "userID": id },
+                success: function (response) {
+                    $("#partialModal").find(".modal-body").html(response);
+                    $("#partialModal").modal('show');
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        };
+    const openRemoveFollwedByModal = function (userToRemoveId) {
+        
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = userToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveFollowedBy",
+            data: {
+                "userID": id,
+                "userToRemoveId": userToRemoveId
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Following-------------------------------------
+    const openAddFollowingModal = function () {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        console.log(id);
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupAddFollowing",
+            data: { "userID": id },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    const openRemoveFollowingModal = function (userToRemoveId) {
+        
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = userToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveFollowing",
+            data: {
+                "userID": id,
+                "userToRemoveId": userToRemoveId
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------BlockedBy-------------------------------------
+    const openAddBlockedByModal = function () {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        console.log(id);
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupAddBlockedBy",
+            data: { "userID": id },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    const openRemoveBlockedByModal = function (userToRemoveId) {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = userToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveBlockedBy",
+            data: {
+                "userID": id,
+                "userToRemoveId": userToRemoveId
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Blocking-------------------------------------
+    const openAddBlockingModal = function () {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        console.log(id);
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupAddBlocking",
+            data: { "userID": id },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    const openRemoveBlockingModal = function (userToRemoveId) {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = userToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveBlocking",
+            data: {
+                "userID": id,
+                "userToRemoveId": userToRemoveId
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Posts-------------------------------------
+    
+    const openRemovePostModal = function (postToRemoveId) {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = postToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemovePost",
+            data: {
+                "userID": id,
+                "postToRemoveId": removeid
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Comment-------------------------------------
+
+    const openRemoveCommentModal = function (commentToRemoveId) {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = commentToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveComment",
+            data: {
+                "userID": id,
+                "commentToRemoveId": removeid
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Vote-------------------------------------
+
+    const openRemoveVoteModal = function (voteToRemoveId) {
+
+        var id = "@Html.DisplayFor(item => item.Id)";
+        var removeid = voteToRemoveId;
+        $.ajax({
+            type: "POST",
+            url: "/Users/PopupRemoveVote",
+            data: {
+                "userID": id,
+                "voteToRemoveId": removeid
+            },
+            success: function (response) {
+                $("#partialModal").find(".modal-body").html(response);
+                $("#partialModal").modal('show');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    };
+    //-------------------------------------------Shared-------------------------------------
+    const closeModal = function () {
+        
+                $("#partialModal").modal('hide');
+            
+    };
+    
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
