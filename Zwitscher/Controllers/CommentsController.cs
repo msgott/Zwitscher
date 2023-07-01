@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Differencing;
@@ -178,33 +179,37 @@ namespace Zwitscher.Controllers
             {
                 return Problem("Entity set 'ZwitscherContext.Comment'  is null.");
             }
-            var comment = await _context.Comment
+            var comment =  _context.Comment
                 .Include (c => c.Post)
                 .Include(c => c.User)
-                .Include(c => c.commentedBy)
-                .Include(c => c.commentsComment)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .Include(c => c.commentedBy)                
+                .FirstOrDefault(c => c.Id == id);
             if (comment != null)
             {
-                if (comment.User is not null)
-                {
-
-                    //media.User.ProfilePicture = null;
-                    //media.User.MediaId = null;
-                    comment.User.Comments.Remove(comment);
-                    comment.User = null;
-                }
-                if (comment.Post is not null)
-                {
-                    comment.Post.Comments.Remove(comment);
-                    comment.Post = null;
-                }
-
-                _context.Comment.Remove(comment);
+                
+                RecursiveDelete(comment);
+                
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private void RecursiveDelete(Comment parent)
+        {
+            if (parent.commentedBy != null && parent.commentedBy.Count > 0)
+            {
+                var children = _context.Comment
+                    .Include(x => x.commentedBy)
+                    .Where(x => x.commentsCommentId == parent.Id).ToList();
+
+                foreach (var child in children)
+                {
+                    RecursiveDelete(child);
+                }
+            }
+
+            _context.Remove(parent);
         }
 
         private bool CommentExists(Guid id)
@@ -325,6 +330,7 @@ namespace Zwitscher.Controllers
             c.CommentText = CommentText;
             c.UserId = userID;
             c.commentsCommentId = comment.Id;
+            c.CreatedDate = DateTime.Now;
 
             c.commentsComment = comment;
             _context.Add(c);
@@ -357,13 +363,27 @@ namespace Zwitscher.Controllers
 
             }
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
-            Comment comment = c.commentedBy.ToList().Find(c => c.Id == commentToRemoveId);
+            
+            var comment = _context.Comment
+                .Include(c => c.Post)
+                .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .FirstOrDefault(c => c.Id == commentToRemoveId);
             if (comment is null) return BadRequest();
-            if (comment.UserId != userID && c.UserId != userID) return Unauthorized();
+            if (comment != null)
+            {
+                if (comment.UserId != userID && c.UserId != userID) return Unauthorized();
+                RecursiveDelete(comment);
 
-            c.commentedBy.Remove(comment);
-            _context.Remove(comment);
+            }
+
             await _context.SaveChangesAsync();
+            
+            
+
+            
+            
+            
 
 
             return Ok();

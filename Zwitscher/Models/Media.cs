@@ -17,6 +17,7 @@ namespace Zwitscher.Models
         public IFormFile File { get; set; } = null!;
 
         //Relation to User (optional one to one)
+        
         public User? User { get; set; }
 
         //Relation to Post (optional one to many)

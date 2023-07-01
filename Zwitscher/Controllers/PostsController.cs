@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -63,6 +64,7 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
+
             ViewData["RezwitscherId"] = new SelectList(_context.Post, "Id", "Id");
             return View();
         }
@@ -248,12 +250,23 @@ namespace Zwitscher.Controllers
                 .FirstOrDefaultAsync(p=> p.Id == id);
             if (post != null)
             {
-                /*foreach (Comment c in post.Comments)
+                foreach (Comment com in post.Comments)
                 {
-                    c.User = null;
-                    post.Comments.Remove(c);
-                    _context.Comment.Remove(c);
-                }*/
+                    var comment = _context.Comment
+                    .Include(c => c.Post)
+                    .Include(c => c.User)
+                    .Include(c => c.commentedBy)
+                    .FirstOrDefault(c => c.Id == com.Id);
+                    if (comment is null) return BadRequest();
+                    if (comment != null)
+                    {
+                        
+                        RecursiveDelete(comment);
+
+                    }
+
+
+                }
                 foreach (Media m in post.Media)
                 {
                     m.Post = null;
@@ -491,7 +504,7 @@ namespace Zwitscher.Controllers
             
             var post = await _context.Post
                 .Include(post => post.User)
-                .Include(post => post.Comments)
+                .Include(post => post.Comments)                
                 .Include(post => post.Media)
                 .Include(post => post.Votes)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -499,12 +512,24 @@ namespace Zwitscher.Controllers
             if (post.Id != id || post.UserId != userID) return Unauthorized();
 
             
-                /*foreach (Comment c in post.Comments)
+                foreach (Comment com in post.Comments)
                 {
-                    c.User = null;
-                    post.Comments.Remove(c);
-                    _context.Comment.Remove(c);
-                }*/
+                var comment = _context.Comment
+                .Include(c => c.Post)
+                .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .FirstOrDefault(c => c.Id == com.Id);
+                if (comment is null) return BadRequest();
+                if (comment != null)
+                {
+                    if (comment.UserId != userID && post.UserId != userID) return Unauthorized();
+                    RecursiveDelete(comment);
+
+                }
+
+                
+            }
+
                 foreach (Media m in post.Media)
                 {
                     m.Post = null;
@@ -702,16 +727,42 @@ namespace Zwitscher.Controllers
 
             }
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
-            Comment comment = post.Comments.ToList().Find(c => c.Id == commentId);
-            if (comment is null) return BadRequest();
-            if (comment.UserId != userID) return Unauthorized();
+            
 
-            post.Comments.Remove(comment);
-            _context.Remove(comment);
+            var comment = _context.Comment
+                .Include(c => c.Post)
+                .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .FirstOrDefault(c => c.Id == commentId);
+            if (comment is null) return BadRequest();
+            if (comment != null)
+            {
+                if (comment.UserId != userID && post.UserId != userID) return Unauthorized();
+                RecursiveDelete(comment);
+
+            }
+
             await _context.SaveChangesAsync();
+            
 
 
             return Ok();
+        }
+        private void RecursiveDelete(Comment parent)
+        {
+            if (parent.commentedBy != null && parent.commentedBy.Count > 0)
+            {
+                var children = _context.Comment
+                    .Include(x => x.commentedBy)
+                    .Where(x => x.commentsCommentId == parent.Id).ToList();
+
+                foreach (var child in children)
+                {
+                    RecursiveDelete(child);
+                }
+            }
+
+            _context.Remove(parent);
         }
     }
 }
