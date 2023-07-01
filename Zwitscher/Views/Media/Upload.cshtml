@@ -8,7 +8,7 @@
 <h2>Upload Media</h2>
 
 <form asp-action="Upload" enctype="multipart/form-data">
-    <div class="form-group">
+    <div class="form-group" style="min-width=300px">
         <label asp-for="File" class="control-label"></label>
         <input asp-for="File" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" />
     </div>

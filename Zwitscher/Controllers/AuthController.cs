@@ -67,14 +67,15 @@ namespace Zwitscher.Controllers
                     else
                     {
                         _logger.LogInformation($"User {userInDb.Username} tried to log in with wrong password or is locked.");
-                        ModelState.AddModelError("LoginFailed", "Wrong Password!");
+                        ModelState.AddModelError(nameof(Models.User.Password), "Wrong Password!");
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("LoginFailed", "Login failed. Please try again.");
+                    ModelState.AddModelError(nameof(Models.User.Password), "Login failed. Please try again.");
                 }
             }
+            ViewData["Error"] = "Login fehlgeschlagen";
             return RedirectToAction(nameof(Index));
         }
 

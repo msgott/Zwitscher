@@ -13,7 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group form-check">
+            <div class="form-group form-check" style="min-width=300px">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="isUpVote" /> @Html.DisplayNameFor(model => model.isUpVote)
                 </label>

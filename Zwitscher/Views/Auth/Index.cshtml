@@ -3,13 +3,20 @@
 @{
     ViewData["Title"] = "Login";
 }
+<!DOCTYPE html>
+<head>
 
+    <link rel="stylesheet" href="/css/Auth.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
+@*
 <h1>Login</h1>
 
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Login">
-            <div class="form-group">
+            <div class="form-group form-group-lg" style="min-width=300px">
                 <label for="Username" class="control-label">Username:</label>
                 <input type="text" id="Username" name="Username" class="form-control" />
             </div>
@@ -29,3 +36,59 @@
 <p>
     <a asp-action="Register">Registrieren</a>
 </p>
+    *@
+    <div class="div-center">
+        
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+
+                                <div class="text-center">
+                                    <img src="~/favicon.ico"
+                                         style="width: 185px;" alt="logo">
+                                    <h4 class="mt-1 mb-5 pb-1">Wir sind Zwitscher!</h4>
+                                </div>
+
+                                <form asp-action="Login">
+                                    <div class="form-group form-group-lg" style="min-width: 300px">
+                                        <label for="Username" class="control-label">Username:</label>
+                                        <input type="text" id="Username" name="Username" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Password" class="control-label">Password:</label>
+                                        <input type="password" id="Password" name="Password" class="form-control" />
+                                
+                                    </div>
+                                    <br />
+                            
+
+                            <div class="form-group">
+                                        <input type="submit" value="Login" class="btn btn-primary" />
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center pb-4">
+                                <p class="mb-0 me-2">Noch keinen Account? </p>
+                                <a asp-action="Register">Registrieren</a>
+                            </div>
+                        </div>
+                        
+                        
+                            
+                        
+                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                <h4 class="mb-4">Wir sind mehr als nur eine Social Media Plattform</h4>
+                                <p class="small mb-0">
+                                    Wir sind das Zwitscher Team und bestrebt Ihnen das beste Blogging Erlebnis zu bieten
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+    </div>
+
+</body>

@@ -1,85 +1,32 @@
 ﻿@model IEnumerable<Zwitscher.Models.Vote>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Votes";
 }
 
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="/css/Votes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 <body>
     <div class="content-container">
-        <div class="content-container-left"> 
+        <div class="content-container-left">
 
-                       <!-- Sidebar -->
-            <aside id="sidebar">
-                <div class="sidebar-title">
-                    <div class="sidebar-brand">
-                        <span class="material-icons-outlined">inventory</span> Zwitscher
-                    </div>
-                </div>
-                <ul class="sidebar-list">
-                    <a href="https://localhost:7160/Home/Dashboard">
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">dashboard</span> Dashboard
-                        </li>
-                    </a>
-                    <a href="https://localhost:7160/Users">
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">people</span> Users
-                        </li> 
-                    </a>
-                    <a href="https://localhost:7160/Roles">
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">inventory_2</span> Role Manager
-                        </li>
-                    </a>
-                    <a href="https://localhost:7160/Posts">  
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">fact_check</span> Posts
-                        </li>
-                    </a>
-                    <a href="https://localhost:7160/Comments">  
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">comment</span> Comments
-                        </li>
-                    </a>
-                    <a href="https://localhost:7160/Votes">  
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">poll</span> Votes
-                        </li>
-                    </a>
-                    <a href="https://localhost:7160/Media">
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">perm_media</span> Media
-                        </li>
-                    </a>
-                    <a href="~/Zwitscher">  
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">home</span> Home
-                        </li>
-                    </a>
-                    <a href="#">
-                        <li class="sidebar-list-item">
-                            <span class="material-icons-outlined">settings</span> Settings
-                        </li>
-                    </a>
-                </ul>
-            </aside>
-            <!-- End Sidebar -->
+            @Html.Partial("~/Views/Shared/sidebar.cshtml")
         </div>
         <div class="content-container-right">
             <div class="main-title">
                 <h4 class="font-weight-bold">Votes</h4>
             </div>
             <p>
-                <a asp-action="Create">Create New</a>
+                <input type="button" class="btn btn-outline-success btn-sm" value="Hinzufügen" onclick="location.href='@Url.Action("Create", "Posts")'">
             </p>
             <table class="table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>
                             @Html.DisplayNameFor(model => model.isUpVote)
                         </th>
@@ -89,31 +36,43 @@
                         <th>
                             @Html.DisplayNameFor(model => model.Post)
                         </th>
-                        <th></th>
+
                     </tr>
                 </thead>
                 <tbody>
-            @foreach (var item in Model) {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.isUpVote)
-                        </td>
-                        <td>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+
+                                <a asp-action="Edit" asp-route-id="@item.Id" title="Bearbeiten" class="link-success">
+                                    <span class="material-icons-outlined material-icons.md-18">edit</span>
+                                </a>
+                                <br>
+                                <a asp-action="Details" asp-route-id="@item.Id" title="Details" class="link-dark">
+                                    <span class="material-icons-outlined material-icons.md-18">info</span>
+                                </a>
+                                <br>
+                                <a asp-action="Delete" asp-route-id="@item.Id" title="Löschen" class="link-danger">
+                                    <span class="material-icons-outlined material-icons.md-18">delete</span>
+                                </a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.isUpVote)
+                            </td>
+                            <td>
                                 @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Post.Id)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
-            }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Post.Id)
+                            </td>
+
+                        </tr>
+                    }
                 </tbody>
             </table>
-        </div>    
-        <script src="~/js/Dashboard.js" asp-append-version="true"></script>
+        </div>
+    </div>
+    <script src="~/js/Dashboard.js" asp-append-version="true"></script>
 </body>
 </html>

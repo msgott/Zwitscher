@@ -38,7 +38,7 @@ body {
 
 /* ---------- Content ---------- */
 .content-container {
-  top: 55px;
+  
   left: 0px;
   display: flex;
   height: 100vh;
@@ -47,7 +47,8 @@ body {
 }
 
 .content-container-left {
-  width: 190px;
+    width: 190px;
+    min-width: 190px;
 }
 
 .content-container-right {
@@ -55,70 +56,7 @@ body {
   flex-grow: 1;
 }
 
-/* ---------- SIDEBAR ---------- */
 
-#sidebar {
-  top: 0px;
-  left: 0px;
-  height: 100%;
-  background-color: #21232d;
-  color: #9799ab;
-  overflow-y: auto;
-  transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-}
-
-.sidebar-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 20px 20px 20px;
-  margin-bottom: 30px;
-}
-
-.sidebar-title > span {
-  display: none;
-}
-
-.sidebar-brand {
-  margin-top: 15px;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/*if more elements are needed - increase margin-bottom*/
-.sidebar-list {
-  padding: 0;
-  margin-top: 15px;
-  margin-bottom: 75px;
-  list-style-type: none;
-}
-
-.sidebar-list > a {
-  text-decoration: none;
-  color: #9799ab;
-}
-
-.sidebar-list-item {
-  padding: 20px 20px 20px 20px;
-}
-
-.sidebar-list-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-}
-
-.sidebar-responsive {
-  display: inline !important;
-  position: absolute;
-  /*
-      the z-index of the ApexCharts is 11
-      we want the z-index of the sidebar higher so that
-      the charts are not showing over the sidebar 
-      on small screens
-    */
-  z-index: 12 !important;
-}
 
 /* ---------- MAIN ---------- */
 

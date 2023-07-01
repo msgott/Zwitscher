@@ -24,6 +24,13 @@
   <ItemGroup>
     <Folder Include="clientapp\src\Components\Header\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\favicon.ico">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 	
 	
     <!--React components -->

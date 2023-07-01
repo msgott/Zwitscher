@@ -48,7 +48,8 @@ namespace Zwitscher.Controllers
             return View();
         }
 
-        [Moderator]
+        //[Moderator]
+        [Route("")]
         public IActionResult Dashboard()
         {
             // Total User

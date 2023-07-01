@@ -7,67 +7,15 @@
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="/css/Comments.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 <body>
     <div class="grid-container">
 
-        <!-- Sidebar -->
-        <aside id="sidebar">
-            <div class="sidebar-title">
-                <div class="sidebar-brand">
-                    <span class="material-icons-outlined">inventory</span> Zwitscher
-                </div>
-            </div>
-            <ul class="sidebar-list">
-                <a href="https://localhost:7160/Home/Dashboard">
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">dashboard</span> Dashboard
-                    </li>
-                </a>
-                <a href="https://localhost:7160/Users">
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">people</span> Users
-                    </li> 
-                </a>
-                <a href="https://localhost:7160/Roles">
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">inventory_2</span> Role Manager
-                    </li>
-                </a>
-                <a href="https://localhost:7160/Posts">  
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">fact_check</span> Posts
-                    </li>
-                </a>
-                <a href="https://localhost:7160/Comments">  
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">comment</span> Comments
-                    </li>
-                </a>
-                <a href="https://localhost:7160/Votes">  
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">poll</span> Votes
-                    </li>
-                </a>
-                <a href="https://localhost:7160/Media">
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">perm_media</span> Media
-                    </li>
-                </a>
-                <a href="~/Zwitscher">  
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">home</span> Home
-                    </li>
-                </a>
-                <a href="#">
-                    <li class="sidebar-list-item">
-                        <span class="material-icons-outlined">settings</span> Settings
-                    </li>
-                </a>
-            </ul>
-        </aside>
-        <!-- End Sidebar -->
+        @Html.Partial("~/Views/Shared/sidebar.cshtml")
+
         <!-- Main -->
         <main class="main-container">
             <div class="main-title">
@@ -75,11 +23,14 @@
             </div>
 
             <p>
-                <a asp-action="Create">Create New</a>
+                <input type="button" class="btn btn-outline-success btn-sm" value="Hinzufügen" onclick="location.href='@Url.Action("Create", "Comments")'">
             </p>
             <table class="table">
                 <thead>
                     <tr>
+                        <th>
+
+                        </th>
                         <th>
                             @Html.DisplayNameFor(model => model.CreatedDate)
                         </th>
@@ -97,14 +48,28 @@
                         <th>
                                 @Html.DisplayNameFor(model => model.commentsComment)
                         </th>
-                        </th>
-                        <th></th>
+                        
+                        
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+
+                                <a asp-action="Edit" asp-route-id="@item.Id" title="Bearbeiten" class="link-success">
+                                    <span class="material-icons-outlined material-icons.md-18">edit</span>
+                                </a>
+                                <br>
+                                <a asp-action="Details" asp-route-id="@item.Id" title="Details" class="link-dark">
+                                    <span class="material-icons-outlined material-icons.md-18">info</span>
+                                </a>
+                                <br>
+                                <a asp-action="Delete" asp-route-id="@item.Id" title="Löschen" class="link-danger">
+                                    <span class="material-icons-outlined material-icons.md-18">delete</span>
+                                </a>
+                            </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.CreatedDate)
                             </td>
@@ -123,11 +88,7 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.commentsCommentId)
                             </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                            </td>
+                            
                         </tr>
                     }
                 </tbody>

@@ -38,7 +38,7 @@ body {
 
 /* ---------- Content ---------- */
 .content-container {
-  top: 55px;
+ 
   left: 0px;
   display: flex;
   height: 100vh;
@@ -47,7 +47,8 @@ body {
 }
 
 .content-container-left {
-  width: 190px;
+    width: 190px;
+    min-width: 190px;
 }
 
 .content-container-right {

@@ -22,7 +22,7 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="form-group" style="min-width=300px">
                 @{
                 if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
                 {
@@ -70,10 +70,11 @@
                 <input asp-for="Biography" class="form-control" />
                 <span asp-validation-for="Biography" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="isLocked" /> @Html.DisplayNameFor(model => model.isLocked)
-                </label>
+            <div class="form-group">
+                <label asp-for="isLocked" class="control-label"></label>
+                
+                 <input class="form-check-input" asp-for="isLocked" /> 
+                
             </div>
             <div class="form-group">
                 <label asp-for="RoleID" class="control-label"></label>

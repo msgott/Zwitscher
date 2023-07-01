@@ -1,0 +1,85 @@
+﻿<!-- Sidebar -->
+<aside id="sidebar">
+    <div class="sidebar-title">
+        <div class="sidebar-brand">
+            <a class="link-light" href="https://localhost:7160/">
+            Zwitscher-Management
+            </a>
+        </div>
+    </div>
+    
+    <ul class="sidebar-list">
+        <hr />
+    @{
+        var username = Context.Session.GetString("Username");
+    }
+    @if (!string.IsNullOrEmpty(username))
+    {
+        <a href="https://localhost:7160/Auth/Logout">
+            <li class="sidebar-list-item">
+                <span class="material-icons-outlined">logout</span> @username
+            </li>
+        </a>
+    }
+    else
+    {
+        <a href="https://localhost:7160/Auth">
+            <li class="sidebar-list-item">
+                <span class="material-icons-outlined">login</span> Anmelden
+                @*<a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Index">Login</a>*@
+            </li>
+        </a>
+    }
+        <hr />
+    </ul>
+    
+    <ul class="sidebar-list">
+        
+        <a href="https://localhost:7160/">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">dashboard</span> Dashboard
+        </li>
+        </a>
+        <a href="https://localhost:7160/Users">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">people</span> Users
+        </li>
+        </a>
+        <a href="https://localhost:7160/Roles">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">inventory_2</span> Role Manager
+        </li>
+        </a>
+        <a href="https://localhost:7160/Posts">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">fact_check</span> Posts
+        </li>
+        </a>
+        <a href="https://localhost:7160/Comments">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">comment</span> Comments
+        </li>
+        </a>
+        <a href="https://localhost:7160/Votes">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">poll</span> Votes
+        </li>
+        </a>
+        <a href="https://localhost:7160/Media">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">perm_media</span> Media
+        </li>
+        </a>
+        <a href="~/Zwitscher">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">home</span> Home
+        </li>
+        </a>
+        <a href="#">
+        <li class="sidebar-list-item">
+            <span class="material-icons-outlined">settings</span> Settings
+        </li>
+        </a>
+    </ul>
+</aside>
+<!-- End Sidebar -->

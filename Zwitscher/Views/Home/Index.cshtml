@@ -2,12 +2,21 @@
 @{
     ViewData["Title"] = "Homefeed";
 }
-
+<head>
+    
+    <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+<body>
 <div class="text-center">
     <h1 class="display-4">Feed Overview</h1>
     
 </div>
+<div class="grid-container">
 
+
+
+        
 @foreach (var post in Model)
 {
     <div class="col-md-4">
@@ -18,5 +27,8 @@
             </div>
         </div>
     </div>
-}
+            }
+        
 
+</div>
+</body>
