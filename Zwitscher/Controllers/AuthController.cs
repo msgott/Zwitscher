@@ -245,5 +245,19 @@ namespace Zwitscher.Controllers
                 return View(user);
             }
         }
+
+        // Just for testing purposes
+        [HttpGet]
+        [Route("Api/UserDetails")]
+        public async Task<string> Details()
+        {
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                var session_user = await _context.User.FirstOrDefaultAsync(m => m.Id == Guid.Parse(HttpContext.Session.GetString("UserId")));
+                return JsonSerializer.Serialize(new { Username = HttpContext.Session.GetString("Username"), RoleName = HttpContext.Session.GetString("RoleName"), Success = false });
+            }
+
+            return JsonSerializer.Serialize(new { Username = "", RoleName = "", Success = false });
+        }
     }
 }
