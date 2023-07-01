@@ -28,8 +28,9 @@ namespace Zwitscher.Controllers
                 .Include(p => p.User)
                 .Include(p => p.Votes)
                 .Include(p => p.Comments)
-                .Include(p => p.Media);
-            
+                .Include(p => p.Media)
+                .Include(p => p.retweets);
+                
             
             return View(await zwitscherContext.ToListAsync());
         }
@@ -46,6 +47,7 @@ namespace Zwitscher.Controllers
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                 .Include(p => p.Votes)
+                .Include(p => p.retweets)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
@@ -60,7 +62,7 @@ namespace Zwitscher.Controllers
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
-
+            ViewData["RezwitscherId"] = new SelectList(_context.Post, "Id", "Id");
             return View();
         }
 
@@ -69,12 +71,13 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId")] Post post)
+        public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post)
         {
             
             ModelState.Remove("files");
             ModelState.Remove("CreatedDate");
             ModelState.Remove("User");
+            ModelState.Remove("retweets");
             if (ModelState.IsValid)
             {
                 foreach (IFormFile file in files)
@@ -111,6 +114,7 @@ namespace Zwitscher.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post, "Id", "Id", post.retweetsID);
             return View(post);
         }
 
@@ -124,12 +128,17 @@ namespace Zwitscher.Controllers
 
             var post = await _context.Post
                 .Include(p => p.Media)
+                .Include(p => p.retweets)
                 .FirstOrDefaultAsync(p=> p.Id==id);
             if (post == null)
             {
                 return NotFound();
             }
+            List<Post> tempList = new List<Post> { post };
+            
+
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
             return View(post);
         }
 
@@ -138,7 +147,7 @@ namespace Zwitscher.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,IsPublic,UserId")] Post post)
+        public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,IsPublic,UserId,retweetsID")] Post post)
         {
             if (id != post.Id)
             {
@@ -148,6 +157,7 @@ namespace Zwitscher.Controllers
             ModelState.Remove("files");
             ModelState.Remove("CreatedDate");
             ModelState.Remove("User");
+            ModelState.Remove("retweets");
             if (ModelState.IsValid)
             {
                 try
@@ -194,7 +204,11 @@ namespace Zwitscher.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            List<Post> tempList = new List<Post> { post };
+
+
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
             return View(post);
         }
 
@@ -277,6 +291,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Votes)
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
+                .Include(p => p.retweets)
                 .ToListAsync();
             if (posts == null || posts.Count == 0)
             {
@@ -298,8 +313,9 @@ namespace Zwitscher.Controllers
                 string postText = post.TextContent;
                 bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID).User.Id == userID);
                 string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID).isUpVote ? "true": "false"): "null";
+                string retweetsPost = post.retweetsID.ToString();
                 List<string> mediaList = new List<string>();
-                    
+                 
                 if (post.Media is not null)
                 {
                     foreach (Media media in post.Media)
@@ -308,6 +324,7 @@ namespace Zwitscher.Controllers
                     }
                     
                 }
+                
 
                 Dictionary<string, Object> result = new Dictionary<string, Object>
                 {
@@ -320,7 +337,9 @@ namespace Zwitscher.Controllers
                     { "currentUserVoted", currentUserVoted },
                     { "userVoteIsUpvote", userVoteIsUpvote },
                     { "mediaList", mediaList },
-                    { "postText", postText }
+                    { "postText", postText },
+                    { "retweetsPost", retweetsPost }
+                    
 
 
                 };
@@ -329,9 +348,78 @@ namespace Zwitscher.Controllers
             
             return Json(results);
         }
+        [HttpGet]
+        [Route("API/Post")]
+        public async Task<ActionResult> getSinglePost(Guid id)
+        {
+            if (_context.Post == null)
+            {
+                return BadRequest();
+            }
+
+            var post = await _context.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .Include(p => p.retweets)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (post == null || post.Id != id)
+            {
+                return NotFound();
+
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId"));
+            
+                string postID = post.Id.ToString();
+                string user_username = post.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId)).FileName;
+                DateTime createdDate = post.CreatedDate;
+                int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
+                int commentCount = post.Comments.Count;
+                string postText = post.TextContent;
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID).User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID).isUpVote ? "true" : "false") : "null";
+                string retweetsPost = post.retweetsID.ToString();
+                List<string> mediaList = new List<string>();
+
+                if (post.Media is not null)
+                {
+                    foreach (Media media in post.Media)
+                    {
+                        mediaList.Add(media.FileName);
+                    }
+
+                }
+
+
+                Dictionary<string, Object> result = new Dictionary<string, Object>
+                {
+                    { "postID", postID },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate },
+                    { "rating", rating },
+                    { "commentCount", commentCount },
+                    { "currentUserVoted", currentUserVoted },
+                    { "userVoteIsUpvote", userVoteIsUpvote },
+                    { "mediaList", mediaList },
+                    { "postText", postText },
+                    { "retweetsPost", retweetsPost }
+
+
+
+                };
+                
+            
+
+            return Json(result);
+        }
         [HttpPost]
         [Route("API/Posts/Add")]
-        public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId")] Post post) //Only works while logged in!
+        public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -346,6 +434,7 @@ namespace Zwitscher.Controllers
             ModelState.Remove("CreatedDate");
             ModelState.Remove("User");
             ModelState.Remove("UserId");
+            ModelState.Remove("retweets");
             if (ModelState.IsValid)
             {
                 foreach (IFormFile file in files)
@@ -573,6 +662,7 @@ namespace Zwitscher.Controllers
             Comment comment = new Comment();
             comment.Id = Guid.NewGuid();
             comment.CommentText = CommentText;
+            comment.CreatedDate = DateTime.Now;
             comment.UserId = userID;
             comment.PostId = post.Id;
 

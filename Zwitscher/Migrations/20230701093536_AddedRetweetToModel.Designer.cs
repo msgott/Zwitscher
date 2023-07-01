@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zwitscher.Data;
 
@@ -11,9 +12,11 @@ using Zwitscher.Data;
 namespace Zwitscher.Migrations
 {
     [DbContext(typeof(ZwitscherContext))]
-    partial class ZwitscherContextModelSnapshot : ModelSnapshot
+    [Migration("20230701093536_AddedRetweetToModel")]
+    partial class AddedRetweetToModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,14 +132,14 @@ namespace Zwitscher.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("retweetsID")
+                    b.Property<Guid?>("retweetsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("retweetsID");
+                    b.HasIndex("retweetsId");
 
                     b.ToTable("Post");
                 });
@@ -310,7 +313,7 @@ namespace Zwitscher.Migrations
 
                     b.HasOne("Zwitscher.Models.Post", "retweets")
                         .WithMany()
-                        .HasForeignKey("retweetsID");
+                        .HasForeignKey("retweetsId");
 
                     b.Navigation("User");
 

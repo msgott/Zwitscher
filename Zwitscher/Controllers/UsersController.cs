@@ -1416,6 +1416,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Votes)
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
+                .Include(p => p.retweets)
                 .ToListAsync();
             posts = posts.FindAll(p => p.UserId == userid);
             if (posts == null || posts.Count == 0)
@@ -1436,6 +1437,7 @@ namespace Zwitscher.Controllers
                 string postText = post.TextContent;
                 bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userid) is not null && post.Votes.ToList().Find(v => v.User.Id == userid).User.Id == userid);
                 string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userid).isUpVote ? "true" : "false") : "null";
+                string retweetsPost = post.retweetsID.ToString();
                 List<string> mediaList = new List<string>();
 
                 if (post.Media is not null)
@@ -1458,8 +1460,8 @@ namespace Zwitscher.Controllers
                     { "currentUserVoted", currentUserVoted },
                     { "userVoteIsUpvote", userVoteIsUpvote },
                     { "mediaList", mediaList },
-                    { "postText", postText }
-
+                    { "postText", postText },
+                    { "retweetsPost", retweetsPost }
 
                 };
                 results.Add(result);

@@ -82,6 +82,9 @@
                     <thead>
                         <tr>
                             <th>
+                                Aktionen
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model.Id)
                             </th>
                             <th>
@@ -106,7 +109,7 @@
                                 Rating
                             </th>
                             <th>
-
+                                Rezwitscher
                             </th>
                         </tr>
                     </thead>
@@ -114,6 +117,11 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Id)
                                 </td>
@@ -139,9 +147,7 @@
                                     @Html.Encode(item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==true).Count - item.Votes.ToList<Vote>().FindAll(v => v.isUpVote==false).Count)
                                 </td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                    @Html.DisplayFor(modelItem => item.retweetsID)
                                 </td>
                             </tr>
                         }

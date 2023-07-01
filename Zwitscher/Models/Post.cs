@@ -26,5 +26,12 @@ namespace Zwitscher.Models
 
         //Relation to Vote (required one to many)
         public ICollection<Vote> Votes { get; set; } = new List<Vote>();
+
+
+        //Relation to Post (optional one to one)
+        [DisplayName("RezwitscherID")]
+        public Guid? retweetsID { get; set; }
+        [DisplayName("Rezwitschert")]
+        public Post? retweets { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -210,7 +211,42 @@ namespace Zwitscher.Controllers
         {
           return (_context.Comment?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        //---------------------------------------------------------------------------------------------
+        //---------------------------------------------API------------------------------------------------
+        [HttpPost]
+        [Route("API/Comments/Edit")]
+        
+        public async Task<IActionResult> EditComment(Guid id, string CommentText )
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if (id == null || _context.Comment == null || CommentText is null || CommentText.Length < 1)
+            {
+                return BadRequest();
+            }
+
+
+            var c = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+            .ThenInclude(c => c.User)
+                .FirstAsync(p => p.Id == id);
+            if (c == null)
+            {
+                return NotFound();
+
+            }
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            
+            if (c.UserId != userID) return Unauthorized();
+
+            c.CommentText = CommentText;
+            _context.Update(c);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("API/Comments/Comments")]
         public async Task<ActionResult> CommentsList(Guid? id)
