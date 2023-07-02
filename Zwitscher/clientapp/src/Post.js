@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import "./Post.css";
+import Comments from "./Comments";
 import Avatar from "@mui/material/Avatar";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import NorthIcon from "@mui/icons-material/North";
-import SouthIcon from "@mui/icons-material/South";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
+import UpVote from "./Images/up-arrow-svgrepo-com.svg";
+import DownVote from "./Images/down-arrow-svgrepo-com.svg";
 import { goToProfileContext } from "./AppZwitscher";
 
 {
@@ -13,22 +12,49 @@ import { goToProfileContext } from "./AppZwitscher";
 }
 function Post({ postID, name, text, image, avatar }) {
   const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
-  const [upvotes, setUpvotes] = useState(0);
-  const [downvotes, setDownvotes] = useState(0);
+
+  {
+    /*Handle Up- and Downvotes*/
+  }
+  const [votes, setVotes] = useState(0);
+  const [setUp, hasSetUp] = useState(false);
+  const [setDown, hasSetDown] = useState(false);
 
   const handleUpvoteClick = () => {
-    setUpvotes((count) => count + 1);
+    if (setUp === false && setDown === false) {
+      setVotes((count) => count + 1);
+      hasSetUp(true);
+    } else if (setUp === false && setDown === true) {
+      setVotes((count) => count + 2);
+      hasSetUp(true);
+      hasSetDown(false);
+    } else {
+      setVotes((count) => count - 1);
+      hasSetUp(false);
+    }
   };
 
   const handleDownvoteClick = () => {
-    setDownvotes((count) => count + 1);
+    if (setDown === false && setUp === false) {
+      setVotes((count) => count - 1);
+      hasSetDown(true);
+    } else if (setDown === false && setUp === true) {
+      setVotes((count) => count - 2);
+      hasSetUp(false);
+      hasSetDown(true);
+    } else {
+      setVotes((count) => count + 1);
+      hasSetDown(false);
+    }
   };
 
   {
-    /*Function needs to be replaced later but maybe beneficial to understand routing in react?*/
+    /*Open Comment section*/
   }
-  const handleClick = () => {
-    setGoToProfile(true);
+  const [showComments, setShowComments] = useState(false);
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
   };
 
   return (
@@ -39,31 +65,35 @@ function Post({ postID, name, text, image, avatar }) {
           <div className="post_header">
             <div className="post_headerText">
               <h3>{name}</h3>
-              <div className="post_votes">
-                <div className="post_upVotes">
-                  <ThumbUpOffAltIcon className="post_badge" />
-                  <span className="post_header_span">{upvotes}</span>
-                </div>
-                <div className="post_downVotes">
-                  <ThumbDownOffAltIcon className="post_badge" />
-                  <span className="post_header_span">{downvotes}</span>
-                </div>
-              </div>
             </div>
             <div className="post_headerDescription"></div>
+            <p>{text}</p>
           </div>
           <img src={image} alt="" />
           <div className="post_footer">
             <ChatBubbleOutlineIcon
-              onClick={handleClick}
+              onClick={toggleComments}
               className="chat-icon"
             />
-            <NorthIcon className="upvote-icon" onClick={handleUpvoteClick} />
-            <SouthIcon
-              className="downvote-icon"
-              onClick={handleDownvoteClick}
-            />
+            <div className="vote_container">
+              <img
+                src={UpVote}
+                alt="Icon"
+                text="UpVote"
+                className="upvote"
+                onClick={handleUpvoteClick}
+              />
+              <span>{votes}</span>
+              <img
+                src={DownVote}
+                alt="Icon"
+                text="UpVote"
+                className="downvote"
+                onClick={handleDownvoteClick}
+              />
+            </div>
           </div>
+          {showComments && <Comments />}
         </div>
       </div>
     </div>

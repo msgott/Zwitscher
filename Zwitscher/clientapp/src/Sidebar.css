@@ -1,27 +1,28 @@
-{/*!!!!Currently not used as the sidebar but still available as a component!!!!!*/}
+ {
+  /*!!!!Currently not used as the sidebar but still available as a component!!!!!*/
+}
 
 .sidebar {
-    border-right: 1px solid var(--zwitscher-background);
-    flex:0.15;
-    min-width: 15%;
-    margin-top: 20px;
-    padding: 0 20px;
-    border-radius: 20px;
-    
+  flex: 0.5;
+  border-right: 1px solid var(--zwitscher-background);
+
+  width: 500px;
+  margin-top: 20px;
+  border-radius: 20px;
 }
 
 .sidebarZwitscher_Icon {
-    margin-left: 20px;
-    margin-bottom: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
 }
 
 /* background-color:  var(--zwitscher-color) !important;    */
 .sidebarButton {
-    border:none !important;
-    color: white !important;
-    font-weight: 900  !important;
-    text-transform: inherit !important;
-    border-radius: 30px !important;
-    height: 50px !important;
-    margin-top: 20px !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 900 !important;
+  text-transform: inherit !important;
+  border-radius: 30px !important;
+  height: 50px !important;
+  margin-top: 20px !important;
 }
