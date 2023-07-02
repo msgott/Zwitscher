@@ -2,8 +2,17 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  border-bottom: 1px solid var(--zwitscher-background);
+  border: 1px solid rgb(228, 225, 225);
   padding-bottom: 10px;
+}
+#dark .post {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 1px solid #201c1c;
+}
+#light .post {
+  background-color: rgb(253, 253, 253);
 }
 
 .post_body {
@@ -21,7 +30,7 @@
 
 .post_footer {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-top: 20px;
   align-items: center;
   background-color: aquamarine;
@@ -35,25 +44,66 @@
 .post_footer .chat-icon {
   cursor: pointer;
   font-size: 24px !important;
+  margin-left: 10%;
 }
 
 .post_footer .chat-icon:hover {
   color: white;
-  font-size: 26px !important;
 }
 
-.post_footer .favorite-icon {
+.post_footer .vote_container {
+  display: flex;
+  margin-right: 10%;
+  width: 85px;
+  height: 28px;
+  justify-content: space-between;
+  align-items: center;
+}
+#dark .post_footer .vote_container {
+  color: #d1d1d1;
+}
+
+.post_footer .upvote {
+  width: 24px;
+
   cursor: pointer;
-  font-size: 24px !important;
+}
+#dark .post_footer .upvote {
+  filter: grayscale(60%) invert(80%) sepia(0%) saturate(0%) hue-rotate(200deg)
+    brightness(120%) contrast(90%);
 }
 
-.post_footer .favorite-icon:hover {
-  color: white;
+.post_footer .upvote:hover {
+  filter: grayscale(70%) invert(70%) sepia(6%) saturate(0%) hue-rotate(89deg)
+    brightness(91%) contrast(90%);
+}
+#dark .post_footer .upvote:hover {
+  filter: grayscale(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(89deg)
+    brightness(130%) contrast(120%);
+}
+
+.post_footer .downvote {
+  width: 24px;
+  cursor: pointer;
+}
+#dark .post_footer .downvote {
+  filter: grayscale(60%) invert(80%) sepia(0%) saturate(0%) hue-rotate(200deg)
+    brightness(120%) contrast(90%);
+}
+
+.post_footer .downvote:hover {
+  filter: grayscale(70%) invert(70%) sepia(6%) saturate(0%) hue-rotate(89deg)
+    brightness(91%) contrast(90%);
+}
+#dark .post_footer .downvote:hover {
+  filter: grayscale(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(89deg)
+    brightness(130%) contrast(120%);
 }
 
 .post_footer .upvote-icon {
   cursor: pointer;
   font-size: 24px !important;
+  width: 24px;
   padding: 20 0;
 }
 
@@ -64,6 +114,7 @@
 .post_footer .downvote-icon {
   cursor: pointer;
   font-size: 24px !important;
+  width: 24px;
   padding: 20 0;
 }
 

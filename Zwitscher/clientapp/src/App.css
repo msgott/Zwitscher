@@ -1,5 +1,4 @@
 body {
-
   --zwitscher-color-lightmode: #04335c;
   --zwitscher-background-lightmode: #e6ecf0;
 
@@ -7,8 +6,7 @@ body {
   --zwitscher-background-darkmode: #3a3939;
 }
 
-.beginning{
-
+.beginning {
 }
 #dark {
   background-color: #3a3939;
@@ -16,21 +14,20 @@ body {
 
 #light {
   background-color: white;
-
 }
 
 .app {
   display: flex;
   height: 100vh;
   padding: 0 5%;
+  background-color: rgb(221, 24, 24);
 }
-#dark .app{
+#dark .app {
   background-color: #3a3939;
 }
 
-#light .app{
-  background-color: white;
-
+#light .app {
+  background-color: rgb(192, 190, 190);
 }
 
 .header-app {
@@ -45,20 +42,16 @@ body {
   background-color: white;
 }
 
-.zwitscher_icon span{
-
+.zwitscher_icon span {
 }
-#dark .zwitscher_icon span{
+#dark .zwitscher_icon span {
   color: #e6ecf0;
-  
 }
-#light .zwitscher_icon span{
+#light .zwitscher_icon span {
   color: black;
 }
 
-
 .sidebar {
-  
 }
 #dark .sidebar {
   background-color: #201c1c;
@@ -69,40 +62,35 @@ body {
 }
 
 .sidebarList {
-
 }
-#dark .sidebarList{
-  background-color:#201c1c ;
+#dark .sidebarList {
+  background-color: #201c1c;
   color: #d1d1d1;
 }
-#light .sidebarList{
+#light .sidebarList {
   background-color: aquamarine;
 }
 
-
-.sidebarOption:hover{
-
+.sidebarOption:hover {
 }
-#dark .sidebarOption:hover{
-  color:#d1d1d1;
+#dark .sidebarOption:hover {
+  color: #d1d1d1;
   background-color: #302c2c;
 }
-#light .sidebarOption:hover{
+#light .sidebarOption:hover {
   background-color: #f5f8fa;
 }
 
 .sidebarButton {
-
 }
-#dark .sidebarButton{ 
+#dark .sidebarButton {
   background-color: rgb(102, 102, 102) !important;
 }
 #light .sidebarButton {
-  background-color: rgb(2, 93, 129)!important;
+  background-color: rgb(2, 93, 129) !important;
 }
 
 .feed {
-
 }
 #dark .feed {
   background-color: #252525;
@@ -110,20 +98,17 @@ body {
 }
 #light .feed {
   background-color: white;
-  
 }
 
 .feed_header {
-
 }
-#dark .feed_header{
+#dark .feed_header {
   background-color: #252525;
   color: #d5d5d5;
 }
-#light .feed_header{
+#light .feed_header {
   background-color: white;
 }
-
 
 .widgets {
 }
@@ -136,9 +121,8 @@ body {
 }
 
 .widgets_input {
-
 }
-#dark .widgets_input{
+#dark .widgets_input {
   background-color: #d1d1d1;
 }
 #light .widgets_input {
@@ -152,11 +136,10 @@ body {
   background-color: #302c2c;
 }
 #light .zwitscherBox > form {
-  background-color:#f5f8fa;
+  background-color: #f5f8fa;
 }
 
 .zwitscherBox_input > input {
-
 }
 #dark .zwitscherBox_input > input {
   background-color: #d1d1d1;
@@ -165,10 +148,9 @@ body {
   background-color: white;
 }
 
-.marginContainer{
+.marginContainer {
   margin-bottom: 50px;
 }
-#dark .marginContainer{
+#dark .marginContainer {
   background-color: #04335c;
-  
 }

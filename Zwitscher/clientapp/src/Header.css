@@ -1,64 +1,85 @@
 .Header {
-  height: 175px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
-
-  flex-direction: row;
   align-items: baseline;
   margin-bottom: 5px;
+  /*border-bottom: 1px solid rgb(228, 225, 225);*/
 }
-#light {
-  background-color: white;
+#light .Header {
+  background-color: rgb(249, 249, 249);
+  border-bottom: 1px solid rgb(248, 245, 245);
 }
-#black {
+#black .Header {
   background-color: black;
 }
 
-.Logo {
-  padding-top: 10px;
-  padding-bottom: 50px;
-  cursor: pointer;
-  display:flex;
+.Header_Left {
+  flex: 0.4;
+}
+
+.Header_Middle {
+  flex: 0.2;
+}
+
+.Header_Right {
+  display: flex;
+  flex: 0.4;
+  justify-content: space-between;
   align-items: center;
-  flex-grow: 1;
-  width: 10%;
+}
+
+.Logo {
+  display: flex;
+  align-items: center;
+}
+
+.Logo_Zwitscher {
+  margin-left: 40%;
+}
+#dark .Logo_Zwitscher {
+  filter: invert(93%) sepia(6%) saturate(0%) hue-rotate(89deg) brightness(91%)
+    contrast(90%);
+}
+
+.Logo_Zwitscher img {
+  width: 65px;
+  cursor: pointer;
 }
 
 .Logo_Text {
-  color:black;
+  color: #04335c;
   cursor: pointer;
-  text-align:center;
+  text-align: center;
   align-self: center;
   font-size: 56px;
   font-weight: bold;
-  margin-top:95px;
-
+  margin-left: 3%;
+  text-decoration: none;
 }
-
-.Login-Toggle{
-  width:10%;
-  display:flex;
-  align-self: center;
-  align-items: flex-start;
-  flex-direction: column;
-  margin-left: 50px;
+#dark .Logo_Text {
+  filter: invert(93%) sepia(6%) saturate(0%) hue-rotate(89deg) brightness(91%)
+    contrast(90%);
 }
 
 .Login_Icon {
+  margin-top: 15px;
+  margin-right: 5%;
   transform: scale(2);
   cursor: pointer;
 }
-  #light .Login_Icon{
-  color:#01385f;
+#light .Login_Icon {
+  color: #01385f;
 }
-#dark .Login_Icon{
-  color:grey;
+#dark .Login_Icon {
+  color: grey;
 }
-#dark .Login_Icon:hover{
-  color:white;
+#dark .Login_Icon:hover {
+  color: white;
   transition: color 1000ms ease-out;
 }
 
-.toggle{
+.toggle {
+  margin-left: 65%;
   margin-top: 15px;
 }
