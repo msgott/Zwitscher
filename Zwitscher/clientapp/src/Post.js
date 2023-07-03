@@ -7,50 +7,69 @@ import UpVote from "./Images/up-arrow-svgrepo-com.svg";
 import DownVote from "./Images/down-arrow-svgrepo-com.svg";
 import { goToProfileContext } from "./AppZwitscher";
 
-{
-  /*The hard coded stuff from the Feed components will be entered here as props/ name,text etc.*/
-}
-function Post({ postID, name, text, image, avatar }) {
+//The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
+function Post({ postId, name, text, image, avatar, rating }) {
   const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
 
-  {
-    /*Handle Up- and Downvotes*/
-  }
-  const [votes, setVotes] = useState(0);
+  //Handle Up- and Downvotes
+  const [votes, setVotes] = useState({ rating });
   const [setUp, hasSetUp] = useState(false);
   const [setDown, hasSetDown] = useState(false);
 
-  const handleUpvoteClick = () => {
-    if (setUp === false && setDown === false) {
-      setVotes((count) => count + 1);
+  const handleUpvoteClick = async (postId) => {
+    if (!setUp && !setDown) {
+      setVotes((prevVotes) => ({ rating: prevVotes.rating + 1 }));
       hasSetUp(true);
-    } else if (setUp === false && setDown === true) {
-      setVotes((count) => count + 2);
+      await updateVoteOnBackend(postId, votes.rating + 1);
+    } else if (!setUp && setDown) {
+      setVotes((prevVotes) => ({ rating: prevVotes.rating + 2 }));
       hasSetUp(true);
       hasSetDown(false);
+      await updateVoteOnBackend(postId, votes.rating + 2);
     } else {
-      setVotes((count) => count - 1);
+      setVotes((prevVotes) => ({ rating: prevVotes.rating - 1 }));
       hasSetUp(false);
+      await updateVoteOnBackend(postId, votes.rating - 1);
     }
   };
 
   const handleDownvoteClick = () => {
-    if (setDown === false && setUp === false) {
-      setVotes((count) => count - 1);
+    if (!setDown && !setUp) {
+      setVotes((prevVotes) => ({ rating: prevVotes.rating - 1 }));
       hasSetDown(true);
-    } else if (setDown === false && setUp === true) {
-      setVotes((count) => count - 2);
+      updateVoteOnBackend(votes.rating - 1);
+    } else if (!setDown && setUp) {
+      setVotes((prevVotes) => ({ rating: prevVotes.rating - 2 }));
       hasSetUp(false);
       hasSetDown(true);
+      updateVoteOnBackend(votes.rating - 2);
     } else {
-      setVotes((count) => count + 1);
+      setVotes((prevVotes) => ({ rating: prevVotes.rating + 1 }));
       hasSetDown(false);
+      updateVoteOnBackend(votes.rating + 1);
     }
   };
 
-  {
-    /*Open Comment section*/
-  }
+  //Send updated vote to backend
+  const updateVoteOnBackend = async (postId, newRating) => {
+    try {
+      const response = await fetch(
+        `https://localhost:7160/API/Posts/${postId}/Vote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rating: newRating }),
+        }
+      );
+      // Handle the response if needed
+    } catch (error) {
+      console.error("Error updating vote:", error);
+    }
+  };
+
+  //Open Comment section
   const [showComments, setShowComments] = useState(false);
 
   const toggleComments = () => {
@@ -81,9 +100,9 @@ function Post({ postID, name, text, image, avatar }) {
                 alt="Icon"
                 text="UpVote"
                 className="upvote"
-                onClick={handleUpvoteClick}
+                onClick={() => handleUpvoteClick(postId)}
               />
-              <span>{votes}</span>
+              <span>{votes.rating}</span>
               <img
                 src={DownVote}
                 alt="Icon"
@@ -93,7 +112,7 @@ function Post({ postID, name, text, image, avatar }) {
               />
             </div>
           </div>
-          {showComments && <Comments />}
+          {showComments && <Comments postId={postId} />}
         </div>
       </div>
     </div>
