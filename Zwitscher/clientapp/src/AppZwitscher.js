@@ -24,14 +24,10 @@ export const ThemeContext = createContext(null);
 export const goToProfileContext = createContext(null);
 
 function AppZwitscher() {
-  {
-    /* Main File to load all the Components on the page (Header, Sidebar, Feed etc.) */
-  }
+  // Main File to load all the Components on the page (Header, Sidebar, Feed etc.)
 
-  {
-    /* set the theme to 'light mode' in the beginning and have the opportunity to change theme 
-  depending on toggleTheme*/
-  }
+  // set the theme to 'light mode' in the beginning and have the opportunity to change theme
+  // depending on toggleTheme
 
   const [theme, setTheme] = useState("light");
 
@@ -39,9 +35,9 @@ function AppZwitscher() {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
   };
 
-  {
-    /*Navigate to the profile page if set to true. Follow goToProfileContext.Provider to understand routing with React v18 */
-  }
+  // Navigate to the profile page if set to true. Follow goToProfileContext.Provider to understand
+  // routing with React v18
+
   const [goToProfile, setGoToProfile] = useState(false);
   const navigate = useNavigate();
 

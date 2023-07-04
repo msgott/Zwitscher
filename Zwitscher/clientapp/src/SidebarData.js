@@ -7,7 +7,6 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 
 export const SidebarData = [
   {
@@ -39,10 +38,5 @@ export const SidebarData = [
     text: "Profile",
     icon: <PermIdentityIcon />,
     link: "/Zwitscher/profile",
-  },
-  {
-    text: "Dashboard",
-    icon: <DashboardIcon />,
-    link: "/",
   },
 ];

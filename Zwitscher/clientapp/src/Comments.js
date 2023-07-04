@@ -36,7 +36,11 @@ function Comments({ postId, name }) {
   return (
     <>
       <h1>Comments</h1>
-      <CommentForm onSubmit />
+
+      {/*Comment form with submit function*/}
+      <CommentForm postId={postId} onSubmit />
+
+      {/*Shows the comment section and renders it*/}
       {data.map((comment) => (
         <div className="comment">
           <div className="comment-section">

@@ -76,6 +76,22 @@ function Post({ postId, name, text, image, avatar, rating }) {
     setShowComments(!showComments);
   };
 
+  // Get authorization data from backend
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="post">
       <div className="post_avatar">
@@ -87,6 +103,7 @@ function Post({ postId, name, text, image, avatar, rating }) {
             </div>
             <div className="post_headerDescription"></div>
             <p>{text}</p>
+            <p>{data.Username}</p>
           </div>
           <img src={image} alt="" />
           <div className="post_footer">

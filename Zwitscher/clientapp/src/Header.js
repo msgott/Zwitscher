@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import "./Header.css";
 import zwitscher_logo from "./zwitscher_logo.svg";
@@ -8,6 +8,28 @@ import { ThemeContext } from "./AppZwitscher"; // Access ThemeContext from App f
 
 function Header() {
   const { theme, toggleTheme } = useContext(ThemeContext);
+
+  // Get authorization data from backend
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Function to check if user is a moderator or administrator
+  const isModeratorOrAdmin = () => {
+    return data.RoleName === "Moderator" || data.RoleName === "Administrator";
+  };
 
   return (
     <div className="Header">
@@ -37,25 +59,6 @@ function Header() {
             <LoginIcon />
           </a>
         </div>
-
-        {/*Hello button to figure out how to access Users2 data
-        <button
-          onClick={async () => {
-            try {
-              //Not working because Users2 Endpoint not implemented remotely
-              const response = await fetch("/Users2");
-              const data = await response.json();
-              console.log(data[0].LastName);
-              // Do something with the data here
-              console.log(data);
-            } catch (error) {
-              console.error(error);
-              // Handle the error here
-            }
-          }}
-        >
-          Hello
-        </button>*/}
       </div>
     </div>
   );

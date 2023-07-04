@@ -1,18 +1,20 @@
-import React, {useState} from 'react';
-import './ZwitscherBox.css';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-{/*
+import React, { useState } from "react";
+import "./ZwitscherBox.css";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+{
+  /*
 import {db} from './Firebase';
 import { getDocs, collection, addDoc } from "firebase/firestore";
-*/}
-
+*/
+}
 
 function ZwitscherBox() {
-  const [zwitscherMessage, setZwitscherMessage] = useState('');
-  const [zwitscherImage, setZwitscherImage] = useState('');
+  const [zwitscherMessage, setZwitscherMessage] = useState("");
+  const [zwitscherImage, setZwitscherImage] = useState("");
 
-  {/*With firebase:
+  {
+    /*With firebase:
 
     const postsCollectionRef = collection(db, "posts");
 
@@ -31,42 +33,76 @@ function ZwitscherBox() {
       setZwitscherMessage("");
       setZwitscherImage("");
     }
-*/}
-  
-  
+*/
+  }
+
+  const sendZwitscher = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("files", zwitscherImage); // Assuming zwitscherImage is a file object
+
+    const postPayload = {
+      TextContent: zwitscherMessage,
+    };
+
+    formData.append("post", JSON.stringify(postPayload));
+
+    try {
+      const response = await fetch("https://localhost:7160/API/Posts/Add", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Post created successfully
+        console.log("Zwitscher posted successfully!");
+        setZwitscherMessage("");
+        setZwitscherImage("");
+      } else {
+        // Handle the error case
+        console.error("Failed to post Zwitscher:", response.status);
+      }
+    } catch (error) {
+      console.error("Error posting Zwitscher:", error);
+    }
+  };
 
   return (
     <div className="zwitscherBox">
-        <form>
-            <div className="zwitscherBox_input">
-                <Avatar src="https://www.thesprucepets.com/thmb/APYdMl_MTqwODmH4dDqaY5q0UoE=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/all-about-tabby-cats-552489-hero-a23a9118af8c477b914a0a1570d4f787.jpg"></Avatar>
-                <input onChange={(e) => setZwitscherMessage(e.target.value)}
-                 value={zwitscherMessage}
-                 placeholder="What's going on?"
-                 type="text" />
-            </div>
+      <form>
+        <div className="zwitscherBox_input">
+          <Avatar src="https://www.thesprucepets.com/thmb/APYdMl_MTqwODmH4dDqaY5q0UoE=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/all-about-tabby-cats-552489-hero-a23a9118af8c477b914a0a1570d4f787.jpg"></Avatar>
 
-            {/*Input field connected to the useState method to set and assign the value for "zwitscherImage". An Image link will be 
-            provided here and will be stored
+          {/*Text Input*/}
+          <input
+            onChange={(e) => setZwitscherMessage(e.target.value)}
+            value={zwitscherMessage}
+            placeholder="What's going on?"
+            type="text"
+          />
+        </div>
 
-            <input
-             onChange={(e) => setZwitscherImage(e.target.value)}
-             className="zwitscherBox_imageInput"
-             value={zwitscherImage}
-             placeholder='optional: image'
-             type='text' />
-            
-            */}
-            
-            {/*Less functional input field for Images, DUMMY*/}
-            <input className="zwitscherBox_imageInput" placeholder="Optional: Enter image URL" type="text"/>
+        <div className="zwitscherbox_footer">
+          {/*Image Input*/}
+          <input
+            onChange={(e) => setZwitscherImage(e.target.value)}
+            className="zwitscherBox_imageInput"
+            value={zwitscherImage}
+            placeholder="optional: image"
+            type="text"
+          />
 
-            {/*sendZwitscher function call to create a new "zwitscher/message/tweed". 
-            It will also be visable in the database after the function call. The Author,
-            Image etc. still hardcoded at this point*/}
-            
-            {/*<Button onClick={sendZwitscher} type='submit' className="zwitscherBox_zwitscherButton">Zwitscher</Button>*/}
-        </form>
+          {/*Submit all Inputs*/}
+          <Button
+            onClick={sendZwitscher}
+            type="submit"
+            className="zwitscherBox_zwitscherButton"
+          >
+            Zwitscher
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
