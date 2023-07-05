@@ -47,7 +47,7 @@ namespace Zwitscher.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userInDb = _context.User.FirstOrDefault(u => u.Username == Username);
+                var userInDb = _context.User.Include(u => u.ProfilePicture).FirstOrDefault(u => u.Username == Username);
                 if (userInDb != null)
                 {
                     if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password) && userInDb.isLocked == false)
