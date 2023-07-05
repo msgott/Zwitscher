@@ -61,8 +61,16 @@ namespace Zwitscher.Controllers
                         HttpContext.Session.SetString("FirstName", userInDb.FirstName);
                         HttpContext.Session.SetString("LastName", userInDb.LastName);
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                        if (userInDb.ProfilePicture is not null)
+                        {
+                            HttpContext.Session.SetString("pbFileName", userInDb.ProfilePicture.FileName);
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("pbFileName", "real-placeholder.png");
+                        }
                         _logger.LogInformation($"User {userInDb.Username} logged in.");
-                        return RedirectToAction(nameof(Details));
+                        return Redirect("/Zwitscher");
                     }
                     else
                     {
@@ -85,7 +93,7 @@ namespace Zwitscher.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userInDb = _context.User.FirstOrDefault(u => u.Username == Username);
+                var userInDb = _context.User.Include(u => u.ProfilePicture).FirstOrDefault(u => u.Username == Username);
                 if (userInDb != null)
                 {
                     if (BCrypt.Net.BCrypt.Verify(Password, userInDb.Password) && userInDb.isLocked == false)
@@ -99,9 +107,17 @@ namespace Zwitscher.Controllers
                         HttpContext.Session.SetString("FirstName", userInDb.FirstName);
                         HttpContext.Session.SetString("LastName", userInDb.LastName);
                         HttpContext.Session.SetString("Birthday", userInDb.Birthday.ToString());
+                        if (userInDb.ProfilePicture is not null)
+                        {
+                            HttpContext.Session.SetString("pbFileName", userInDb.ProfilePicture.FileName);
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("pbFileName", "real-placeholder.png");
+                        }
                         _logger.LogInformation($"User {userInDb.Username} logged in.");
 
-                        var result = new{ Username = userInDb.Username, RoleName = role.Name, Success = true};
+                        var result = new{ Username = userInDb.Username, ProfilePicture = HttpContext.Session.GetString("pbFileName"), RoleName = role.Name, Success = true};
 
                         return JsonSerializer.Serialize(result);
                     }
@@ -116,7 +132,7 @@ namespace Zwitscher.Controllers
                     ModelState.AddModelError("LoginFailed", "Login failed. Please try again.");
                 }
             }
-            return JsonSerializer.Serialize(new { Username = "", RoleName = "", Success = false });
+            return JsonSerializer.Serialize(new { Username = "", ProfilePicture ="", RoleName = "", Success = false });
         }
 
 
@@ -209,8 +225,16 @@ namespace Zwitscher.Controllers
                     HttpContext.Session.SetString("FirstName", user.FirstName);
                     HttpContext.Session.SetString("LastName", user.LastName);
                     HttpContext.Session.SetString("Birthday", user.Birthday.ToString());
+                    if (user.ProfilePicture is not null)
+                    {
+                        HttpContext.Session.SetString("pbFileName", user.ProfilePicture.FileName);
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("pbFileName", "real-placeholder.png");
+                    }
 
-                    var result = new { Username = Username, RoleName = role.Name, Success = true };
+                    var result = new { Username = Username, ProfilePicture = HttpContext.Session.GetString("pbFileName"), RoleName = role.Name, Success = true };
                     return JsonSerializer.Serialize(result);
                 }
                 else
@@ -250,15 +274,17 @@ namespace Zwitscher.Controllers
         // Just for testing purposes
         [HttpGet]
         [Route("Api/UserDetails")]
-        public async Task<string> Details()
+        public async Task<string> DetailsApi()
         {
             if (HttpContext.Session.GetString("UserId") != null)
             {
                 var session_user = await _context.User.FirstOrDefaultAsync(m => m.Id == Guid.Parse(HttpContext.Session.GetString("UserId")));
-                return JsonSerializer.Serialize(new { Username = HttpContext.Session.GetString("Username"), RoleName = HttpContext.Session.GetString("RoleName"), Success = false });
+                var profilePicture = HttpContext.Session.GetString("pbFileName");
+
+                return JsonSerializer.Serialize(new { Username = HttpContext.Session.GetString("Username"), ProfilePicture = profilePicture, RoleName = HttpContext.Session.GetString("RoleName"), Success = false });
             }
 
-            return JsonSerializer.Serialize(new { Username = "", RoleName = "", Success = false });
+            return JsonSerializer.Serialize(new { Username = "", ProfilePicture = "", RoleName = "", Success = false });
         }
     }
 }
