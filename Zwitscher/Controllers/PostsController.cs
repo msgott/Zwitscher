@@ -298,15 +298,39 @@ namespace Zwitscher.Controllers
             {
                 return BadRequest();
             }
-
-            var posts = await _context.Post
+            var posts = (await _context.Post
                 .Include(u => u.User)
                 .Include(u => u.Media)
                 .Include(u => u.Votes)
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
-                .ToListAsync();
+                .ToListAsync()).FindAll(p => p.IsPublic == true);
+
+            if (HttpContext.Session.GetString("UserId") is not null)
+            {
+                User usr = _context.User.Find(Guid.Parse(HttpContext.Session.GetString("UserId")));
+                if(usr != null)
+                {
+                var userSpecificPosts = (await _context.Post
+                .Include(u => u.User)
+                .ThenInclude(u => u.FollowedBy)
+                .Include(u => u.User)
+                .ThenInclude(u => u.Blocking)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .Include(p => p.retweets)
+                .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr));
+
+                    posts = posts.Union(userSpecificPosts).ToList();
+                }
+            }
+
+            
+           
+
             if (posts == null || posts.Count == 0)
             {
                 return NotFound();
