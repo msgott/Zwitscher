@@ -1,4 +1,32 @@
-﻿/* ---------- SIDEBAR ---------- */
+﻿/* ---------- Content ---------- */
+.content-container {
+    left: 0px;
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    
+}
+
+.content-container-left {
+    width: 190px;
+    min-width: 190px;
+    min-height: 600px;
+}
+
+.content-container-right {
+    min-width: 310px;
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    color: #666666;
+    background-color: #fdfff1;
+}
+.material-icons-outlined {
+    vertical-align: middle;
+    line-height: 1px;
+}
+/* ---------- SIDEBAR ---------- */
 
 #sidebar {
     grid-area: sidebar;

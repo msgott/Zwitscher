@@ -1,0 +1,36 @@
+﻿@model Zwitscher.Models.Post
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Kommentar entfernen</h1>
+
+
+<hr />
+
+    <div >
+
+    <form asp-controller="Posts" asp-action="RemoveCommentFromPost" enctype="multipart/form-data">
+
+
+            <input type="hidden" name="postID" value="@Model.Id" />
+        <input type="hidden" name="commentToRemoveId" value="@ViewBag.commentToRemove" />
+            <div class="form-group">
+                Sicher, dass Sie diesen Kommentar aus der Liste entfernen wollen?
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="entfernen" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

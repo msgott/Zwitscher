@@ -129,7 +129,7 @@ namespace Zwitscher.Controllers
                 }
                 if (media.Post is not null)
                 {
-                    media.Post.Media.Remove(media);
+                    
                     media.Post = null;
                     await _context.SaveChangesAsync();
                 }

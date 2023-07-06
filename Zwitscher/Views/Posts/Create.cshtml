@@ -1,52 +1,90 @@
 ﻿@model Zwitscher.Models.Post
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Hinzufügen";
 }
+<head>
 
-<h1>Create</h1>
+    <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
 
-<h4>Post</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group" style="min-width=300px">
-                <label class="control-label">Medien Upload</label>
-                <input name="files" type="file" class="form-control" multiple="multiple" accept="image/png, image/gif, image/jpeg" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="partialModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Beziehung verwalten</h5>
+                    <button type="button" class="close" onclick="closeModal()" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="TextContent" class="control-label"></label>
-                <input asp-for="TextContent" class="form-control" />
-                <span asp-validation-for="TextContent" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPublic" /> @Html.DisplayNameFor(model => model.IsPublic)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="retweetsID" class="control-label"></label>
-                <select asp-for="retweetsID" class="form-control" asp-items="ViewBag.RezwitscherId"></select>
-            </div>
-            
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+    <div class="content-container">
+        <div class="content-container-left">
+            @Html.Partial("~/Views/Shared/sidebar.cshtml")
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+        </div>
+
+
+        <div class="content-container-right ">
+            <h1>Hinzufügen</h1>
+
+            <h4>Post</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group" style="min-width:300px">
+                            <label class="control-label">Medien Upload</label>
+                            <input name="files" type="file" class="form-control" multiple="multiple" accept="image/png, image/gif, image/jpeg" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TextContent" class="control-label"></label>
+                            <input asp-for="TextContent" class="form-control" />
+                            <span asp-validation-for="TextContent" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="IsPublic" /> @Html.DisplayNameFor(model => model.IsPublic)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="UserId" class="control-label"></label>
+                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="retweetsID" class="control-label"></label>
+                            <select asp-for="retweetsID" class="form-control" asp-items="ViewBag.RezwitscherId"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <a asp-action="Index">Back to List</a>
+            </div>
+        </div>
+</body>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

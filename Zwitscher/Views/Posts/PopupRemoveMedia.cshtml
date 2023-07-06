@@ -1,0 +1,36 @@
+﻿@model Zwitscher.Models.Post
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Medium entfernen</h1>
+
+
+<hr />
+
+    <div >
+
+    <form asp-controller="Posts" asp-action="RemoveMediaFromPost" enctype="multipart/form-data">
+
+
+            <input type="hidden" name="postID" value="@Model.Id" />
+        <input type="hidden" name="mediaToRemoveId" value="@ViewBag.mediatoremove" />
+            <div class="form-group">
+                Sicher, dass Sie dieses Medium aus diesem Post entfernen wollen?
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="entfernen" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

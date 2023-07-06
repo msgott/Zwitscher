@@ -23,7 +23,7 @@ namespace Zwitscher.Controllers
             if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
             {
                 ViewBag.Message = HttpContext.Session.GetString("Username");
-                var user = _context.User.Include(p => p.Following).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("UserId")));
+                var user = _context.User.Include(p => p.Following).FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("UserId")!));
                 if (user != null)
                 {
                     var followedPosts = _context.Post.Include(p => p.User).Where(p => user.Following.Contains(p.User)).ToList();

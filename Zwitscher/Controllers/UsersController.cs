@@ -335,6 +335,54 @@ namespace Zwitscher.Controllers
         {
           return (_dbContext.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        //-----------------------------------------------MVC User Details----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupUserDetails(Guid userID)
+        {
+            if (userID == Guid.Empty || _dbContext.User == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy)
+                .FirstOrDefaultAsync(m => m.Id == userID);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+           
+            return PartialView("PopupUserDetails", _dbContext.User
+                .Include(u => u.Role)
+                .Include(u => u.FollowedBy)
+                .Include(u => u.Following)
+                .Include(u => u.Posts)
+                .Include(u => u.Comments)
+                .Include(u => u.Votes)
+                .Include(u => u.ProfilePicture)
+                .Include(u => u.Blocking)
+                .Include(u => u.BlockedBy).ToList().Find(us => us.Id == user.Id));
+
+
+
+        }
         //-----------------------------------------------MVC User FollowedBy----------------------------------------------------------------------
 
         [HttpPost]
@@ -343,7 +391,7 @@ namespace Zwitscher.Controllers
            
             var user = await _dbContext.User.Include(u => u.FollowedBy).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
-            List<User> tempList = user.FollowedBy;
+            List<User> tempList = user!.FollowedBy;
             tempList.Add(user);
             SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList),"Id","");
             ViewData["users"] = tempSelectList;
@@ -367,7 +415,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddFollowedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
 
-            if (userToAddId == null || _dbContext.User == null)
+            if (userToAddId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -415,7 +463,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveFollowedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (userToRemoveId == null || _dbContext.User == null)
+            if (userToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -466,7 +514,7 @@ namespace Zwitscher.Controllers
             
             var user = await _dbContext.User.Include(u => u.Following).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
-            List<User> tempList = user.Following;
+            List<User> tempList = user!.Following;
             tempList.Add(user);
             SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
             ViewData["users"] = tempSelectList;
@@ -490,7 +538,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddFollowingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
 
-            if (userToAddId == null || _dbContext.User == null)
+            if (userToAddId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -538,7 +586,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveFollowingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (userToRemoveId == null || _dbContext.User == null)
+            if (userToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -590,7 +638,7 @@ namespace Zwitscher.Controllers
 
             var user = await _dbContext.User.Include(u => u.BlockedBy).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
-            List<User> tempList = user.BlockedBy;
+            List<User> tempList = user!.BlockedBy;
             tempList.Add(user);
             SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
             ViewData["users"] = tempSelectList;
@@ -614,7 +662,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddBlockedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
 
-            if (userToAddId == null || _dbContext.User == null)
+            if (userToAddId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -662,7 +710,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveBlockedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (userToRemoveId == null || _dbContext.User == null)
+            if (userToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -713,7 +761,7 @@ namespace Zwitscher.Controllers
 
             var user = await _dbContext.User.Include(u => u.Blocking).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
-            List<User> tempList = user.Blocking;
+            List<User> tempList = user!.Blocking;
             tempList.Add(user);
             SelectList tempSelectList = new SelectList(_dbContext.User.ToList().Except(tempList), "Id", "");
             ViewData["users"] = tempSelectList;
@@ -737,7 +785,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddBlockingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
 
-            if (userToAddId == null || _dbContext.User == null)
+            if (userToAddId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -785,7 +833,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveBlockingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (userToRemoveId == null || _dbContext.User == null)
+            if (userToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -848,7 +896,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemovePostFromUser(Guid userID, Guid postToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (postToRemoveId == null || _dbContext.User == null)
+            if (postToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -907,7 +955,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveCommentFromUser(Guid userID, Guid commentToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (commentToRemoveId == null || _dbContext.User == null)
+            if (commentToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -932,7 +980,8 @@ namespace Zwitscher.Controllers
             if (!user.Comments.Contains(CommentToRemove)) return NotFound();
             user.Comments.Remove(CommentToRemove);
             _dbContext.Update(user);
-            _dbContext.Remove(CommentToRemove);
+            RecursiveDelete(CommentToRemove);
+            
             await _dbContext.SaveChangesAsync();
 
 
@@ -966,7 +1015,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveVoteFromUser(Guid userID, Guid voteToRemoveId) //Just for the MVC Frontend 
         {
 
-            if (voteToRemoveId == null || _dbContext.User == null)
+            if (voteToRemoveId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -1034,7 +1083,7 @@ namespace Zwitscher.Controllers
             string username = user.Username;
             DateTime birthday = user.Birthday;
             string biography = user.Biography is null? "": user.Biography;
-            string gender = user.Gender is null ? "" : user.Gender.ToString();
+            string gender = user.Gender is null ? "" : user.Gender.ToString()!;
             int followedCount = user.Following.Count();
             int followerCount = user.FollowedBy.Count();
             string pbFileName = "";
@@ -1090,7 +1139,7 @@ namespace Zwitscher.Controllers
                 string username = user.Username;
                 DateTime birthday = user.Birthday;
                 string biography = user.Biography is null ? "" : user.Biography;
-                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                string gender = user.Gender is null ? "" : user.Gender.ToString()!;
                 int followedCount = user.Following.Count();
                 int followerCount = user.FollowedBy.Count();
                 string pbFileName = "";
@@ -1148,7 +1197,7 @@ namespace Zwitscher.Controllers
                 string username = user.Username;
                 DateTime birthday = user.Birthday;
                 string biography = user.Biography is null ? "" : user.Biography;
-                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                string gender = user.Gender is null ? "" : user.Gender.ToString()!;
                 int followedCount = user.Following.Count();
                 int followerCount = user.FollowedBy.Count();
                 string pbFileName = "";
@@ -1217,7 +1266,7 @@ namespace Zwitscher.Controllers
                 string username = user.Username;
                 DateTime birthday = user.Birthday;
                 string biography = user.Biography is null ? "" : user.Biography;
-                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                string gender = user.Gender is null ? "" : user.Gender.ToString()!;
                 int followedCount = user.Following.Count();
                 int followerCount = user.FollowedBy.Count();
                 string pbFileName = "";
@@ -1283,7 +1332,7 @@ namespace Zwitscher.Controllers
                 string username = user.Username;
                 DateTime birthday = user.Birthday;
                 string biography = user.Biography is null ? "" : user.Biography;
-                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                string gender = user.Gender is null ? "" : user.Gender.ToString()!;
                 int followedCount = user.Following.Count();
                 int followerCount = user.FollowedBy.Count();
                 string pbFileName = "";
@@ -1318,7 +1367,7 @@ namespace Zwitscher.Controllers
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (userToFollowId == null || _dbContext.User == null)
+            if (userToFollowId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -1353,7 +1402,7 @@ namespace Zwitscher.Controllers
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (userToUnfollowId == null || _dbContext.User == null)
+            if (userToUnfollowId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -1418,7 +1467,7 @@ namespace Zwitscher.Controllers
                 string username = user.Username;
                 DateTime birthday = user.Birthday;
                 string biography = user.Biography is null ? "" : user.Biography;
-                string gender = user.Gender is null ? "" : user.Gender.ToString();
+                string gender = user.Gender is null ? "" : user.Gender.ToString()!;
                 int followedCount = user.Following.Count();
                 int followerCount = user.FollowedBy.Count();
                 string pbFileName = "";
@@ -1496,7 +1545,7 @@ namespace Zwitscher.Controllers
                 string postText = post.TextContent;
                 bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userid) is not null && post.Votes.ToList().Find(v => v.User.Id == userid).User.Id == userid);
                 string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userid).isUpVote ? "true" : "false") : "null";
-                string retweetsPost = post.retweetsID.ToString();
+                string retweetsPost = post.retweetsID.ToString()!;
                 List<string> mediaList = new List<string>();
 
                 if (post.Media is not null)
@@ -1535,7 +1584,7 @@ namespace Zwitscher.Controllers
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (userToBlockId == null || _dbContext.User == null)
+            if (userToBlockId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -1570,7 +1619,7 @@ namespace Zwitscher.Controllers
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (userToUnblockId == null || _dbContext.User == null)
+            if (userToUnblockId == Guid.Empty || _dbContext.User == null)
             {
                 return BadRequest();
             }
@@ -1597,6 +1646,22 @@ namespace Zwitscher.Controllers
 
 
             return Ok();
+        }
+        private void RecursiveDelete(Comment parent)
+        {
+            if (parent.commentedBy != null && parent.commentedBy.Count > 0)
+            {
+                var children = _dbContext.Comment
+                    .Include(x => x.commentedBy)
+                    .Where(x => x.commentsCommentId == parent.Id).ToList();
+
+                foreach (var child in children)
+                {
+                    RecursiveDelete(child);
+                }
+            }
+
+            _dbContext.Remove(parent);
         }
 
 

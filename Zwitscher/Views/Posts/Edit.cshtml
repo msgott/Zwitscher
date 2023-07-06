@@ -1,65 +1,360 @@
 ﻿@model Zwitscher.Models.Post
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Bearbeiten";
 }
+<head>
 
-<h1>Edit</h1>
+    <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
 
-<h4>Post</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            Medien:
-            @{
-                foreach(Media m in Model.Media)
-                {
-                    <img style="width: 50px; height: 50px;" src="~/Media/@m.FileName" alt="" />
-                }
-            }
-            <br />
-            
-            <div class="form-group" style="min-width=300px">
-                <label class="control-label">Medien hinzufügen</label>
-                <input name="files" type="file" class="form-control" multiple="multiple" accept="image/png, image/gif, image/jpeg" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="partialModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Beziehung verwalten</h5>
+                    <button type="button" class="close" onclick="closeModal()" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label asp-for="TextContent" class="control-label"></label>
-                <input asp-for="TextContent" class="form-control" />
-                <span asp-validation-for="TextContent" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPublic" /> @Html.DisplayNameFor(model => model.IsPublic)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="retweetsID" class="control-label"></label>
-                <select asp-for="retweetsID" class="form-control" asp-items="ViewBag.RezwitscherId"></select>
-                <span asp-validation-for="retweetsID" class="text-danger"></span>
-            </div>
-
-            
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+    <div class="content-container">
+        <div class="content-container-left">
+            @Html.Partial("~/Views/Shared/sidebar.cshtml")
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+        </div>
 
+
+        <div class="content-container-right ">
+            <h1>Bearbeiten</h1>
+
+
+            <hr />
+            <div class="container justify-content-start m-0 ml-0">
+                <div class="row">
+                    <div class="col">
+                        <form asp-action="Edit" enctype="multipart/form-data">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="Id" />
+                            
+
+                            <div class="form-group">
+                                <label asp-for="TextContent" class="control-label"></label>
+                                <input asp-for="TextContent" class="form-control" />
+                                <span asp-validation-for="TextContent" class="text-danger"></span>
+                            </div>
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsPublic" /> @Html.DisplayNameFor(model => model.IsPublic)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="UserId" class="control-label"></label>
+                                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                                <span asp-validation-for="UserId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="retweetsID" class="control-label"></label>
+                                <select asp-for="retweetsID" class="form-control" asp-items="ViewBag.RezwitscherId"></select>
+                                <span asp-validation-for="retweetsID" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-group">
+                                <input type="submit" value="Save" class="btn btn-primary" />
+                            </div>
+                        </form>
+                        <div>
+                            <a asp-action="Index">Back to List</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="Media-tab" data-bs-toggle="tab" data-bs-target="#Media" type="button" role="tab" aria-controls="home" aria-selected="true">Medien</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="Comments-tab" data-bs-toggle="tab" data-bs-target="#Comments" type="button" role="tab" aria-controls="home" aria-selected="true">Kommentare</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="Votes-tab" data-bs-toggle="tab" data-bs-target="#Votes" type="button" role="tab" aria-controls="home" aria-selected="true">Votes</button>
+                            </li>
+
+
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="Media" role="tabpanel" aria-labelledby="Media-tab">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Preview
+                                            </th>
+                                            <th>
+                                                Dateiname
+                                            </th>
+                                            
+
+                                            <th>
+                                                <button class="btn btn-outline-success btn-sm" onclick="openAddMediaModal()">+</button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Media)
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    <img style="width: 30px; height: 30px;" src="~/Media/@item.FileName">
+                                                    
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.FileName)
+                                                </td>
+                                                
+                                                <td>
+                                                    <button class="btn btn-outline-danger btn-sm" onclick="openRemoveMediaModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="tab-pane fade show" id="Comments" role="tabpanel" aria-labelledby="Comments-tab">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Id
+                                            </th>
+                                            <th>
+                                                User
+                                            </th>
+                                            <th>
+                                                Text
+                                            </th>
+                                            <th>
+                                                Erstellt am
+                                            </th>
+
+                                            <th>
+                                                
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in (List<Comment>)ViewData["Comments"])
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Id)
+                                                </td>
+                                                <td>
+                                                    @item.User.ToString()
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.CommentText)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                                                </td>
+
+
+                                                <td>
+                                                    <button class="btn btn-outline-danger btn-sm" onclick="openRemoveCommentModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="tab-pane fade show" id="Votes" role="tabpanel" aria-labelledby="Votes-tab">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Id
+                                            </th>
+                                            <th>
+                                                User
+                                            </th>
+                                            <th>
+                                                Upvote
+                                            </th>
+
+
+                                            <th>
+                                                
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in (List<Vote>)ViewData["Votes"])
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Id)
+                                                </td>
+                                                <td>
+                                                    @item.User.ToString()
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.isUpVote)
+                                                </td>
+
+
+
+                                                <td>
+                                                    <button class="btn btn-outline-danger btn-sm" onclick="openRemoveVoteModal('@Html.DisplayFor(modelItem => item.Id)')">entfernen</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <script type="text/javascript">
+
+
+
+            //-------------------------------------------Media-------------------------------------
+            const openAddMediaModal = function () {
+
+                var id = "@Html.DisplayFor(item => item.Id)";
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/PopupAddMedia",
+                    data: { "postID": id },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
+            const openRemoveMediaModal = function (mediaToRemoveId) {
+
+                var id = "@Html.DisplayFor(item => item.Id)";
+                var removeid = mediaToRemoveId;
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/PopupRemoveMedia",
+                    data: {
+                        "postID": id,
+                        "mediaToRemoveId": removeid
+                    },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
+            //-------------------------------------------Comment-------------------------------------
+
+            const openRemoveCommentModal = function (commentToRemoveId) {
+
+                var id = "@Html.DisplayFor(item => item.Id)";
+                var removeid = commentToRemoveId;
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/PopupRemoveComment",
+                    data: {
+                        "postID": id,
+                        "commentToRemoveId": removeid
+                    },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
+
+            //-------------------------------------------Vote-------------------------------------
+
+            const openRemoveVoteModal = function (voteToRemoveId) {
+
+                var id = "@Html.DisplayFor(item => item.Id)";
+                var removeid = voteToRemoveId;
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/PopupRemoveVote",
+                    data: {
+                        "postID": id,
+                        "voteToRemoveId": removeid
+                    },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
+
+            //-------------------------------------------Shared-------------------------------------
+            const closeModal = function () {
+
+                $("#partialModal").modal('hide');
+
+            };
+
+        </script>
+</body>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+

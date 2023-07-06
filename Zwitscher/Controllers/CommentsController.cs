@@ -99,7 +99,10 @@ namespace Zwitscher.Controllers
                 return NotFound();
             }
 
-            var comment = await _context.Comment.FindAsync(id);
+            var comment = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (comment == null)
             {
                 return NotFound();
@@ -216,6 +219,59 @@ namespace Zwitscher.Controllers
         {
           return (_context.Comment?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        //-----------------------------------------------MVC Comment Comment----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveComment(Guid commentID, Guid commentToRemoveId)
+        {
+            var comment = await _context.Comment.FirstOrDefaultAsync(c => c.Id == commentID);
+
+
+            ViewData["commentToRemove"] = commentToRemoveId;
+            return PartialView("PopupRemoveComment", comment);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveCommentFromComment(Guid commentID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (commentToRemoveId == Guid.Empty || _context.Post == null)
+            {
+                return BadRequest();
+            }
+
+
+            var CommentToRemove = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .Include(u => u.Post)
+                .Include(u => u.User)
+                .FirstAsync(p => p.Id == commentToRemoveId);
+            if (CommentToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            RecursiveDelete(CommentToRemove);
+
+            await _context.SaveChangesAsync();
+
+            var comment = await _context.Comment
+                 .Include(p => p.Post)
+                 .Include(p => p.User)
+                 .Include(p => p.commentedBy)
+                 .Include(p => p.commentsComment)
+                 .FirstOrDefaultAsync(p => p.Id == commentID);
+            ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id", comment.PostId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
+            
+            return RedirectToAction(nameof(Edit), comment);
+        }
         //---------------------------------------------API------------------------------------------------
         [HttpPost]
         [Route("API/Comments/Edit")]
@@ -223,8 +279,8 @@ namespace Zwitscher.Controllers
         public async Task<IActionResult> EditComment(Guid id, string CommentText )
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (id == null || _context.Comment == null || CommentText is null || CommentText.Length < 1)
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            if (id == Guid.Empty || _context.Comment == null || CommentText is null || CommentText.Length < 1)
             {
                 return BadRequest();
             }
@@ -233,14 +289,14 @@ namespace Zwitscher.Controllers
             var c = await _context.Comment
                 .Include(u => u.commentedBy)
                 .Include(u => u.commentsComment)
-            .ThenInclude(c => c.User)
+            .ThenInclude(c => c!.User)
                 .FirstAsync(p => p.Id == id);
             if (c == null)
             {
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             
             if (c.UserId != userID) return Unauthorized();
 
@@ -277,7 +333,7 @@ namespace Zwitscher.Controllers
 
                 string commentId = comment.Id.ToString();
                 string user_username = comment.User.Username;
-                string user_profilePicture = (await _context.Media.FindAsync(comment.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(comment.User.MediaId)).FileName;
+                string user_profilePicture = (await _context.Media.FindAsync(comment.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(comment.User.MediaId))!.FileName;
                 DateTime createdDate = comment.CreatedDate;
                 string commentText = comment.CommentText;
                 bool loggedInUserIsCreator = comment.UserId.ToString() == HttpContext.Session.GetString("UserId");
@@ -307,7 +363,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddCommentToComment(Guid? commentId, string CommentText = "") //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
             if (commentId == null || _context.Comment == null || CommentText is null)
             {
                 return BadRequest();
@@ -317,14 +373,14 @@ namespace Zwitscher.Controllers
             var comment = await _context.Comment
                 .Include(u => u.commentedBy)
                 .Include(u => u.commentsComment)
-                .ThenInclude(c => c.User)
+                .ThenInclude(c => c!.User)
                 .FirstAsync(p => p.Id == commentId);
             if (comment == null)
             {
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             Comment c = new Comment();
             c.Id = Guid.NewGuid();
             c.CommentText = CommentText;
@@ -345,8 +401,8 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> RemoveCommentFromPost(Guid commentId, Guid commentToRemoveId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (commentId == null || _context.Comment == null)
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            if (commentId == Guid.Empty || _context.Comment == null)
             {
                 return BadRequest();
             }
@@ -355,14 +411,14 @@ namespace Zwitscher.Controllers
             var c = await _context.Comment
                 .Include(u => u.commentedBy)
                 .Include(u => u.commentsComment)
-                .ThenInclude(c => c.User)
+                .ThenInclude(c => c!.User)
                 .FirstAsync(p => p.Id == commentId);
             if (c == null)
             {
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             
             var comment = _context.Comment
                 .Include(c => c.Post)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -132,14 +133,19 @@ namespace Zwitscher.Controllers
             var post = await _context.Post
                 .Include(p => p.Media)
                 .Include(p => p.retweets)
+                .Include(p => p.Comments)
+                .Include(p => p.Votes)
                 .FirstOrDefaultAsync(p=> p.Id==id);
             if (post == null)
             {
                 return NotFound();
             }
             List<Post> tempList = new List<Post> { post };
-            
 
+           
+            
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
             ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
             return View(post);
@@ -247,6 +253,7 @@ namespace Zwitscher.Controllers
                 .Include(post => post.User)
                 .Include(post => post.Comments)
                 .Include(post => post.Media)
+                .Include(post => post.Votes)
                 .FirstOrDefaultAsync(p=> p.Id == id);
             if (post != null)
             {
@@ -288,6 +295,342 @@ namespace Zwitscher.Controllers
         {
           return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+        //-----------------------------------------------MVC User Details----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupPostDetails(Guid postID)
+        {
+            if (postID == Guid.Empty || _context.Post == null)
+            {
+                return NotFound();
+            }
+
+            var post = await _context.Post
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Votes)
+                .Include(p => p.retweets)
+                .FirstOrDefaultAsync(m => m.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
+            
+
+            return PartialView("PopupPostDetails", post);
+
+
+
+        }
+        //-----------------------------------------------MVC Post Media ----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupAddMedia(Guid postID)
+        {
+
+            if (postID == Guid.Empty || _context.Post == null)
+            {
+                return NotFound();
+            }
+
+            var post = await _context.Post
+                .Include(p => p.Media)                
+                .FirstOrDefaultAsync(m => m.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            
+            return PartialView("PopupAddMedia", post);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveMedia(Guid postID, Guid mediaToRemoveId)
+        {
+            if (postID == Guid.Empty || _context.Post == null)
+            {
+                return NotFound();
+            }
+
+            var post = await _context.Post
+                .Include(p => p.Media)
+                .FirstOrDefaultAsync(m => m.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            
+
+
+            ViewData["mediatoremove"] = mediaToRemoveId;
+            return PartialView("PopupRemoveMedia", post);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddMediaToPost(Guid postID, IFormFile[] files) //Just for the MVC Frontend 
+        {
+
+            if (postID == Guid.Empty || _context.Post == null || files == null)
+            {
+                return BadRequest();
+            }
+
+            var post = await _context.Post
+                 .Include(p => p.Media)
+                 .Include(p => p.retweets)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Votes)
+                 .FirstOrDefaultAsync(p => p.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                foreach (IFormFile file in files)
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _context.Media.Add(image);
+                        post.Media.Add(image);
+                    }
+                }
+                _context.Update(post);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PostExists(post.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+
+
+
+            List<Post> tempList = new List<Post> { post };
+
+
+
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
+            return RedirectToAction(nameof(Edit), post);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveMediaFromPost(Guid postID, Guid mediaToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (mediaToRemoveId == Guid.Empty || _context.Post == null)
+            {
+                return BadRequest();
+            }
+
+
+            var media = await _context.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == mediaToRemoveId);
+            if (media != null)
+            {
+                if (media.User is not null)
+                {
+
+                    //media.User.ProfilePicture = null;
+                    //media.User.MediaId = null;
+                    media.User.ProfilePicture = null;
+                    media.User = null;
+                    
+                }
+                if (media.Post is not null)
+                {
+
+                    media.Post = null;
+                    
+                }
+                if (Path.Exists(media.FilePath))
+                {
+                    System.IO.File.Delete(media.FilePath);
+                }
+                _context.Media.Remove(media);
+            }
+
+            await _context.SaveChangesAsync();
+
+
+            var post = await _context.Post
+                 .Include(p => p.Media)
+                 .Include(p => p.retweets)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Votes)
+                 .FirstOrDefaultAsync(p => p.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            List<Post> tempList = new List<Post> { post };
+
+
+
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
+            return RedirectToAction(nameof(Edit), post);
+        }
+
+        //-----------------------------------------------MVC Post Comment----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveComment(Guid postID, Guid commentToRemoveId)
+        {
+            var post = await _context.Post.FirstOrDefaultAsync(post => post.Id == postID);
+
+
+            ViewData["commentToRemove"] = commentToRemoveId;
+            return PartialView("PopupRemoveComment", post);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveCommentFromPost(Guid postID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (commentToRemoveId == Guid.Empty || _context.Post == null)
+            {
+                return BadRequest();
+            }
+
+
+            var CommentToRemove = await _context.Comment
+                .Include(u => u.commentedBy)
+                .Include(u => u.commentsComment)
+                .Include(u => u.Post)
+                .Include(u => u.User)
+                .FirstAsync(p => p.Id == commentToRemoveId);
+            if (CommentToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            RecursiveDelete(CommentToRemove);
+            
+            await _context.SaveChangesAsync();
+
+
+            var post = await _context.Post
+                 .Include(p => p.Media)
+                 .Include(p => p.retweets)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Votes)
+                 .FirstOrDefaultAsync(p => p.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            List<Post> tempList = new List<Post> { post };
+
+
+
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
+            return RedirectToAction(nameof(Edit), post);
+        }
+        //-----------------------------------------------MVC User Vote----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveVote(Guid postID, Guid voteToRemoveId)
+        {
+            var user = await _context.Post.FirstOrDefaultAsync(user => user.Id == postID);
+
+
+            ViewData["voteToRemove"] = voteToRemoveId;
+            return PartialView("PopupRemoveVote", user);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveVoteFromPost(Guid postID, Guid voteToRemoveId) //Just for the MVC Frontend 
+        {
+
+            if (voteToRemoveId == Guid.Empty || _context.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            var voteToRemove = await _context.Vote
+                .Include(u => u.User)
+                .Include(u => u.Post)
+                .FirstAsync(p => p.Id == voteToRemoveId);
+            if (voteToRemove == null)
+            {
+                return NotFound();
+
+            }
+
+            
+            _context.Remove(voteToRemove);
+            await _context.SaveChangesAsync();
+
+
+            var post = await _context.Post
+                 .Include(p => p.Media)
+                 .Include(p => p.retweets)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Votes)
+                 .FirstOrDefaultAsync(p => p.Id == postID);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            List<Post> tempList = new List<Post> { post };
+
+
+
+            ViewData["Votes"] = post.Votes;
+            ViewData["Comments"] = post.Comments;
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
+            ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
+            return RedirectToAction(nameof(Edit), post);
+        }
 
         //-------------------------------------------------------------------------------------------
         [HttpGet]
@@ -298,7 +641,21 @@ namespace Zwitscher.Controllers
             {
                 return BadRequest();
             }
-            var posts = (await _context.Post
+            var posts = new List<Post>();
+            if(HttpContext.Session.GetString("RoleName") == "Administrator" || HttpContext.Session.GetString("RoleName") == "Moderator")
+            {
+                posts = await _context.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .Include(p => p.retweets)
+                .ToListAsync();
+            }
+            else
+            {
+                posts = (await _context.Post
                 .Include(u => u.User)
                 .Include(u => u.Media)
                 .Include(u => u.Votes)
@@ -307,26 +664,30 @@ namespace Zwitscher.Controllers
                 .Include(p => p.retweets)
                 .ToListAsync()).FindAll(p => p.IsPublic == true);
 
-            if (HttpContext.Session.GetString("UserId") is not null)
-            {
-                User usr = _context.User.Find(Guid.Parse(HttpContext.Session.GetString("UserId")));
-                if(usr != null)
+                if (HttpContext.Session.GetString("UserId") is not null)
                 {
-                var userSpecificPosts = (await _context.Post
-                .Include(u => u.User)
-                .ThenInclude(u => u.FollowedBy)
-                .Include(u => u.User)
-                .ThenInclude(u => u.Blocking)
-                .Include(u => u.Media)
-                .Include(u => u.Votes)
-                .ThenInclude(v => v.User)
-                .Include(u => u.Comments)
-                .Include(p => p.retweets)
-                .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr));
+                    User usr = _context.User.Find(Guid.Parse(HttpContext.Session.GetString("UserId")!))!;
+                    if (usr != null)
+                    {
+                        var userSpecificPosts = (await _context.Post
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.FollowedBy)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.Blocking)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.BlockedBy)
+                        .Include(u => u.Media)
+                        .Include(u => u.Votes)
+                        .ThenInclude(v => v.User)
+                        .Include(u => u.Comments)
+                        .Include(p => p.retweets)
+                        .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr));
 
-                    posts = posts.Union(userSpecificPosts).ToList();
+                        posts = posts.Union(userSpecificPosts).ToList();
+                    }
                 }
             }
+            
 
             
            
@@ -337,21 +698,21 @@ namespace Zwitscher.Controllers
 
             }
             
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null? Guid.NewGuid().ToString(): HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null? Guid.NewGuid().ToString(): HttpContext.Session.GetString("UserId")!);
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
 
             foreach (Post post in posts)
             {
                 string postID = post.Id.ToString();                
                 string user_username = post.User.Username;
-                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null? "" : (await _context.Media.FindAsync(post.User.MediaId)).FileName;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
                 DateTime createdDate = post.CreatedDate;
                 int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
                 int commentCount = post.Comments.Count;
                 string postText = post.TextContent;
-                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID).User.Id == userID);
-                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID).isUpVote ? "true": "false"): "null";
-                string retweetsPost = post.retweetsID.ToString();
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true": "false"): "null";
+                string retweetsPost = post.retweetsID.ToString()!;
                 List<string> mediaList = new List<string>();
                  
                 if (post.Media is not null)
@@ -409,18 +770,18 @@ namespace Zwitscher.Controllers
 
             }
 
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId")!);
             
                 string postID = post.Id.ToString();
                 string user_username = post.User.Username;
-                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId)).FileName;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
                 DateTime createdDate = post.CreatedDate;
                 int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
                 int commentCount = post.Comments.Count;
                 string postText = post.TextContent;
-                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID).User.Id == userID);
-                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID).isUpVote ? "true" : "false") : "null";
-                string retweetsPost = post.retweetsID.ToString();
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true" : "false") : "null";
+                string retweetsPost = post.retweetsID.ToString()!;
                 List<string> mediaList = new List<string>();
 
                 if (post.Media is not null)
@@ -460,13 +821,13 @@ namespace Zwitscher.Controllers
         public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
             if (_context.Post == null)
             {
                 return BadRequest();
             }
 
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             post.UserId = userID;
             ModelState.Remove("files");
             ModelState.Remove("CreatedDate");
@@ -517,13 +878,13 @@ namespace Zwitscher.Controllers
         public async Task<IActionResult> DeletePost(Guid id)
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
             if (_context.Post == null)
             {
                 return BadRequest();
             }
 
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
             
             var post = await _context.Post
@@ -598,7 +959,7 @@ namespace Zwitscher.Controllers
 
                 string commentId = c.Id.ToString();
                 string user_username = c.User.Username;
-                string user_profilePicture = (await _context.Media.FindAsync(c.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(c.User.MediaId)).FileName;
+                string user_profilePicture = (await _context.Media.FindAsync(c.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(c.User.MediaId))!.FileName;
                 DateTime createdDate = c.CreatedDate;
                 string commentText = c.CommentText;
                 bool loggedInUserIsCreator = c.UserId.ToString() == HttpContext.Session.GetString("UserId");
@@ -628,7 +989,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> ManageVotes(Guid? postId, bool IsUpVote = true) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-             if((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+             if((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
             if (postId == null || _context.Post == null)
             {
                 return BadRequest();
@@ -644,11 +1005,11 @@ namespace Zwitscher.Controllers
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             List<Vote> postVotes = post.Votes.ToList();
             if(postVotes.Find(v=> v.User.Id == userID) != null)
             {//User hat schon Vote für diesen Post abgegeben
-                Vote vote = postVotes.Find(v => v.User.Id == userID);
+                Vote vote = postVotes.Find(v => v.User.Id == userID)!;
 
                 if (vote.isUpVote && IsUpVote)
                 {
@@ -692,7 +1053,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> AddCommentToPost(Guid? postId, string CommentText="") //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
             if (postId == null || _context.Post == null || CommentText is null)
             {
                 return BadRequest();
@@ -708,7 +1069,7 @@ namespace Zwitscher.Controllers
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             Comment comment = new Comment();
             comment.Id = Guid.NewGuid();
             comment.CommentText = CommentText;
@@ -727,11 +1088,11 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("API/Posts/Comment/Remove")]
-        public async Task<ActionResult> RemoveCommentFromPost(Guid postId, Guid commentId) //Only works while logged in!
+        public async Task<ActionResult> RemoveCommentFromPost1(Guid postId, Guid commentId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
-            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
-            if (postId == null || _context.Post == null)
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            if (postId == Guid.Empty || _context.Post == null)
             {
                 return BadRequest();
             }
@@ -750,7 +1111,7 @@ namespace Zwitscher.Controllers
                 return NotFound();
 
             }
-            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             
 
             var comment = _context.Comment

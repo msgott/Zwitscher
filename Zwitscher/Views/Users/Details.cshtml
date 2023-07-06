@@ -308,7 +308,7 @@ User hat folgende Kommentare
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in (List<Comment>)ViewData["Comments"])
+        @foreach (var item in (List<Comment>)ViewData["Comments"]!)
         {
             <tr>
 

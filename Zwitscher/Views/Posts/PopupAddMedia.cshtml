@@ -1,0 +1,37 @@
+﻿@model Zwitscher.Models.Post
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Dateien hochladen</h1>
+
+
+<hr />
+
+    <div >
+
+    <form asp-controller="Posts" asp-action="AddMediaToPost" enctype="multipart/form-data">
+            
+            
+            <input type="hidden" name="postID" value="@Model.Id" />
+
+
+        <input name="files" type="file" class="form-control" multiple="multiple" accept="image/png, image/gif, image/jpeg" />
+                
+            
+            <br />
+            
+                <input type="submit" value="hinzufügen" class="btn btn-success" />
+            
+        </form>
+    </div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

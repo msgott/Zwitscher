@@ -6,12 +6,29 @@
 
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="/css/Posts.css" asp-append-version="true" />
+    
     <link rel="stylesheet" href="/css/sidebar.css" asp-append-version="true" />
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 <body>
+    <div id="partialModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Details</h5>
+                    <button type="button" class="close" onclick="closeModal()" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="content-container">
         <div class="content-container-left">
             @Html.Partial("~/Views/Shared/sidebar.cshtml")
@@ -64,17 +81,14 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr class="trhover" onclick="openShowDetailsModal('@item.Id')">
                                 <td>
 
                                     <a asp-action="Edit" asp-route-id="@item.Id" title="Bearbeiten" class="link-success">
                                         <span class="material-icons-outlined material-icons.md-18">edit</span>
                                     </a>
                                     <br>
-                                    <a asp-action="Details" asp-route-id="@item.Id" title="Details" class="link-dark">
-                                        <span class="material-icons-outlined material-icons.md-18">info</span>
-                                    </a>
-                                    <br>
+                                   
                                     <a asp-action="Delete" asp-route-id="@item.Id" title="Löschen" class="link-danger">
                                         <span class="material-icons-outlined material-icons.md-18">delete</span>
                                     </a>
@@ -113,5 +127,36 @@
             </div>
         </div>
         <script src="~/js/Dashboard.js" asp-append-version="true"></script>
+        <script>
+            const openShowDetailsModal = function (postDetailId) {
+
+
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/PopupPostDetails",
+                    data: {
+                        "postID": postDetailId
+
+                    },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+            };
+            const closeModal = function () {
+
+                $("#partialModal").modal('hide');
+
+            };
+        </script>
 </body>
 </html>
