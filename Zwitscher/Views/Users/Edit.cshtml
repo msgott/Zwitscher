@@ -50,30 +50,37 @@
                             if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
                             {
                                 <img style="width: 200px; height: 200px;" src="~/Media/real-placeholder.png" alt="" />
+                                
                             }
                             else
                             {
                                 <img style="width: 200px; height: 200px;" src="~/Media/@Model.ProfilePicture.FileName" alt="" />
                             }
-                        }
+                            
 
+                        }
+                        <div class="form-group m-0" style="">
+                            <label class="control-label">Profilbild Verwalten</label>
+                            <br />
+                            @{
+                                if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
+                                {
+                                    <button class="btn btn-outline-success btn-sm" onclick="openAddMediaModal()">hinzufügen</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-outline-success btn-sm" onclick="openAddMediaModal()">ändern</button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="openRemoveMediaModal('@Model.MediaId')">entfernen</button>
+
+                                }
+                            }
+                            @*<input name="file" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" />*@
+                        </div>
                         <form asp-action="Edit" enctype="multipart/form-data">
 
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input type="hidden" asp-for="Id" />
-                            <div class="form-group m-0" style="">
-                                @{
-                                    if (Model.ProfilePicture is null || Model.ProfilePicture.FileName.Equals(""))
-                                    {
-                                        <label class="control-label">Profilbild Upload</label>
-                                    }
-                                    else
-                                    {
-                                        <label class="control-label">Profilbild ersetzen</label>
-                                    }
-                                }
-                                <input name="file" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" />
-                            </div>
+                            
                             <div class="form-group m-0">
                                 <label asp-for="LastName" class="control-label"></label>
                                 <input asp-for="LastName" class="form-control" />
@@ -463,7 +470,50 @@
         <script type="text/javascript">
 
 
+            //-------------------------------------------ProfilePicture-------------------------------------
+            const openAddMediaModal = function () {
 
+                var id = "@Html.DisplayFor(item => item.Id)";
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Users/PopupAddMedia",
+                    data: { "userID": id },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
+            const openRemoveMediaModal = function (mediaToRemoveId) {
+
+                var id = "@Html.DisplayFor(item => item.Id)";
+                var removeid = mediaToRemoveId;
+                $.ajax({
+                    type: "POST",
+                    url: "/Users/PopupRemoveMedia",
+                    data: {
+                        "userID": id,
+                        "mediaToRemoveId": mediaToRemoveId
+                    },
+                    success: function (response) {
+                        $("#partialModal").find(".modal-body").html(response);
+                        $("#partialModal").modal('show');
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            };
             //-------------------------------------------FollowedBy-------------------------------------
             const openAddFollwedByModal = function () {
 

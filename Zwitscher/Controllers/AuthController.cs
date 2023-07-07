@@ -181,6 +181,7 @@ namespace Zwitscher.Controllers
                     var role = _context.Role.FirstOrDefault(u => u.Name == "User");
                     user.RoleID = role.Id;
                     user.isLocked = false;
+                    user.CreatedDate = DateTime.Now;
                     _context.Add(user);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -215,6 +216,7 @@ namespace Zwitscher.Controllers
                     var role = _context.Role.FirstOrDefault(u => u.Name == "User");
                     user.RoleID = role.Id;
                     user.isLocked = false;
+                    user.CreatedDate = DateTime.Now;
                     _context.Add(user);
                     await _context.SaveChangesAsync();
 

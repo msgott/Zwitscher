@@ -383,6 +383,220 @@ namespace Zwitscher.Controllers
 
 
         }
+
+        //-----------------------------------------------MVC User ProfilePicture----------------------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> PopupAddMedia(Guid userID)
+        {
+
+            var user = await _dbContext.User.Include(u => u.ProfilePicture).FirstOrDefaultAsync(user => user.Id == userID);
+            
+            return PartialView("PopupAddMedia", user);
+
+
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> PopupRemoveMedia(Guid userID, Guid mediaToRemoveId)
+        {
+            var user = await _dbContext.User.Include(u => u.ProfilePicture).FirstOrDefaultAsync(user => user.Id == userID);
+
+
+            ViewData["mediatoremove"] = mediaToRemoveId;
+            return PartialView("PopupRemoveMedia", user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddMediaToUser(Guid userID, IFormFile file) //Just for the MVC Frontend 
+        {
+
+            if (file == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+            
+
+            User user = await _dbContext.User.Include(u => u.ProfilePicture).FirstAsync(p => p.Id == userID);
+            
+            if (user is null) return Unauthorized();
+
+
+            if (user.ProfilePicture == null)
+            {
+                try
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _dbContext.Media.Add(image);
+                        user.ProfilePicture = image;
+                    }
+                    
+                    _dbContext.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+
+                var media = await _dbContext.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == user.MediaId);
+                if (media != null)
+                {
+                    if (media.User is not null)
+                    {
+
+                        //media.User.ProfilePicture = null;
+                        //media.User.MediaId = null;
+                        media.User.ProfilePicture = null;
+                        media.User = null;
+                        
+                    }
+                    
+                    if (Path.Exists(media.FilePath))
+                    {
+                        System.IO.File.Delete(media.FilePath);
+                    }
+                    _dbContext.Media.Remove(media);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                try
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _dbContext.Media.Add(image);
+                        user.ProfilePicture = image;
+                    }
+
+                    _dbContext.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            
+            
+
+
+
+            
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RemoveMediaFromUser(Guid userID, Guid mediaToRemoveId) //Just for the MVC Frontend 
+        {
+            User user = await _dbContext.User.Include(u => u.ProfilePicture).FirstAsync(p => p.Id == userID);
+            var media = await _dbContext.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == mediaToRemoveId);
+            if (media != null)
+            {
+                if (media.User is not null)
+                {
+
+                    //media.User.ProfilePicture = null;
+                    //media.User.MediaId = null;
+                    media.User.ProfilePicture = null;
+                    media.User = null;
+
+                }
+
+                if (Path.Exists(media.FilePath))
+                {
+                    System.IO.File.Delete(media.FilePath);
+                }
+                _dbContext.Media.Remove(media);
+                await _dbContext.SaveChangesAsync();
+            }
+
+
+            ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
+            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
+            ViewData["Following"] = user.Following;
+            ViewData["FollowedBy"] = user.FollowedBy;
+            ViewData["Posts"] = user.Posts;
+            ViewData["Comments"] = user.Comments;
+            ViewData["Votes"] = user.Votes;
+            ViewData["BlockedBy"] = user.BlockedBy;
+            ViewData["Blocking"] = user.Blocking;
+            return RedirectToAction(nameof(Edit), user);
+        }
         //-----------------------------------------------MVC User FollowedBy----------------------------------------------------------------------
 
         [HttpPost]
