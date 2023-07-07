@@ -80,7 +80,7 @@
 
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input type="hidden" asp-for="Id" />
-                            
+                            <input type="hidden" name="oldPW" value="@Model.Password" />
                             <div class="form-group m-0">
                                 <label asp-for="LastName" class="control-label"></label>
                                 <input asp-for="LastName" class="form-control" />
@@ -103,7 +103,7 @@
                             </div>
                             <div class="form-group m-0">
                                 <label asp-for="Password" class="control-label"></label>
-                                <input asp-for="Password" class="form-control" />
+                                <input asp-for="Password" class="form-control" placeholder="Zum Ändern neues Passwort eingeben"/>
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
                             <div class="form-group m-0">
@@ -129,7 +129,7 @@
                             </div>
 
                             <div class="form-group mt-1">
-                                <input type="submit" value="Save" class="btn btn-primary" />
+                                <input type="submit" formnovalidate="formnovalidate" value="Save" class="btn btn-primary" />
 
                             </div>
                         </form>

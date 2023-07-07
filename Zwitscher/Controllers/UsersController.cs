@@ -211,7 +211,7 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        public async Task<IActionResult> Edit(Guid id, string oldPW, IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
         {
 
             if (id != user.Id)
@@ -220,6 +220,7 @@ namespace Zwitscher.Controllers
             }
             
             ModelState.Remove("file");
+            ModelState.Remove("Password");
             if (ModelState.IsValid)
             {
                 
@@ -249,7 +250,17 @@ namespace Zwitscher.Controllers
                     user.ProfilePicture = image;
                     }
                     user.Role = await _dbContext.Role.FindAsync(user.RoleID);
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    if (user.Password == "" || user.Password == null)
+                    {
+                        
+
+                        user.Password = oldPW;
+                        
+                    }
+                    else
+                    {
+                        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    }
                     _dbContext.Update(user);
                     await _dbContext.SaveChangesAsync();
                 }
@@ -1322,6 +1333,53 @@ namespace Zwitscher.Controllers
            
             return Json(result);
         }
+        [HttpPost]
+        [Route("API/Users/Edit")]
+        public async Task<IActionResult> EditUser(Guid userID, string LastName, string FirstName, string Username, string Password, string Birthday, string? Biography,int Gender) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            Guid _userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+
+            if (userID == Guid.Empty || _dbContext.User == null) return BadRequest();                             
+            if(LastName == "" || LastName == null) return BadRequest();
+            if(FirstName == "" || FirstName == null) return BadRequest();
+            if(Username == "" || Username == null) return BadRequest();
+            if( Birthday == null) return BadRequest();
+            if(Gender == null) return BadRequest();
+            
+                User user = _dbContext.User.Find(userID);
+            if (user == null) return NotFound();
+
+            user.LastName = LastName;
+            user.FirstName = FirstName;
+            user.Username = Username;
+            if (Password != null && Password != "")
+            {
+                user.Password = Password;
+                if (!TryValidateModel(user, nameof(user))) return ValidationProblem();
+
+            }
+            user.Birthday = DateTime.Parse(Birthday);
+           
+                user.Biography = Biography;
+               
+            
+                user.Gender = (User.Genders?)Gender;
+            
+            if (Password != null && Password != "")
+            {
+                if (!TryValidateModel(user, nameof(user))) return ValidationProblem();
+                user.Password = BCrypt.Net.BCrypt.HashPassword(Password);
+            }
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+
+
+
+
+        }
 
         [HttpGet]
         [Route("API/Users/Search")]
@@ -1861,6 +1919,284 @@ namespace Zwitscher.Controllers
 
             return Ok();
         }
+
+
+        [HttpDelete]
+        [Route("API/Users/Remove")]
+        public async Task<IActionResult> DeletePost(Guid id)
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            if (_dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+
+
+            var user = await _dbContext.User
+                .Include(user => user.ProfilePicture)
+                .Include(user => user.Role)
+                .Include(user => user.FollowedBy)
+                .Include(user => user.Following)
+                .Include(user => user.BlockedBy)
+                .Include(user => user.Blocking)
+                .Include(user => user.Posts)
+                .Include(user => user.Comments)
+                .Include(user => user.Votes)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (user is null) return NotFound();
+            if (user.Id != id || user.Id != userID) return Unauthorized();
+
+            //-------------Delete direct Comments
+            foreach (Comment com in user.Comments)
+            {
+                var comment = _dbContext.Comment
+                .Include(c => c.Post)
+                .Include(c => c.User)
+                .Include(c => c.commentsComment)
+                .Include(c => c.commentedBy)
+                .FirstOrDefault(c => c.Id == com.Id);
+                
+                if (comment != null)
+                {
+                    
+                    RecursiveDelete(comment);
+
+                }
+
+
+            }
+            //-------------Delete Posts and their Comments and Media
+            foreach (Post pos in user.Posts)
+            {
+                var post = await _dbContext.Post
+                .Include(post => post.User)
+                .Include(post => post.Comments)
+                .Include(post => post.Media)
+                .Include(post => post.Votes)
+                .FirstOrDefaultAsync(p => p.Id == pos.Id);
+
+                foreach (Comment com in pos.Comments)
+                {
+                    var comment = _dbContext.Comment
+                    .Include(c => c.Post)
+                    .Include(c => c.User)
+                    .Include(c => c.commentsComment)
+                    .Include(c => c.commentedBy)
+                    .FirstOrDefault(c => c.Id == com.Id);
+
+                    if (comment != null)
+                    {
+                        
+                        RecursiveDelete(comment);
+
+                    }
+
+
+                }
+                foreach (Media m in pos.Media)
+                {
+                    m.Post = null;
+                    if (Path.Exists(m.FilePath))
+                    {
+                        System.IO.File.Delete(m.FilePath);
+                    }
+                    _dbContext.Media.Remove(m);
+                }
+                pos.Media.Clear();
+                _dbContext.Post.Remove(pos);
+
+            }
+            _dbContext.Remove(user);
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
+
+        //-----------------------------------------------API User ProfilePicture----------------------------------------------------------------------
+
+      
+
+        [HttpPost]
+        [Route("API/Users/Media/Add")]
+        public async Task<ActionResult> AddMediaToUser1(Guid userID, IFormFile file) 
+        {
+
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            Guid _userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            if (userID != _userID) return Unauthorized();
+            if (file == null || _dbContext.User == null)
+            {
+                return BadRequest();
+            }
+
+
+
+
+            User user = await _dbContext.User.Include(u => u.ProfilePicture).FirstAsync(p => p.Id == userID);
+
+            if (user is null) return Unauthorized();
+
+
+            if (user.ProfilePicture == null)
+            {
+                try
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _dbContext.Media.Add(image);
+                        user.ProfilePicture = image;
+                    }
+
+                    _dbContext.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+
+                var media = await _dbContext.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == user.MediaId);
+                if (media != null)
+                {
+                    if (media.User is not null)
+                    {
+
+                        //media.User.ProfilePicture = null;
+                        //media.User.MediaId = null;
+                        media.User.ProfilePicture = null;
+                        media.User = null;
+
+                    }
+
+                    if (Path.Exists(media.FilePath))
+                    {
+                        System.IO.File.Delete(media.FilePath);
+                    }
+                    _dbContext.Media.Remove(media);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                try
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        Guid tempID = Guid.NewGuid();
+
+                        string fileName = tempID.ToString() + Path.GetExtension(file.FileName);
+                        //string fileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine("wwwroot", "Media", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        Media image = new Media
+                        {
+                            Id = tempID,
+                            FileName = fileName,
+                            FilePath = filePath
+                        };
+
+                        _dbContext.Media.Add(image);
+                        user.ProfilePicture = image;
+                    }
+
+                    _dbContext.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+
+
+            return Ok();
+
+        }
+
+        [HttpPost]
+        [Route("API/Users/Media/Remove")]
+        public async Task<ActionResult> RemoveMediaFromUser1(Guid userID, Guid mediaToRemoveId) 
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            Guid _userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            if (userID != _userID) return Unauthorized();
+            User user = await _dbContext.User.Include(u => u.ProfilePicture).FirstAsync(p => p.Id == userID);
+            var media = await _dbContext.Media
+                .Include(m => m.User)
+                .Include(m => m.Post)
+                .FirstOrDefaultAsync(m => m.Id == mediaToRemoveId);
+            if (media != null)
+            {
+                if (media.User is not null)
+                {
+
+                    //media.User.ProfilePicture = null;
+                    //media.User.MediaId = null;
+                    media.User.ProfilePicture = null;
+                    media.User = null;
+
+                }
+
+                if (Path.Exists(media.FilePath))
+                {
+                    System.IO.File.Delete(media.FilePath);
+                }
+                _dbContext.Media.Remove(media);
+                await _dbContext.SaveChangesAsync();
+            }
+            else return NotFound();
+
+
+           
+            return Ok();
+        }
+
         private void RecursiveDelete(Comment parent)
         {
             if (parent.commentedBy != null && parent.commentedBy.Count > 0)

@@ -398,7 +398,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Comments/Comment/Remove")]
-        public async Task<ActionResult> RemoveCommentFromPost(Guid commentId, Guid commentToRemoveId) //Only works while logged in!
+        public async Task<ActionResult> RemoveCommentFromComment1(Guid commentId, Guid commentToRemoveId) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -424,6 +424,7 @@ namespace Zwitscher.Controllers
                 .Include(c => c.Post)
                 .Include(c => c.User)
                 .Include(c => c.commentedBy)
+                .Include(c => c.commentsComment)
                 .FirstOrDefault(c => c.Id == commentToRemoveId);
             if (comment is null) return BadRequest();
             if (comment != null)
@@ -440,6 +441,47 @@ namespace Zwitscher.Controllers
             
             
             
+
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("API/Comments/Remove")]
+        public async Task<ActionResult> RemoveComment1(Guid commentToRemoveId) //Only works while logged in!
+        {
+            if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
+            if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
+            if ( _context.Comment == null)
+            {
+                return BadRequest();
+            }
+
+
+            
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+
+            var comment = _context.Comment
+                .Include(c => c.Post)
+                .Include(c => c.User)
+                .Include(c => c.commentedBy)
+                .Include(c=>c.commentsComment)
+                .FirstOrDefault(c => c.Id == commentToRemoveId);
+            if (comment is null) return BadRequest();
+            if (comment != null)
+            {
+                if (comment.UserId != userID ) return Unauthorized();
+                RecursiveDelete(comment);
+
+            }
+
+            await _context.SaveChangesAsync();
+
+
+
+
+
+
 
 
             return Ok();
