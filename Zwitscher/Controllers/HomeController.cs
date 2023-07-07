@@ -81,7 +81,7 @@ namespace Zwitscher.Controllers
             ViewBag.newZwitschersFourteen = newZwitschersFourteen;
 
             // AVG. ZWITSCHER RATE - 30 DAYS
-            DateTime thirtyDaysAgo = DateTime.Now.AddDays(-900); // change to 30 whenever there are some posts available
+            DateTime thirtyDaysAgo = DateTime.Now.AddDays(-30); // change to 30 whenever there are some posts available
 
             int totalPostsThirty = _context.Post.Count(p => p.CreatedDate >= thirtyDaysAgo);
             int numberOfDays = (DateTime.Now - thirtyDaysAgo).Days; 
@@ -105,9 +105,13 @@ namespace Zwitscher.Controllers
             int diverseUsers = _context.User.Count(u => u.Gender == Models.User.Genders.Divers);
            
 
-            ViewBag.GenderStatisticMale = maleUsers;
-            ViewBag.GenderStatisticFemale = femaleUsers;
-            ViewBag.GenderStatisticDiverse = diverseUsers;
+            double GenderStatisticMale = ((double)maleUsers / totalUsers)*100;
+            double GenderStatisticFemale = ((double)femaleUsers / totalUsers)*100;
+            double GenderStatisticDiverse = ((double)diverseUsers / totalUsers)*100;
+
+            ViewBag.GenderStatisticMale = Math.Round(GenderStatisticMale, 2);
+            ViewBag.GenderStatisticFemale = Math.Round(GenderStatisticFemale, 2);
+            ViewBag.GenderStatisticDiverse = Math.Round(GenderStatisticDiverse, 2);
 
             return View();
         }

@@ -3,6 +3,8 @@ import { NavLink, Link } from "react-router-dom";
 import "./Header.css";
 import zwitscher_logo from "./zwitscher_logo.svg";
 import ReactSwitch from "react-switch";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import LoginIcon from "@mui/icons-material/Login";
 import { ThemeContext } from "./AppZwitscher"; // Access ThemeContext from App function to have toggle in the header
 
@@ -48,16 +50,19 @@ function Header() {
       <div className="Header_Middle"></div>
       <div className="Header_Right">
         <div className="toggle">
-          <ReactSwitch onChange={toggleTheme} checked={theme === "dark"} />
+          {theme === "dark" ? (
+            <LightModeIcon onClick={toggleTheme} />
+          ) : (
+            <DarkModeIcon onClick={toggleTheme} />
+          )}
         </div>
 
         <div className="Login_Icon">
-          <a
-            href="https://localhost:7160/Auth"
-            style={{ textDecoration: "none" }}
-          >
-            <LoginIcon />
-          </a>
+          <LoginIcon
+            onClick={() =>
+              (window.location.href = "https://localhost:7160/Auth")
+            }
+          />
         </div>
       </div>
     </div>

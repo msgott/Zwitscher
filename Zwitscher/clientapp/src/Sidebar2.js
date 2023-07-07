@@ -53,6 +53,21 @@ function Sidebar() {
           );
         })}
 
+        {/*Profile only visibale, if registered*/}
+        {data.Username !== "" && (
+          <li
+            className="row"
+            onClick={() => {
+              window.location.pathname = "/Zwitscher/profile";
+            }}
+          >
+            <div className="icon">
+              <PermIdentityIcon />
+            </div>
+            <div className="text">Profile</div>
+          </li>
+        )}
+
         {/*Dashboard only visibale, if the role is either Admin or Mod*/}
         {isModeratorOrAdmin() && (
           <li

@@ -64,8 +64,8 @@
 }
 
 .post_footer .upvote {
-  width: 24px;
-
+  height: 35px;
+  width: 35px;
   cursor: pointer;
 }
 #dark .post_footer .upvote {
@@ -82,8 +82,21 @@
     brightness(130%) contrast(120%);
 }
 
+/*Upvote filled*/
+.post_footer .UpvoteFilled {
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+}
+#dark .post_footer .UpvoteFilled {
+  filter: grayscale(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+    brightness(130%) contrast(120%);
+}
+
+/*Downvote not filled*/
 .post_footer .downvote {
-  width: 24px;
+  height: 35px;
+  width: 35px;
   cursor: pointer;
 }
 #dark .post_footer .downvote {
@@ -100,26 +113,15 @@
     brightness(130%) contrast(120%);
 }
 
-.post_footer .upvote-icon {
+/*Downvote Filled*/
+.post_footer .downvoteFilled {
+  height: 35px;
+  width: 35px;
   cursor: pointer;
-  font-size: 24px !important;
-  width: 24px;
-  padding: 20 0;
 }
-
-.post_footer .upvote-icon:hover {
-  color: white;
-}
-
-.post_footer .downvote-icon {
-  cursor: pointer;
-  font-size: 24px !important;
-  width: 24px;
-  padding: 20 0;
-}
-
-.post_footer .downvote-icon:hover {
-  color: white;
+#dark .post_footer .downvoteFilled {
+  filter: grayscale(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+    brightness(130%) contrast(120%);
 }
 
 .post_footer > svg {

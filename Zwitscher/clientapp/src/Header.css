@@ -64,15 +64,19 @@
 
 .Login_Icon {
   margin-top: 15px;
-  margin-right: 5%;
+  margin-right: 10%;
   transform: scale(2);
   cursor: pointer;
 }
 #light .Login_Icon {
   color: #01385f;
 }
+#light .Login_Icon:hover {
+  color: black;
+  transition: color 1000ms ease-out;
+}
 #dark .Login_Icon {
-  color: grey;
+  color: #d1d1d1;
 }
 #dark .Login_Icon:hover {
   color: white;
@@ -80,6 +84,22 @@
 }
 
 .toggle {
-  margin-left: 65%;
+  margin-left: 70%;
   margin-top: 15px;
+  cursor: pointer;
+  transform: scale(1.35);
+}
+#light .toggle {
+  color: #01385f !important;
+}
+#light .toggle:hover {
+  color: black !important;
+  transition: color 1000ms ease-out;
+}
+#dark .toggle {
+  color: #d1d1d1 !important;
+}
+#dark .toggle:hover {
+  color: white !important;
+  transition: color 1000ms ease-out;
 }

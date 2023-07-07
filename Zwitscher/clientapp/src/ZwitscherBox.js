@@ -1,40 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ZwitscherBox.css";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
-{
-  /*
-import {db} from './Firebase';
-import { getDocs, collection, addDoc } from "firebase/firestore";
-*/
-}
+import ImageIcon from "@mui/icons-material/Image";
+import VideocamIcon from "@mui/icons-material/Videocam";
 
 function ZwitscherBox() {
   const [zwitscherMessage, setZwitscherMessage] = useState("");
   const [zwitscherImage, setZwitscherImage] = useState("");
-
-  {
-    /*With firebase:
-
-    const postsCollectionRef = collection(db, "posts");
-
-    const sendZwitscher = async () => {
-      try {
-        await addDoc(postsCollectionRef, {
-          name: "JD",
-          text: zwitscherMessage,
-          image: zwitscherImage,
-          avatar:"https://upload.wikimedia.org/wikipedia/en/a/a2/Jd_season9.jpg" ,
-        });
-      } catch(err){
-        console.error(err);
-      }
-      
-      setZwitscherMessage("");
-      setZwitscherImage("");
-    }
-*/
-  }
 
   const sendZwitscher = async (e) => {
     e.preventDefault();
@@ -68,12 +41,62 @@ function ZwitscherBox() {
     }
   };
 
+  // Get all users information and session data from the current logged-in user
+  const [usersData, setUsersData] = useState([]);
+  const [sessionData, setSessionData] = useState([]);
+  const [pbFileName, setPbFileName] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch users data
+        const usersResponse = await fetch("https://localhost:7160/API/Users");
+        const usersJsonData = await usersResponse.json();
+        setUsersData(usersJsonData);
+
+        // Fetch session data
+        const sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+        const sessionJsonData = await sessionResponse.json();
+        setSessionData(sessionJsonData);
+
+        const currentUser = sessionJsonData.Username;
+
+        // Check if the current user is in the list of all registered users and then retrieve the filePath from that API
+        const currentUserData = usersJsonData.find(
+          (user) => user.username === currentUser
+        );
+
+        if (currentUserData) {
+          setPbFileName(currentUserData.pbFileName);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Get Avatar image depending on the filename using import() Method
+    const importImage = async () => {
+      try {
+        const module = await import(`../../wwwroot/Media/${pbFileName}`);
+        const image = module.default;
+        setPbFileName(image);
+      } catch (error) {
+        console.error("Error importing image:", error);
+      }
+    };
+
+    importImage();
+  }, [pbFileName]);
+
   return (
     <div className="zwitscherBox">
       <form>
         <div className="zwitscherBox_input">
-          <Avatar src="https://www.thesprucepets.com/thmb/APYdMl_MTqwODmH4dDqaY5q0UoE=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/all-about-tabby-cats-552489-hero-a23a9118af8c477b914a0a1570d4f787.jpg"></Avatar>
-
+          <Avatar src={pbFileName}></Avatar>
           {/*Text Input*/}
           <input
             onChange={(e) => setZwitscherMessage(e.target.value)}
@@ -85,14 +108,10 @@ function ZwitscherBox() {
 
         <div className="zwitscherbox_footer">
           {/*Image Input*/}
-          <input
-            onChange={(e) => setZwitscherImage(e.target.value)}
-            className="zwitscherBox_imageInput"
-            value={zwitscherImage}
-            placeholder="optional: image"
-            type="text"
-          />
-
+          <div className="zwitscherbox_footerLeft">
+            <ImageIcon className="zwitscherBox_imageInput" />
+            <VideocamIcon className="zwitscherBox_videoInput" />
+          </div>
           {/*Submit all Inputs*/}
           <Button
             onClick={sendZwitscher}
