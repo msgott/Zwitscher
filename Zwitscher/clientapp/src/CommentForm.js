@@ -1,26 +1,31 @@
 import React, { useState } from "react";
 
-function CommentForm({ postId, autoFocus = false, onSubmit, initialValue = "" }) {
+function CommentForm({
+  postId,
+  autoFocus = false,
+  onSubmit,
+  initialValue = "",
+}) {
   const [message, setMessage] = useState(initialValue); // set values for the form/Default,Edit
-    
+
   // Function to submit the message (CommentText) including: Id,UserId,PostId, to the CommentController
   // to create a new comment and update the database
   async function handleSubmit(e) {
-    e.preventDefault();
-     
-      try {
-
-          var requestOptions = {
-              method: 'POST',
-              redirect: 'follow'
-          };
-          let response = await fetch("https://localhost:7160/API/Posts/Comment/Add?postId=" + postId + "&CommentText=" + message, requestOptions)
-              .then(response => response.text())
-              .then(result => console.log(result))
-              .catch(error => console.log('error', error));
-
-
-          
+    try {
+      var requestOptions = {
+        method: "POST",
+        redirect: "follow",
+      };
+      let response = await fetch(
+        "https://localhost:7160/API/Posts/Comment/Add?postId=" +
+          postId +
+          "&CommentText=" +
+          message,
+        requestOptions
+      )
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.log("error", error));
 
       if (response.ok) {
         // Comment added successfully
