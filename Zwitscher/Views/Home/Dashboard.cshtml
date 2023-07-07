@@ -96,13 +96,13 @@
 
           <div class="charts-card">
             <p class="chart-title">MOST FAMOUS USER</p>
-                    <p class="chart-name">@ViewBag.mostFamousUser</p>
+                    <p class="chart-name">@ViewData["mostLikedUser"]</p>
             <div id="bar-chart"></div>
           </div>
 
           <div class="charts-card">
             <p class="chart-title">MOST HATED USER </p>
-            <p class="chart-name">Lukas Meyer</p>
+                    <p class="chart-name">@ViewData["mostHatedUser"]</p>
             <div id="area-chart"></div>
           </div>
 

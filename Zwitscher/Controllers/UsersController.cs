@@ -845,14 +845,6 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User BlockedBy----------------------------------------------------------------------
@@ -919,14 +911,7 @@ namespace Zwitscher.Controllers
             _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
 
         }
@@ -969,14 +954,7 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Blocking----------------------------------------------------------------------
@@ -1042,14 +1020,7 @@ namespace Zwitscher.Controllers
             _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
 
         }
@@ -1092,14 +1063,7 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Post----------------------------------------------------------------------
@@ -1151,14 +1115,7 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Comment----------------------------------------------------------------------
@@ -1211,14 +1168,7 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Vote----------------------------------------------------------------------
@@ -1268,14 +1218,7 @@ namespace Zwitscher.Controllers
 
 
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name", user.RoleID);
-            ViewData["MediaId"] = new SelectList(_dbContext.Media, "Id", "Id", user.MediaId);
-            ViewData["Following"] = user.Following;
-            ViewData["FollowedBy"] = user.FollowedBy;
-            ViewData["Posts"] = user.Posts;
-            ViewData["Comments"] = user.Comments;
-            ViewData["Votes"] = user.Votes;
-            ViewData["BlockedBy"] = user.BlockedBy;
-            ViewData["Blocking"] = user.Blocking;
+            
             return RedirectToAction(nameof(Edit), user);
         }
 

@@ -181,7 +181,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<User>)ViewData["Following"]!)
+                                        @foreach (var item in Model.Following)
                                         {
                                             <tr>
 
@@ -227,7 +227,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<User>)ViewData["FollowedBy"]!)
+                                        @foreach (var item in Model.FollowedBy)
                                         {
                                             <tr>
 
@@ -270,7 +270,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<User>)ViewData["BlockedBy"]!)
+                                        @foreach (var item in Model.BlockedBy)
                                         {
                                             <tr>
 
@@ -312,7 +312,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<User>)ViewData["Blocking"]!)
+                                        @foreach (var item in Model.Blocking)
                                         {
                                             <tr>
 
@@ -353,7 +353,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<Post>)ViewData["Posts"]!)
+                                        @foreach (var item in Model.Posts)
                                         {
                                             <tr>
 
@@ -392,7 +392,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<Comment>)ViewData["Comments"]!)
+                                        @foreach (var item in Model.Comments)
                                         {
                                             <tr>
 
@@ -430,7 +430,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in (List<Vote>)ViewData["Votes"]!)
+                                        @foreach (var item in Model.Votes)
                                         {
                                             <tr>
 

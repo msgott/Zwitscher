@@ -15,7 +15,11 @@ builder.Services.AddDbContext<ZwitscherContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//SignalR
 builder.Services.AddSignalR();
+
+//SwaggerGen
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Zwitscher API", Version = "v1" });
@@ -40,7 +44,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-CreateDbIfNotExists(app);
+
+//CreateDbIfNotExists(app); //Currently not used and deprecated
 
 
 //app.UseHttpsRedirection();
@@ -48,6 +53,8 @@ app.UseStaticFiles();
 app.UseSession();
 
 app.UseRouting();
+
+//Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -55,6 +62,8 @@ app.UseSwaggerUI(c =>
 });
 app.UseAuthorization();
 
+
+//Base Route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=index}/{id?}");

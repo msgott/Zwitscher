@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Zwitscher.Attributes;
@@ -95,9 +96,52 @@ namespace Zwitscher.Controllers
             ViewBag.totalBanned = totalBanned;
 
             //MOST FAMOUS USER
-            List<User> userOrderedByFollowedBy = _context.User.OrderBy(u => u.FollowedBy.Count).ToList<User>();
+            
+            User mostLiked = null;
+            int highestFollowedBy = 0;
+            foreach (User user in _context.User.Include(u => u.FollowedBy))
+            {
+                if (user.FollowedBy.Count > highestFollowedBy)
+                {
+                    highestFollowedBy = user.FollowedBy.Count;
+                    mostLiked = user;
+                }
+
+            }
+            string mostLikedUser = "-";
+            if (mostLiked != null)
+            {
+                mostLikedUser = mostLiked.Username;
+            }
+
+
+            ViewData["mostLikedUser"] = mostLikedUser;
+
+
+            List<User> userOrderedByFollowedBy = _context.User.Include(u => u.FollowedBy).OrderBy(u => u.FollowedBy.Count).ToList<User>();
             string mostFamousUser = userOrderedByFollowedBy.Last().Username;
             ViewBag.mostFamousUser = mostFamousUser;
+
+            //MOST HATED USER
+            User mostHated = null;
+            int highestBlockedBy = 0;
+            foreach (User user in _context.User.Include(u=>u.BlockedBy))
+            {
+                if (user.BlockedBy.Count > highestBlockedBy)
+                {
+                    highestBlockedBy = user.BlockedBy.Count;
+                    mostHated = user;
+                }
+                
+            }
+            string mostHatedUser = "-";
+            if (mostHated != null) { 
+            mostHatedUser = mostHated.Username;
+            }
+            
+            
+            ViewData["mostHatedUser"] = mostHatedUser;
+            
 
             //GENDER STATISTIC
             int maleUsers=_context.User.Count(u => u.Gender == Models.User.Genders.Männlich);
