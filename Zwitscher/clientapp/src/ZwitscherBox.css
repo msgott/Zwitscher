@@ -44,15 +44,54 @@
   align-items: baseline;
 }
 
+.zwitscherbox_footerLeft {
+  display: flex;
+  margin-left: 3%;
+  margin-top: 30px;
+}
+
 .zwitscherBox_imageInput {
   border: none;
   border-radius: 9px;
   padding: 10px;
-  margin-left: 2%;
-  height: 35px;
+  cursor: pointer;
+  transform: scale(7);
 }
 #dark .zwitscherBox_imageInput {
-  background-color: #d1d1d1;
+  color: #d1d1d1 !important;
+}
+#dark .zwitscherBox_imageInput:hover {
+  color: white !important;
+  transition: color 1000ms ease-out;
+}
+
+#light .zwitscherBox_imageInput {
+  color: #01385f !important;
+}
+#light .zwitscherBox_imageInput:hover {
+  color: black !important;
+  transition: color 1000ms ease-out;
+}
+
+.zwitscherBox_videoInput {
+  cursor: pointer;
+  transform: scale(1.35);
+  margin-left: 30px;
+}
+#dark .zwitscherBox_videoInput {
+  color: #d1d1d1 !important;
+}
+#dark .zwitscherBox_videoInput:hover {
+  color: white !important;
+  transition: color 1000ms ease-out;
+}
+
+#light .zwitscherBox_videoInput {
+  color: #01385f !important;
+}
+#light .zwitscherBox_videoInput:hover {
+  color: black !important;
+  transition: color 1000ms ease-out;
 }
 
 .zwitscherBox_zwitscherButton {
