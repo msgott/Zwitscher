@@ -17,14 +17,46 @@ namespace Zwitscher.Controllers
     public class PostsController : Controller
     {
         private readonly ZwitscherContext _context;
-
+        #region Helping Actions
+        //============================================= Helping Actions =====================================================
         public PostsController(ZwitscherContext context)
         {
-            _context = context;
+            _context = context; //Dependency Injection of DBContext
         }
+        private bool PostExists(Guid id)
+        //checks whether a Post exists
+        //Parameter:
+        //  id: Id to search a Post with
+        {
+            return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private void RecursiveDelete(Comment parent)
+        //Removes Comments Recursively because of many to many relationship to self
+        //Parameters:
+        //  parent: Comment to remove all child Comments from recursively
+        {
+            if (parent.commentedBy != null && parent.commentedBy.Count > 0)
+            {
+                var children = _context.Comment
+                    .Include(x => x.commentedBy)
+                    .Where(x => x.commentsCommentId == parent.Id).ToList();
+
+                foreach (var child in children)
+                {
+                    RecursiveDelete(child);
+                }
+            }
+
+            _context.Remove(parent);
+        }
+        #endregion
+        #region Base MVC Stuff for Index, Create, Edit, Delete
+        //============================================= Base MVC Stuff for Index, Create, Edit, Delete =====================================================
 
         // GET: Posts
         public async Task<IActionResult> Index()
+        //Delivers View for Posts Listing
         {
             Console.WriteLine(HttpContext.Session.GetString("UserId"));
             var zwitscherContext = _context.Post
@@ -40,6 +72,7 @@ namespace Zwitscher.Controllers
 
         // GET: Posts/Details/5
         public async Task<IActionResult> Details(Guid? id)
+        //Delivers View for Posts Details, Currently not used because of Popups
         {
             if (id == null || _context.Post == null)
             {
@@ -63,6 +96,7 @@ namespace Zwitscher.Controllers
 
         // GET: Posts/Create
         public IActionResult Create()
+        //Delivers View for Posts Creation
         {
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName");
 
@@ -71,11 +105,13 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post)
+        //Called when submitting the form in Create View
+        //Parameter:
+        //  files: Images to be Uploaded
+        //  Binded Properties: All Properties of post Model
         {
 
             ModelState.Remove("files");
@@ -99,7 +135,7 @@ namespace Zwitscher.Controllers
                             await file.CopyToAsync(stream);
                         }
 
-                        Media image = new Media
+                        Media image = new()
                         {
                             Id = tempID,
                             FileName = fileName,
@@ -124,6 +160,7 @@ namespace Zwitscher.Controllers
 
         // GET: Posts/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
+        //Delivers View for Posts Editing
         {
             if (id == null || _context.Post == null)
             {
@@ -140,7 +177,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
 
@@ -152,11 +189,14 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,IsPublic,UserId,retweetsID")] Post post)
+        //Called when submitting the form in Edit View
+        //Parameter:
+        //  id: Guid of Post to be edited
+        //  files: Images to be Uploaded
+        //  Binded Properties: All Properties of post Model
         {
             if (id != post.Id)
             {
@@ -186,7 +226,7 @@ namespace Zwitscher.Controllers
                                 await file.CopyToAsync(stream);
                             }
 
-                            Media image = new Media
+                            Media image = new()
                             {
                                 Id = tempID,
                                 FileName = fileName,
@@ -213,7 +253,7 @@ namespace Zwitscher.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
             ViewData["UserId"] = new SelectList(_context.User, "Id", "FirstName", post.UserId);
@@ -223,6 +263,7 @@ namespace Zwitscher.Controllers
 
         // GET: Posts/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
+        //Delivers View for Posts Deletion
         {
             if (id == null || _context.Post == null)
             {
@@ -244,6 +285,10 @@ namespace Zwitscher.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
+        //Called when submitting the form in Delete View
+        //Parameter:
+        //  id: Guid of Post to be deleted
+
         {
             if (_context.Post == null)
             {
@@ -290,15 +335,16 @@ namespace Zwitscher.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
-        private bool PostExists(Guid id)
-        {
-            return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-        //-----------------------------------------------MVC User Details----------------------------------------------------------------------
 
+        #region MVC Popup stuff
+        //============================================= MVC Popup stuff =====================================================
         [HttpPost]
         public async Task<IActionResult> PopupPostDetails(Guid postID)
+        //Delivers the PartialView for the Details Popup
+        //Parameters:
+        //  postID: ID of Post to show Details of
         {
             if (postID == Guid.Empty || _context.Post == null)
             {
@@ -324,10 +370,13 @@ namespace Zwitscher.Controllers
 
 
         }
-        //-----------------------------------------------MVC Post Media ----------------------------------------------------------------------
+
 
         [HttpPost]
         public async Task<IActionResult> PopupAddMedia(Guid postID)
+        //Delivers the PartialView for the Add Media Popup
+        //Parameters:
+        //  postID: ID of Post to add Media to
         {
 
             if (postID == Guid.Empty || _context.Post == null)
@@ -348,6 +397,10 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         public async Task<IActionResult> PopupRemoveMedia(Guid postID, Guid mediaToRemoveId)
+        //Delivers the PartialView for the Remove Media Popup
+        //Parameters:
+        //  postID: ID of Post to remove Media from
+        //  mediaToRemoveId: ID of Media to remove
         {
             if (postID == Guid.Empty || _context.Post == null)
             {
@@ -370,7 +423,11 @@ namespace Zwitscher.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddMediaToPost(Guid postID, IFormFile[] files) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddMediaToPost(Guid postID, IFormFile[] files)
+        //Adds the Media to the post when the form from the Add Media Popup is submitted
+        //Parameters:
+        //  postID: ID of Post to add Media to
+        //  files: Images to add
         {
 
             if (postID == Guid.Empty || _context.Post == null || files == null)
@@ -406,7 +463,7 @@ namespace Zwitscher.Controllers
                             await file.CopyToAsync(stream);
                         }
 
-                        Media image = new Media
+                        Media image = new()
                         {
                             Id = tempID,
                             FileName = fileName,
@@ -435,7 +492,7 @@ namespace Zwitscher.Controllers
 
 
 
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
 
@@ -448,7 +505,11 @@ namespace Zwitscher.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> RemoveMediaFromPost(Guid postID, Guid mediaToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveMediaFromPost(Guid postID, Guid mediaToRemoveId)
+        //Removes the Media from the post when the form from the Remove Media Popup is submitted
+        //Parameters:
+        //  postID: ID of Post to add Media to
+        //  mediaToRemoveId: media ID to remove
         {
 
             if (mediaToRemoveId == Guid.Empty || _context.Post == null)
@@ -466,8 +527,7 @@ namespace Zwitscher.Controllers
                 if (media.User is not null)
                 {
 
-                    //media.User.ProfilePicture = null;
-                    //media.User.MediaId = null;
+
                     media.User.ProfilePicture = null;
                     media.User = null;
 
@@ -498,7 +558,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
 
@@ -513,6 +573,10 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid postID, Guid commentToRemoveId)
+        //Delivers the PartialView for the Remove Comment Popup
+        //Parameters:
+        //  postID: ID of Post to remove Media from
+        //  commentToRemoveId: ID of Comment to remove
         {
             var post = await _context.Post.FirstOrDefaultAsync(post => post.Id == postID);
 
@@ -525,7 +589,11 @@ namespace Zwitscher.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> RemoveCommentFromPost(Guid postID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveCommentFromPost(Guid postID, Guid commentToRemoveId)
+        //Removes the Comment from the post when the form from the Remove Comment Popup is submitted
+        //Parameters:
+        //  postID: ID of Post to add Media to
+        //  commentToRemoveId: comment ID to remove
         {
 
             if (commentToRemoveId == Guid.Empty || _context.Post == null)
@@ -561,7 +629,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
 
@@ -575,6 +643,10 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         public async Task<IActionResult> PopupRemoveVote(Guid postID, Guid voteToRemoveId)
+        //Delivers the PartialView for the Remove Comment Popup
+        //Parameters:
+        //  postID: ID of Post to remove Media from
+        //  voteToRemoveId: ID of Vote to remove
         {
             var user = await _context.Post.FirstOrDefaultAsync(user => user.Id == postID);
 
@@ -587,7 +659,11 @@ namespace Zwitscher.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> RemoveVoteFromPost(Guid postID, Guid voteToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveVoteFromPost(Guid postID, Guid voteToRemoveId)
+        //Removes the Comment from the vote when the form from the Remove Vote Popup is submitted
+        //Parameters:
+        //  postID: ID of Post to add Media to
+        //  voteToRemoveId: vote ID to remove
         {
 
             if (voteToRemoveId == Guid.Empty || _context.User == null)
@@ -621,7 +697,7 @@ namespace Zwitscher.Controllers
             {
                 return NotFound();
             }
-            List<Post> tempList = new List<Post> { post };
+            List<Post> tempList = new() { post };
 
 
 
@@ -631,11 +707,13 @@ namespace Zwitscher.Controllers
             ViewData["RezwitscherId"] = new SelectList(_context.Post.ToList().Except(tempList), "Id", "Id", post.retweetsID);
             return RedirectToAction(nameof(Edit), post);
         }
-
-        //----------------------------------------- API --------------------------------------------------
+        #endregion
+        #region API Endpoint stuff
+        //============================================= API Endpoint stuff =====================================================
         [HttpGet]
         [Route("API/Posts")]
         public async Task<ActionResult> PostsList()
+        //Returns JSON of all Posts with regard for Admin and Moderator roles, User Following status and user Blocking status
         {
             if (_context.Post == null)
             {
@@ -699,7 +777,7 @@ namespace Zwitscher.Controllers
             }
 
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId")!);
-            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+            List<Dictionary<string, Object>> results = new();
 
             foreach (Post post in posts)
             {
@@ -713,7 +791,7 @@ namespace Zwitscher.Controllers
                 bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
                 string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true" : "false") : "null";
                 string retweetsPost = post.retweetsID.ToString()!;
-                List<string> mediaList = new List<string>();
+                List<string> mediaList = new();
 
                 if (post.Media is not null)
                 {
@@ -725,7 +803,7 @@ namespace Zwitscher.Controllers
                 }
 
 
-                Dictionary<string, Object> result = new Dictionary<string, Object>
+                Dictionary<string, Object> result = new()
                 {
                     { "postID", postID },
                     { "user_username", user_username },
@@ -747,9 +825,13 @@ namespace Zwitscher.Controllers
 
             return Json(results);
         }
+
         [HttpGet]
         [Route("API/Post")]
-        public async Task<ActionResult> getSinglePost(Guid id)
+        public async Task<ActionResult> GetSinglePost(Guid id)
+        //Returns JSON of one spcific Post
+        //Parameters:
+        //  id: the ID of the Post to be returned in detail
         {
             if (_context.Post == null)
             {
@@ -782,7 +864,7 @@ namespace Zwitscher.Controllers
             bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
             string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true" : "false") : "null";
             string retweetsPost = post.retweetsID.ToString()!;
-            List<string> mediaList = new List<string>();
+            List<string> mediaList = new();
 
             if (post.Media is not null)
             {
@@ -794,8 +876,8 @@ namespace Zwitscher.Controllers
             }
 
 
-            Dictionary<string, Object> result = new Dictionary<string, Object>
-                {
+            Dictionary<string, Object> result = new()
+            {
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
@@ -816,9 +898,15 @@ namespace Zwitscher.Controllers
 
             return Json(result);
         }
+
         [HttpPost]
         [Route("API/Posts/Add")]
-        public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post) //Only works while logged in!
+        public async Task<IActionResult> CreatePost(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post)
+        //Creates a new Post    
+        //Only works while logged in!
+        // Parameters:
+        //  files: Images to be uploaded
+        //  Binded properties: All relevant Values of post Model
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -851,7 +939,7 @@ namespace Zwitscher.Controllers
                             await file.CopyToAsync(stream);
                         }
 
-                        Media image = new Media
+                        Media image = new()
                         {
                             Id = tempID,
                             FileName = fileName,
@@ -875,7 +963,14 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Posts/Edit")]
-        public async Task<IActionResult> EditPost(Guid postID, string TextContent, bool IsPublic, Guid? retweetsID) //Only works while logged in!
+        public async Task<IActionResult> EditPost(Guid postID, string TextContent, bool IsPublic, Guid? retweetsID)
+        //Edits a Post    
+        //Only works while logged in!
+        //Parameters:
+        //  postID: Post that is edited
+        //  TextContent: new TextContent
+        //  IsPublic: new Value for Public state
+        //  retweetsID: new value for retweeting
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -885,7 +980,7 @@ namespace Zwitscher.Controllers
             {
                 return BadRequest();
             }
-            Post post = _context.Post.Find(postID);
+            Post post = _context.Post.Find(postID)!;
             if (post == null) return NotFound();
             if (post.UserId != _userID) return Unauthorized();
 
@@ -901,9 +996,12 @@ namespace Zwitscher.Controllers
 
 
         }
-        // POST: Posts/Delete/5
+
+
         [HttpDelete]
         [Route("API/Posts/Remove")]
+        //Deletes a Post    
+        //Only works while logged in!
         public async Task<IActionResult> DeletePost(Guid id)
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
@@ -965,6 +1063,9 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("API/Posts/Comments")]
         public async Task<ActionResult> PostsList(Guid? id)
+        //returns all Comments of one Post  
+        //Parameters:
+        //  id: ID of Post for query
         {
             if (id == null || _context.Post == null)
             {
@@ -979,7 +1080,7 @@ namespace Zwitscher.Controllers
                 return NotFound();
 
             }
-            List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
+            List<Dictionary<string, Object>> results = new();
             List<Comment> comments = (await _context.Comment
                 .Include(c => c.User)
                 .ToListAsync<Comment>()).FindAll(c => c.PostId == post.Id);
@@ -995,7 +1096,7 @@ namespace Zwitscher.Controllers
 
 
 
-                Dictionary<string, Object> result = new Dictionary<string, Object>
+                Dictionary<string, Object> result = new()
                 {
                     { "commentId", commentId },
                     { "user_username", user_username },
@@ -1015,7 +1116,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Posts/Vote")]
-        public async Task<ActionResult> ManageVotes(Guid? postId, bool IsUpVote = true) //Only works while logged in!
+        public async Task<ActionResult> ManageVotes(Guid? postId, bool IsUpVote = true)
+        //Manages the Vote of the currently logged in User for a given Post
+        //Only works while logged in!
+        //Parameters:
+        //  postId: ID of Post to manage Vote for
+        //  IsUpVote: whether the Vote is now an upvote
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1065,11 +1171,13 @@ namespace Zwitscher.Controllers
             }
             else
             {//User hat noch keinen Vote zu diesem Post abgegeben
-                Vote vote = new Vote();
-                vote.Id = Guid.NewGuid();
-                vote.isUpVote = IsUpVote;
-                vote.PostId = post.Id;
-                vote.UserId = userID;
+                Vote vote = new()
+                {
+                    Id = Guid.NewGuid(),
+                    isUpVote = IsUpVote,
+                    PostId = post.Id,
+                    UserId = userID
+                };
                 _context.Add(vote);
                 await _context.SaveChangesAsync();
             }
@@ -1081,11 +1189,16 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Posts/Comment/Add")]
-        public async Task<ActionResult> AddCommentToPost(Guid? postId, string CommentText = "") //Only works while logged in!
+        public async Task<ActionResult> AddCommentToPost(Guid? postId, string CommentText = "")
+        //Adds a Comment to a Post in the Context of the currently logged in User
+        //Only works while logged in!
+        //Parameters:
+        //  postId: ID of Post to add Comment to
+        //  CommentText: the Text of the Comment
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
-            if (postId == null || _context.Post == null || CommentText is null)
+            if (postId == null || _context.Post == null || CommentText is null || CommentText.Length == 0)
             {
                 return BadRequest();
             }
@@ -1101,14 +1214,16 @@ namespace Zwitscher.Controllers
 
             }
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
-            Comment comment = new Comment();
-            comment.Id = Guid.NewGuid();
-            comment.CommentText = CommentText;
-            comment.CreatedDate = DateTime.Now;
-            comment.UserId = userID;
-            comment.PostId = post.Id;
+            Comment comment = new()
+            {
+                Id = Guid.NewGuid(),
+                CommentText = CommentText,
+                CreatedDate = DateTime.Now,
+                UserId = userID,
+                PostId = post.Id,
 
-            comment.Post = post;
+                Post = post
+            };
             _context.Add(comment);
             await _context.SaveChangesAsync();
 
@@ -1119,7 +1234,12 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("API/Posts/Comment/Remove")]
-        public async Task<ActionResult> RemoveCommentFromPost1(Guid postId, Guid commentId) //Only works while logged in!
+        public async Task<ActionResult> RemoveCommentFromPost1(Guid postId, Guid commentId)
+        //Removes a Comment from a Post in the Context of the currently logged in User
+        //Only works while logged in!
+        //Parameters:
+        //  postId: ID of Post to remove Comment from
+        //  commentId: ID of Comment to be removed
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1164,15 +1284,15 @@ namespace Zwitscher.Controllers
 
             return Ok();
         }
-        //-----------------------------------------------API Post Media ----------------------------------------------------------------------
-
-
-
-
 
         [HttpPost]
         [Route("API/Posts/Media/Add")]
         public async Task<ActionResult> AddMediaToPost1(Guid postID, IFormFile[] files)
+        //Adds Media to a Post in the Context of the currently logged in User
+        //Only works while logged in!
+        //Parameters:
+        //  postID: ID of Post to add Media to
+        //  files: Image files to add
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1188,7 +1308,7 @@ namespace Zwitscher.Controllers
                  .Include(p => p.Comments)
                  .Include(p => p.Votes)
                  .FirstOrDefaultAsync(p => p.Id == postID);
-            if (post.UserId != userID) return Unauthorized();
+            if (post!.UserId != userID) return Unauthorized();
             if (post == null)
             {
                 return NotFound();
@@ -1211,7 +1331,7 @@ namespace Zwitscher.Controllers
                             await file.CopyToAsync(stream);
                         }
 
-                        Media image = new Media
+                        Media image = new()
                         {
                             Id = tempID,
                             FileName = fileName,
@@ -1248,6 +1368,11 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("API/Posts/Media/Remove")]
         public async Task<ActionResult> RemoveMediaFromPost1(Guid postID, Guid mediaToRemoveId)
+        //Removes Media from a Post in the Context of the currently logged in User
+        //Only works while logged in!
+        //Parameters:
+        //  postID: ID of Post to remove Media from
+        //  mediaToRemoveId: ID of Media to be removed
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1297,21 +1422,7 @@ namespace Zwitscher.Controllers
 
             return Ok();
         }
-        private void RecursiveDelete(Comment parent)
-        {
-            if (parent.commentedBy != null && parent.commentedBy.Count > 0)
-            {
-                var children = _context.Comment
-                    .Include(x => x.commentedBy)
-                    .Where(x => x.commentsCommentId == parent.Id).ToList();
+        #endregion
 
-                foreach (var child in children)
-                {
-                    RecursiveDelete(child);
-                }
-            }
-
-            _context.Remove(parent);
-        }
     }
 }
