@@ -1,6 +1,44 @@
 *{
   margin: 0;
 }
+:root {
+    /*Color for Objects*/
+    --ZwitscherColor: #04335c;
+    --LightBaseColor: #ffffff;
+    --DarkBaseColor: #3a3939;
+    --LightContrastColor: #7fffd4;
+    --DarkContrastColor: #302c2c;
+    --LightBetweenColor: #e5fff6;
+    --DarkBetweenColor: #3f3f3f;
+    /*Navigation colors*/
+    --LightSidebarLinkColor: var(--LightContrastColor);
+    --DarkSidebarLinkColor: var(--DarkContrastColor);
+    /*Text colors*/
+    --Light_TextColor: #000000;
+    --Dark_TextColor: #ffffff;
+    --Light_PlaceholderColor: #dcd5d5;
+    --Dark_PlaceholderColor: #000000;
+    /*Border colors*/
+    --Light_BorderColor: #000000;
+    --Dark_BorderColor: #ffffff;
+    /*Shadow colors*/
+    --Light_ShadowColor: #999999;
+    --Dark_ShadowColor: #999999;
+    /*Icon Colors*/
+    --Light_HeaderIconColor: #04335c;
+    --Dark_HeaderIconColor: #b2b2b2;
+    --Light_Hover_HeaderIconColor: #000000;
+    --Dark_Hover_HeaderIconColor: #ffffff;
+    /*Button Color*/
+    --Light_ButtomPrimaryColor: var(--LightContrastColor);
+    --Dark_ButtonPrimaryColor: var(--DarkBaseColor);
+    --Light_ButtomSecondaryColor: #04335c;
+    --Dark_ButtonSecondaryColor: #b2b2b2;
+    --Light_Hover_ButtomPrimaryColor: var(--LightBetweenColor);
+    --Dark_Hover_ButtonPrimaryColor: var(--DarkBetweenColor);
+    --Light_Hover_ButtomSecondaryColor: #04335c;
+    --Dark_Hover_ButtonSecondaryColor: #b2b2b2;
+}
 
 body {
   margin: 0;

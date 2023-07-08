@@ -2,19 +2,19 @@ import React, { useState, useEffect } from "react";
 import "./Comments.css";
 import IconBtn from "./IconBtn.js";
 import CommentForm from "./CommentForm";
-import { FaEdit, FaHeart, FaRegHeart, FaReply, FaTrash } from "react-icons/fa";
+import { FaEdit, FaHeart, FaReply, FaTrash } from "react-icons/fa";
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
+//const dateFormatter = new Intl.DateTimeFormat(undefined, {
+//  dateStyle: "medium",
+//  timeStyle: "short",
+//});
 
 function Comments({ postId, name }) {
   const [data, setData] = useState([]);
 
-  {
+  
     /*Get data from the Database/API */
-  }
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

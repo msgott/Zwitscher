@@ -1,24 +1,21 @@
-import React, { useState, createContext, useEffect } from "react";
-import ReactSwitch from "react-switch";
+import React, { useState, createContext } from "react";
+
 import {
-  BrowserRouter,
-  Link,
-  Switch,
+  
   Routes,
-  Route,
-  NavLink,
-  useNavigate,
+  Route
+  
+  
 } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
+
 import Header from "./Header";
-import Sidebar from "./Sidebar";
+
 import Sidebar2 from "./Sidebar2";
 import Feed from "./Feed";
 import Widgets from "./Widgets";
 import "./AppZwitscher.css";
 import Profile from "./pages/Profile";
-import HomeIcon from "@mui/icons-material/Home";
+
 
 export const ThemeContext = createContext(null);
 export const goToProfileContext = createContext(null);
@@ -39,7 +36,7 @@ function AppZwitscher() {
   // routing with React v18
 
   const [goToProfile, setGoToProfile] = useState(false);
-  const navigate = useNavigate();
+  
 
   return (
     // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on

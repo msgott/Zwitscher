@@ -5,11 +5,11 @@
     
 }
 
-.sidebarOption:hover {
-    border-radius: 30px;
-    color: var(--zwitscher-color);
-    transition: color 100ms ease-out;
-}
+    .sidebarOption:hover {
+        border-radius: 30px;
+        color: var(--ZwitscherColor);
+        transition: color 100ms ease-out;
+    }
 
 .sidebarOption > .MuiSvgIcon-root {
     padding: 20px;
@@ -21,7 +21,6 @@
     margin-right: 20px;
 }
 
-.sidebarOption--selected{
-    color: var(--zwitscher-color);
-
+.sidebarOption--selected {
+    color: var(--ZwitscherColor);
 }

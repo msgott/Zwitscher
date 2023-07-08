@@ -1,17 +1,16 @@
 .Header {
-  height: 75px;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 5px;
-  /*border-bottom: 1px solid rgb(228, 225, 225);*/
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    /*margin-bottom: 5px;*/
+    border-bottom: 1px solid #999999;
 }
 #light .Header {
-  background-color: rgb(249, 249, 249);
-  border-bottom: 1px solid rgb(248, 245, 245);
+    
 }
 #black .Header {
-  background-color: black;
+  
 }
 
 .Header_Left {
@@ -23,10 +22,12 @@
 }
 
 .Header_Right {
-  display: flex;
-  flex: 0.4;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    flex: 0.4;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: auto;
+    margin-top: auto;
 }
 
 .Logo {
@@ -35,7 +36,7 @@
 }
 
 .Logo_Zwitscher {
-  margin-left: 40%;
+  margin-left: 1%;
 }
 #dark .Logo_Zwitscher {
   filter: invert(93%) sepia(6%) saturate(0%) hue-rotate(89deg) brightness(91%)
@@ -48,14 +49,14 @@
 }
 
 .Logo_Text {
-  color: #04335c;
-  cursor: pointer;
-  text-align: center;
-  align-self: center;
-  font-size: 56px;
-  font-weight: bold;
-  margin-left: 3%;
-  text-decoration: none;
+    color: var(--Light_TextColor);
+    cursor: pointer;
+    text-align: center;
+    align-self: center;
+    font-size: 56px;
+    font-weight: bold;
+    margin-left: 3%;
+    text-decoration: none;
 }
 #dark .Logo_Text {
   filter: invert(93%) sepia(6%) saturate(0%) hue-rotate(89deg) brightness(91%)
@@ -69,19 +70,20 @@
   cursor: pointer;
 }
 #light .Login_Icon {
-  color: #01385f;
+    color: var( --Light_HeaderIconColor);
 }
-#light .Login_Icon:hover {
-  color: black;
-  transition: color 1000ms ease-out;
-}
+    #light .Login_Icon:hover {
+        color: var(--Light_Hover_HeaderIconColor);
+        transition: color 1000ms ease-out;
+    }
 #dark .Login_Icon {
-  color: #d1d1d1;
+    color: var(--Dark_HeaderIconColor);
+    
 }
-#dark .Login_Icon:hover {
-  color: white;
-  transition: color 1000ms ease-out;
-}
+    #dark .Login_Icon:hover {
+        color: var(--Light_Hover_HeaderIconColor);
+        transition: color 1000ms ease-out;
+    }
 
 .toggle {
   margin-left: 70%;
@@ -90,16 +92,16 @@
   transform: scale(1.35);
 }
 #light .toggle {
-  color: #01385f !important;
+    color: var(--Light_HeaderIconColor) !important;
 }
-#light .toggle:hover {
-  color: black !important;
-  transition: color 1000ms ease-out;
-}
+    #light .toggle:hover {
+        color: var(--Light_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
 #dark .toggle {
-  color: #d1d1d1 !important;
+    color: var(--Dark_HeaderIconColor) !important;
 }
-#dark .toggle:hover {
-  color: white !important;
-  transition: color 1000ms ease-out;
-}
+    #dark .toggle:hover {
+        color: var(--Dark_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }

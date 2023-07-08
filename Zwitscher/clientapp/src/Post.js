@@ -20,22 +20,24 @@ function Post({
     _currentUserVoted,
     _userVoteIsUpvote,
 }) {
-    
+
     const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
-    const [ currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
-    const [ userVoteIsUpvote, setuserVoteIsUpvote ] = useState(_userVoteIsUpvote);
+    const [currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
+    const [userVoteIsUpvote, setuserVoteIsUpvote] = useState(_userVoteIsUpvote === "true"? true : false);
+    
+
     // Get the current filename for the Avatar
     const [userName, setUserName] = useState("");
     // Sessions Data from the current logged in User
     const [sessionData, setSessionData] = useState([]);
-    
-    
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
                 const jsonData = await response.json();
-                console.log(jsonData);
+                //console.log(jsonData);
                 setSessionData(jsonData);
                 // get the current Username
                 const currentUser = jsonData.Username;
@@ -75,7 +77,7 @@ function Post({
     // Get ratings and the variable for the ratings
     const [votes, setVotes] = useState({ rating });
 
-    
+
 
     // ============================== upvote logic =============================================
 
@@ -83,7 +85,7 @@ function Post({
         // Current user has not voted at all, but votes up - increase by one
         if (!currentUserVoted) {
             setVotes((votes) => ({ rating: votes.rating + 1 }));
-            
+
             await updateVoteOnBackend(postId, true);
             setcurrentUserVoted(true);
             setuserVoteIsUpvote(true);
@@ -91,14 +93,14 @@ function Post({
         // Current user has not voted up, but voted already down - increases by 2
         else if (currentUserVoted && !userVoteIsUpvote) {
             setVotes((votes) => ({ rating: votes.rating + 2 }));
-            
+
             await updateVoteOnBackend(postId, true);
             setuserVoteIsUpvote(true);
         }
         // Current user has voted up but clicks upvote again to neutralize the vote
         else if (currentUserVoted && userVoteIsUpvote) {
             setVotes((votes) => ({ rating: votes.rating - 1 }));
-            
+
             await updateVoteOnBackend(postId, true);
             setcurrentUserVoted(false);
             setuserVoteIsUpvote(null);
@@ -110,7 +112,7 @@ function Post({
     const handleDownvoteClick = async (postId) => {
         if (!currentUserVoted) {
             setVotes((votes) => ({ rating: votes.rating - 1 }));
-            
+
             await updateVoteOnBackend(postId, false);
             setcurrentUserVoted(true);
             setuserVoteIsUpvote(false);
@@ -120,14 +122,14 @@ function Post({
             currentUserVoted && userVoteIsUpvote
         ) {
             setVotes((votes) => ({ rating: votes.rating - 2 }));
-            
+
             await updateVoteOnBackend(postId, false);
-            
+
             setuserVoteIsUpvote(false);
             // neutralize downvote
         } else {
             setVotes((votes) => ({ rating: votes.rating + 1 }));
-            
+
             await updateVoteOnBackend(postId, false);
             setcurrentUserVoted(false);
             setuserVoteIsUpvote(null);
@@ -190,95 +192,103 @@ function Post({
         <div className="post">
             <div className="post_avatar">
                 <Avatar src={avatar} />
-                <div className="post_body">
-                    <div className="post_header">
-                        <div className="post_headerText">
-                            <h3>{name}</h3>
-                        </div>
-                        <div className="post_headerDescription"></div>
-                        <p>{text}</p>
+                <p>{name}</p>
+            </div>
+            <div className="post_body">
+                <div className="post_header">
+                    <div className="post_headerText">
+
                     </div>
-                    <img src={image} alt="" />
-                    <div className="post_footer">
-                        <ChatBubbleOutlineIcon
-                            onClick={toggleComments}
-                            className="chat-icon"
-                        />
-
-                        <div className="vote_container">
-                            
-                            
-                            {(!currentUserVoted || (currentUserVoted && !userVoteIsUpvote)) ?
-                                /*Upvote NOT-filled */
-                                sessionData.Username === "" ? (<img
-                                    src={UpVote}
-                                    alt="Icon"
-                                    text="UpVote"
-                                    className="upvote"
-                                    onClick={() => redirectToLogin()}
-                                />) : (<img
-                                    src={UpVote}
-                                    alt="Icon"
-                                    text="UpVote"
-                                    className="upvote"
-                                    onClick={() => handleUpvoteClick(postId)}
-                                />)
-                                :/*Upvote filled */
-                                sessionData.Username === "" ? (<img
-                                    src={VoteClicked}
-                                    alt="Icon"
-                                    text="ClickedIcon"
-                                    className="UpvoteFilled"
-                                    onClick={() => redirectToLogin()}
-                                />) : (<img
-                                    src={VoteClicked}
-                                    alt="Icon"
-                                    text="ClickedIcon"
-                                    className="UpvoteFilled"
-                                    onClick={() => handleUpvoteClick(postId)}
-                                />)
-                            }
-                            
-                            <span>{votes.rating}</span>
-
-                            {(!currentUserVoted || (currentUserVoted && userVoteIsUpvote)) ?
-                                /*Downvote NOT-filled */
-                                sessionData.Username === "" ? (<img
-                                    src={DownVote}
-                                    alt="Icon"
-                                    text="DownVote"
-                                    className="downvote"
-                                    onClick={() => redirectToLogin()}
-
-                                />) : (<img
-                                    src={DownVote}
-                                    alt="Icon"
-                                    text="DownVote"
-                                    className="downvote"
-                                    onClick={() => handleDownvoteClick(postId)}
-
-                                />)
-                                :/*Downvote filled */
-                                sessionData.Username === "" ? (<img
-                                    src={VotedClickDown}
-                                    alt="Icon"
-                                    text="UpVote"
-                                    className="downvoteFilled"
-                                    onClick={() => redirectToLogin()}
-                                />) : (<img
-                                    src={VotedClickDown}
-                                    alt="Icon"
-                                    text="UpVote"
-                                    className="downvoteFilled"
-                                    onClick={() => handleDownvoteClick(postId)}
-                                />)
-                            }
-                        </div>
-                    </div>
-                    {showComments && <Comments postId={postId} />}
+                    <div className="post_headerDescription"></div>
+                    <p>{text}</p>
                 </div>
+                <img src={image} alt="" />
+                <div className="post_footer">
+                    <ChatBubbleOutlineIcon
+                        onClick={toggleComments}
+                        className="chat-icon"
+                    />
+
+                    <div className="vote_container">
+
+
+                        {(currentUserVoted  && userVoteIsUpvote) ?
+                            /*Upvote filled */
+
+                            sessionData.Username === "" ? (<img
+                                src={VoteClicked}
+                                alt="Icon"
+                                text="ClickedIcon"
+                                className="UpvoteFilled"
+                                onClick={() => redirectToLogin()}
+                            />) : (<img
+                                src={VoteClicked}
+                                alt="Icon"
+                                text="ClickedIcon"
+                                className="UpvoteFilled"
+                                onClick={() => handleUpvoteClick(postId)}
+                            />)
+                            
+                            :
+                            /*Upvote NOT-filled */
+                            sessionData.Username === "" ? (<img
+                                src={UpVote}
+                                alt="Icon"
+                                text="UpVote"
+                                className="upvote"
+                                onClick={() => redirectToLogin()}
+                            />) : (<img
+                                src={UpVote}
+                                alt="Icon"
+                                text="UpVote"
+                                className="upvote"
+                                onClick={() => handleUpvoteClick(postId)}
+                            />)
+                        }
+
+                        <span>{votes.rating}</span>
+
+                        {(currentUserVoted && !userVoteIsUpvote) ?
+                            /*Downvote filled */
+                            !userVoteIsUpvote &&
+                                sessionData.Username === "" ? (<img
+                                    src={VotedClickDown}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="downvoteFilled"
+                                    onClick={() => redirectToLogin()}
+                                />) : (<img
+                                    src={VotedClickDown}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="downvoteFilled"
+                                    onClick={() => handleDownvoteClick(postId)}
+                                />)
+                            
+                            :
+                            /*Downvote NOT-filled */
+                            sessionData.Username === "" ? (<img
+                                src={DownVote}
+                                alt="Icon"
+                                text="DownVote"
+                                className="downvote"
+                                onClick={() => redirectToLogin()}
+
+                            />) : (<img
+                                src={DownVote}
+                                alt="Icon"
+                                text="DownVote"
+                                className="downvote"
+                                onClick={() => handleDownvoteClick(postId)}
+
+                            />)
+                        }
+                    </div>
+                </div>
+                {showComments && <Comments postId={postId} />}
             </div>
         </div>
+
     );
 }
 
