@@ -1742,7 +1742,7 @@ namespace Zwitscher.Controllers
                 .Include(p => p.retweets)
                 .ToListAsync();
             posts = posts.FindAll(p => p.UserId == userid);
-            if (posts == null || posts.Count == 0)
+            if (posts == null)
             {
                 return NotFound();
 

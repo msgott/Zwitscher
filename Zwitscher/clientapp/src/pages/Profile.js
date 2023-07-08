@@ -70,26 +70,31 @@ function Profile() {
         // Fetch session data
         const sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
         const sessionJsonData = await sessionResponse.json();
-        setSessionData(sessionJsonData);
-
+          setSessionData(sessionJsonData);
+          console.log(sessionJsonData);
+          const currentUsername = sessionJsonData.Username;
+          const currentUserID = sessionJsonData.userID;
+          console.log(currentUserID);
         // Fetch PostCount data
+          const currentUser = usersJsonData.find(user => user.username === currentUsername);
 
-        const postCountResponse = await fetch("https://localhost:7160/API/Users/Posts?id="+ {userId});
+          const postCountResponse = await fetch( "https://localhost:7160/API/Users/Posts");
         const postCountJsonData = await postCountResponse.json();
         setPostCount(postCountJsonData.length);
 
         // Search the username of the Session User
-        const currentUsername = sessionJsonData.Username;
+        
 
         // Get the entire Person with all attributes and assign it to currentUser (object), where the Session User 
         // matches with all users.
         // (in short) Get the data from that specific person whos logged in
-        const currentUser = usersJsonData.find(user => user.username === currentUsername);
+        
 
         // If currentUser is truthy (i.e., not null, undefined, false, 0, or an empty string),
         // then the value of currentUser.userID is assigned to currentUserId.
         // If currentUser is falsy (i.e., null, undefined, false, 0, or an empty string), then an empty
         // string ("") is assigned to currentUserId.
+          
         setUserId(currentUser ? currentUser.userID : "");
         setFirstname(currentUser ? currentUser.firstname : "");
         setLastname( currentUser ? currentUser.lastname :"");
