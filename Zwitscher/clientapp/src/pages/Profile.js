@@ -48,11 +48,13 @@ function Profile() {
   const [userId, setUserId] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] =useState("");
+  const [username, setUsername] = useState("");
   const [birthday, setBirthday] =useState("");
   const [biography, setBiography] =useState("");
   const [followedCount, setFollowedCount] = useState(0);
   const [followerCount, setFollowerCount] =useState(0);
   const [gender, setGender] = useState("");
+  const [password, setPassword] = useState("");
 
   // Persons PostCount
   const [postCount, setPostCount] = useState(0);
@@ -91,6 +93,7 @@ function Profile() {
         setUserId(currentUser ? currentUser.userID : "");
         setFirstname(currentUser ? currentUser.firstname : "");
         setLastname( currentUser ? currentUser.lastname :"");
+        setUsername(currentUser ? currentUser.username : "" )
         setBirthday(currentUser ? currentUser.brithday: "") ;
         setBiography(currentUser ? currentUser.biography: "");
         setFollowedCount(currentUser ? currentUser.followedCount: 0);
@@ -113,6 +116,25 @@ function Profile() {
     fetchData();
   }, []);
 
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+    // Perform any necessary actions here, such as saving the form data or making API calls
+    var formdata = new FormData();
+
+    var requestOptions = {
+      method: 'POST',
+      body: formdata,
+      redirect: 'follow'
+    };
+  
+    fetch("https://localhost:7160/API/Users/Edit?userID="+userId+"&LastName=" + lastname+"&FirstName="+firstname +"&Username="+username+"&Password="+ password+"&Birthday="+birthday+ "&Biography="+ biography + "&Gender="+gender, requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+
+  };
+
   return (
     // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
@@ -124,55 +146,74 @@ function Profile() {
           <div className="app">
             <Sidebar2 className ="sticky-sidebar" />
             <div className="Profile">
-              <h1 style={{padding:'10px'}}>Profile</h1>
-              <div className="inputfields">
-                <h1 className="input_header">Name:</h1>
-                <div className="inputfiled_button">
+              <h1 style={{padding:'10px'}}>Profile: {username}</h1>
+              <form  onClick={handleSubmit}>
+                <div className="inputfields">
+                  <h1 className="input_header">Name:</h1>
+                  <div className="inputfiled_button">
+                    <input
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
+                      placeholder="Firstname..."
+                      type="text"
+                      className="inputs"
+                    />
+                    <div className="line"></div> 
+                  </div>
+                  <h1 className="input_header">Lastname:</h1>
                   <input
-                    value={firstname}
-                    onChange={(e) => setFirstname(e.target.value)}
-                    placeholder="Firstname..."
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    placeholder="Lastname..."
                     type="text"
                     className="inputs"
                   />
                   <div className="line"></div> 
+                  <h1 className="input_header">About:</h1>
+                  <input
+                    value={biography}
+                    onChange={(e) => setBiography(e.target.value)}
+                    placeholder="Tell something about you ..."
+                    type="text"
+                    className="inputs"
+                  />
+                  <div className="line"></div> 
+                  <h1 className="input_header">Birthday: </h1>
+                  <input
+                    value={birthday}
+                    onChange={(e) => setBirthday(e.target.value)}
+                    placeholder="01.01.2000"
+                    type="text"
+                    className="inputs"
+                  />
+                  <div className="line"></div> 
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="inputs"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="Diverse">Diverse</option>
+                  </select>
+                  <div className="line"></div> 
+                  <input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    placeholder="Enter new password"
+                    className="inputs"
+                  />
+                  <div className="line"></div> 
                   <Button
-                  className="zwitscherButton"
-                  type="submit"
-                  onClick={setFirstname}
-                >
-                  Save
-                </Button>
+                    className="zwitscherButton"
+                    type="submit"
+                  >
+                    Save
+                  </Button>
                 </div>
-                <h1 className="input_header">Lastname:</h1>
-                <input
-                  value={lastname}
-                  onChange={(e) => setLastname(e.target.value)}
-                  placeholder="Lastname..."
-                  type="text"
-                  className="inputs"
-                />
-                <div className="line"></div> 
-                <Button className="zwitscherButton" type="submit" onClick={setLastname}>
-                  Save
-                </Button>
-                <h1 className="input_header">About:</h1>
-                <input
-                  value={biography}
-                  onChange={(e) => setBiography(e.target.value)}
-                  placeholder="Tell something about you ..."
-                  type="text"
-                  className="inputs"
-                />
-                <div className="line"></div> 
-                <Button
-                  className="zwitscherButton"
-                  type="submit"
-                  onClick={setBiography}
-                >
-                  Save
-                </Button>
-              </div>
+              </form>
               <div className="statistics_profile">
                 <h1>Followered by: </h1>
                 <span>{followerCount}</span>

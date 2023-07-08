@@ -26,7 +26,7 @@ function App() {
       <Route path="public" element={<Public />} />
       <Route path="trending" element={<Trending />} />
       <Route path="new" element={<New />} />
-      <Route path="profile" element={<Profile />} />
+      <Route path="profile/*" element={<Profile />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="*" element={<Error />} />
     </Routes>

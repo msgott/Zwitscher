@@ -93,7 +93,7 @@ body {
 }
 
 .inputs:focus {
-  padding-bottom: 5px;
+  
 }
 
 .inputs:focus + .line:after {
@@ -146,5 +146,5 @@ body {
 }
 
 .statistics_profile{
-  margin-top: 200px;
+  margin-top: 350px;
 }
