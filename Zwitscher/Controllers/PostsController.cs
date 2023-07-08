@@ -1116,7 +1116,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Posts/Vote")]
-        public async Task<ActionResult> ManageVotes(Guid? postId, bool IsUpVote = true)
+        public async Task<ActionResult> ManageVotes([Bind("postId,IsUpVote")]Guid? postId, bool IsUpVote = true)
         //Manages the Vote of the currently logged in User for a given Post
         //Only works while logged in!
         //Parameters:

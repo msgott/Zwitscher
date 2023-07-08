@@ -1,9 +1,8 @@
 body {
-  --zwitscher-color-lightmode: #04335c;
-  --zwitscher-background-lightmode: #e6ecf0;
-
-  --zwitscher-color-darkmode: white;
-  --zwitscher-background-darkmode: #3a3939;
+    --zwitscher-color-lightmode: #04335c;
+    --zwitscher-background-lightmode: #e5fff6;
+    --zwitscher-color-darkmode: white;
+    --zwitscher-background-darkmode: #3a3939;
 }
 
 ::-webkit-scrollbar {
@@ -17,7 +16,7 @@ body {
 }
 
 #light {
-  background-color: white;
+    background-color: #e5fff6;
 }
 
 .app {
@@ -33,7 +32,7 @@ body {
 }
 
 #light .app {
-  background-color: white;
+    background-color: #e5fff6;
 }
 
 .Profile {

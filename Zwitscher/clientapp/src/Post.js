@@ -11,235 +11,275 @@ import { goToProfileContext } from "./AppZwitscher";
 
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
 function Post({
-  postId,
-  name,
-  text,
-  image,
-  avatar,
-  rating,
-  currentUserVoted,
-  userVoteIsUpvote,
+    postId,
+    name,
+    text,
+    image,
+    avatar,
+    rating,
+    _currentUserVoted,
+    _userVoteIsUpvote,
 }) {
-  const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
+    
+    const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
+    const [ currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
+    const [ userVoteIsUpvote, setuserVoteIsUpvote ] = useState(_userVoteIsUpvote);
+    // Get the current filename for the Avatar
+    const [userName, setUserName] = useState("");
+    // Sessions Data from the current logged in User
+    const [sessionData, setSessionData] = useState([]);
+    
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
+                const jsonData = await response.json();
+                console.log(jsonData);
+                setSessionData(jsonData);
+                // get the current Username
+                const currentUser = jsonData.Username;
 
-  // Get the current filename for the Avatar
-  const [userName, setUserName] = useState("");
-  // Sessions Data from the current logged in User
-  const [sessionData, setSessionData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
-        const jsonData = await response.json();
-        setSessionData(jsonData);
-        // get the current Username
-        const currentUser = jsonData.Username;
+                const currentUserData = usersData.find(
+                    (user) => user.username === currentUser
+                );
 
-        const currentUserData = usersData.find(
-          (user) => user.username === currentUser
-        );
+                if (currentUserData) {
+                    setUserName(currentUserData.pbFileName);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
 
-        if (currentUserData) {
-          setUserName(currentUserData.pbFileName);
+        fetchData();
+    }, []);
+
+    // Get all users information
+    const [usersData, setUsersData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("https://localhost:7160/API/Users"); // Replace with your API endpoint
+                const jsonData = await response.json();
+                setUsersData(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Get ratings and the variable for the ratings
+    const [votes, setVotes] = useState({ rating });
+
+    
+
+    // ============================== upvote logic =============================================
+
+    const handleUpvoteClick = async (postId) => {
+        // Current user has not voted at all, but votes up - increase by one
+        if (!currentUserVoted) {
+            setVotes((votes) => ({ rating: votes.rating + 1 }));
+            
+            await updateVoteOnBackend(postId, true);
+            setcurrentUserVoted(true);
+            setuserVoteIsUpvote(true);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        // Current user has not voted up, but voted already down - increases by 2
+        else if (currentUserVoted && !userVoteIsUpvote) {
+            setVotes((votes) => ({ rating: votes.rating + 2 }));
+            
+            await updateVoteOnBackend(postId, true);
+            setuserVoteIsUpvote(true);
+        }
+        // Current user has voted up but clicks upvote again to neutralize the vote
+        else if (currentUserVoted && userVoteIsUpvote) {
+            setVotes((votes) => ({ rating: votes.rating - 1 }));
+            
+            await updateVoteOnBackend(postId, true);
+            setcurrentUserVoted(false);
+            setuserVoteIsUpvote(null);
+        }
     };
 
-    fetchData();
-  }, []);
+    // ============================== downvote logic =============================================
+    // Neutral position
+    const handleDownvoteClick = async (postId) => {
+        if (!currentUserVoted) {
+            setVotes((votes) => ({ rating: votes.rating - 1 }));
+            
+            await updateVoteOnBackend(postId, false);
+            setcurrentUserVoted(true);
+            setuserVoteIsUpvote(false);
 
-  // Get all users information
-  const [usersData, setUsersData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://localhost:7160/API/Users"); // Replace with your API endpoint
-        const jsonData = await response.json();
-        setUsersData(jsonData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+            // Upvote was clicked before and now downvote is clicked
+        } else if (
+            currentUserVoted && userVoteIsUpvote
+        ) {
+            setVotes((votes) => ({ rating: votes.rating - 2 }));
+            
+            await updateVoteOnBackend(postId, false);
+            
+            setuserVoteIsUpvote(false);
+            // neutralize downvote
+        } else {
+            setVotes((votes) => ({ rating: votes.rating + 1 }));
+            
+            await updateVoteOnBackend(postId, false);
+            setcurrentUserVoted(false);
+            setuserVoteIsUpvote(null);
+        }
     };
 
-    fetchData();
-  }, []);
+    // Send votes to the backend depending on the posts ID and the user gets an update if the user
+    // already voted for that post or not
 
-  // Get ratings and the variable for the ratings
-  const [votes, setVotes] = useState({ rating });
+    var requestOptions = {
+        method: "POST",
+        redirect: "follow",
+    };
 
-  // Upvote
-  const [CurrentUserVotedUp, setCurrentUserVotedUp] = useState("null");
-  // Downvote
-  const [CurrentUserVotedDown, setCurrentUserVotedDown] = useState(false);
+    //fetch(
+    //  "https://localhost:7160/API/Posts/Vote?postId=" +
+    //    { postId } +
+    //    "&IsUpVote=" +
+    //    { userVoteIsUpvote } +
+    //    ", requestOptions"
+    //)
+    //  .then((response) => response.text())
+    //  .then((result) => console.log(result))
+    //  .catch((error) => console.log("error", error));
 
-  // ============================== upvote logic =============================================
+    //Send updated vote to backend
+    const updateVoteOnBackend = async (postId, isupvote) => {
+        try {
+            const response = await fetch(
+                `https://localhost:7160/API/Posts/Vote?postId=${postId}&IsUpVote=${isupvote}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
 
-  const handleUpvoteClick = async (postId, userVoteIsUpvote) => {
-    // Current user has not voted at all, but votes up - increase by one
-    if (CurrentUserVotedUp === "null" && CurrentUserVotedDown === false) {
-      setVotes((votes) => ({ rating: votes.rating + 1 }));
-      setCurrentUserVotedUp("true");
-      await updateVoteOnBackend(postId, votes.rating + 1);
-    }
-    // Current user has not voted up, but voted already down - increases by 2
-    else if (CurrentUserVotedUp === "false" && CurrentUserVotedDown === true) {
-      setVotes((votes) => ({ rating: votes.rating + 2 }));
-      setCurrentUserVotedUp("true");
-      setCurrentUserVotedDown(false);
-      await updateVoteOnBackend(postId, votes.rating + 2);
-    }
-    // Current user has voted up but clicks upvote again to neutralize the vote
-    else if (CurrentUserVotedUp === "true" && CurrentUserVotedDown === false) {
-      setVotes((votes) => ({ rating: votes.rating - 1 }));
-      setCurrentUserVotedUp("null");
-      await updateVoteOnBackend(postId, votes.rating - 1);
-    }
-  };
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
 
-  // ============================== downvote logic =============================================
-  // Neutral position
-  const handleDownvoteClick = async (postId, userVoteIsUpvote) => {
-    if (CurrentUserVotedUp === "null" && CurrentUserVotedDown === false) {
-      setVotes((votes) => ({ rating: votes.rating - 1 }));
-      setCurrentUserVotedUp("false");
-      setCurrentUserVotedDown(true);
-      await updateVoteOnBackend(votes.rating - 1);
-
-      // Upvote was clicked before and now downvote is clicked
-    } else if (
-      CurrentUserVotedUp === "true" &&
-      CurrentUserVotedDown === false
-    ) {
-      setVotes((votes) => ({ rating: votes.rating - 2 }));
-      setCurrentUserVotedUp("false");
-      setCurrentUserVotedDown(true);
-      await updateVoteOnBackend(votes.rating - 2);
-      // neutralize downvote
-    } else {
-      setVotes((votes) => ({ rating: votes.rating + 1 }));
-      setCurrentUserVotedUp("null");
-      setCurrentUserVotedDown(false);
-      await updateVoteOnBackend(postId, votes.rating + 1);
-    }
-  };
-
-  // Send votes to the backend depending on the posts ID and the user gets an update if the user
-  // already voted for that post or not
-
-  var requestOptions = {
-    method: "POST",
-    redirect: "follow",
-  };
-
-  fetch(
-    "https://localhost:7160/API/Posts/Vote?postId=" +
-      { postId } +
-      "&IsUpVote=" +
-      { userVoteIsUpvote } +
-      ", requestOptions"
-  )
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.log("error", error));
-
-  //Send updated vote to backend
-  const updateVoteOnBackend = async (postId, newRating) => {
-    try {
-      const response = await fetch(
-        `https://localhost:7160/API/Posts/${postId}/Vote`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ rating: newRating }),
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error updating vote:", error);
         }
-      );
-      // Handle the response if needed
-    } catch (error) {
-      console.error("Error updating vote:", error);
-    }
-  };
+    };
+    //redirect to Login page
+    const redirectToLogin = () => {
+        window.location.replace("Auth");
+    };
 
-  //Open Comment section
-  const [showComments, setShowComments] = useState(false);
+    //Open Comment section
+    const [showComments, setShowComments] = useState(false);
 
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
+    const toggleComments = () => {
+        setShowComments(!showComments);
+    };
 
-  return (
-    <div className="post">
-      <div className="post_avatar">
-        <Avatar src={avatar} />
-        <div className="post_body">
-          <div className="post_header">
-            <div className="post_headerText">
-              <h3>{name}</h3>
+    return (
+        <div className="post">
+            <div className="post_avatar">
+                <Avatar src={avatar} />
+                <div className="post_body">
+                    <div className="post_header">
+                        <div className="post_headerText">
+                            <h3>{name}</h3>
+                        </div>
+                        <div className="post_headerDescription"></div>
+                        <p>{text}</p>
+                    </div>
+                    <img src={image} alt="" />
+                    <div className="post_footer">
+                        <ChatBubbleOutlineIcon
+                            onClick={toggleComments}
+                            className="chat-icon"
+                        />
+
+                        <div className="vote_container">
+                            
+                            
+                            {(!currentUserVoted || (currentUserVoted && !userVoteIsUpvote)) ?
+                                /*Upvote NOT-filled */
+                                sessionData.Username === "" ? (<img
+                                    src={UpVote}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="upvote"
+                                    onClick={() => redirectToLogin()}
+                                />) : (<img
+                                    src={UpVote}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="upvote"
+                                    onClick={() => handleUpvoteClick(postId)}
+                                />)
+                                :/*Upvote filled */
+                                sessionData.Username === "" ? (<img
+                                    src={VoteClicked}
+                                    alt="Icon"
+                                    text="ClickedIcon"
+                                    className="UpvoteFilled"
+                                    onClick={() => redirectToLogin()}
+                                />) : (<img
+                                    src={VoteClicked}
+                                    alt="Icon"
+                                    text="ClickedIcon"
+                                    className="UpvoteFilled"
+                                    onClick={() => handleUpvoteClick(postId)}
+                                />)
+                            }
+                            
+                            <span>{votes.rating}</span>
+
+                            {(!currentUserVoted || (currentUserVoted && userVoteIsUpvote)) ?
+                                /*Downvote NOT-filled */
+                                sessionData.Username === "" ? (<img
+                                    src={DownVote}
+                                    alt="Icon"
+                                    text="DownVote"
+                                    className="downvote"
+                                    onClick={() => redirectToLogin()}
+
+                                />) : (<img
+                                    src={DownVote}
+                                    alt="Icon"
+                                    text="DownVote"
+                                    className="downvote"
+                                    onClick={() => handleDownvoteClick(postId)}
+
+                                />)
+                                :/*Downvote filled */
+                                sessionData.Username === "" ? (<img
+                                    src={VotedClickDown}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="downvoteFilled"
+                                    onClick={() => redirectToLogin()}
+                                />) : (<img
+                                    src={VotedClickDown}
+                                    alt="Icon"
+                                    text="UpVote"
+                                    className="downvoteFilled"
+                                    onClick={() => handleDownvoteClick(postId)}
+                                />)
+                            }
+                        </div>
+                    </div>
+                    {showComments && <Comments postId={postId} />}
+                </div>
             </div>
-            <div className="post_headerDescription"></div>
-            <p>{text}</p>
-          </div>
-          <img src={image} alt="" />
-          <div className="post_footer">
-            <ChatBubbleOutlineIcon
-              onClick={toggleComments}
-              className="chat-icon"
-            />
-
-            <div className="vote_container">
-              {/*Upvote filled */}
-              {CurrentUserVotedUp === "true" && (
-                <img
-                  src={VoteClicked}
-                  alt="Icon"
-                  text="ClickedIcon"
-                  className="UpvoteFilled"
-                  onClick={() => handleUpvoteClick(postId, userVoteIsUpvote)}
-                />
-              )}
-              {/*Upvote NOT-filled */}
-              {(CurrentUserVotedUp === "null" ||
-                CurrentUserVotedUp === "false") && (
-                <img
-                  src={UpVote}
-                  alt="Icon"
-                  text="UpVote"
-                  className="upvote"
-                  onClick={() => handleUpvoteClick(postId, userVoteIsUpvote)}
-                />
-              )}
-              <span>{votes.rating}</span>
-              {/*Downvote NOT-filled */}
-              {CurrentUserVotedDown === false && (
-                <img
-                  src={DownVote}
-                  alt="Icon"
-                  text="DownVote"
-                  className="downvote"
-                  onClick={() => handleDownvoteClick(postId, userVoteIsUpvote)}
-                />
-              )}
-              {/*Downvote filled */}
-              {CurrentUserVotedDown === true && (
-                <img
-                  src={VotedClickDown}
-                  alt="Icon"
-                  text="UpVote"
-                  className="downvoteFilled"
-                  onClick={() => handleDownvoteClick(postId, userVoteIsUpvote)}
-                />
-              )}
-            </div>
-          </div>
-          {showComments && <Comments postId={postId} />}
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default Post;

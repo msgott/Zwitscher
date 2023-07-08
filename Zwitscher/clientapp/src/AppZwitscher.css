@@ -1,9 +1,8 @@
 body {
-  --zwitscher-color-lightmode: #04335c;
-  --zwitscher-background-lightmode: #e6ecf0;
-
-  --zwitscher-color-darkmode: white;
-  --zwitscher-background-darkmode: #3a3939;
+    --zwitscher-color-lightmode: #04335c;
+    --zwitscher-background-lightmode: #e5fff6;
+    --zwitscher-color-darkmode: white;
+    --zwitscher-background-darkmode: #3a3939;
 }
 
 .beginning {
@@ -13,7 +12,7 @@ body {
 }
 
 #light {
-  background-color: white;
+    background-color: #e5fff6;
 }
 
 .app {
@@ -28,7 +27,7 @@ body {
 }
 
 #light .app {
-  background-color: white;
+    background-color: #e5fff6;
 }
 
 .header-app {
@@ -105,21 +104,21 @@ body {
 .feed {
 }
 #dark .feed {
-  background-color: #252525;
-  color: #d5d5d5;
+    background-color: #3a3939;
+    color: #d5d5d5;
 }
 #light .feed {
-  background-color: white;
+    background-color: #e5fff6;
 }
 
 .feed_header {
 }
 #dark .feed_header {
-  background-color: #252525;
+  /*background-color: #252525;*/
   color: #d5d5d5;
 }
 #light .feed_header {
-  background-color: white;
+  /*background-color: white;*/
 }
 
 .widgets {
