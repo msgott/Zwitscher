@@ -144,7 +144,7 @@ namespace Zwitscher.Controllers
             
 
             //GENDER STATISTIC
-            int maleUsers=_context.User.Count(u => u.Gender == Models.User.Genders.Männlich);
+            int maleUsers=_context.User.Count(u => u.Gender == Models.User.Genders.Maennlich);
             int femaleUsers = _context.User.Count(u => u.Gender == Models.User.Genders.Weiblich);
             int diverseUsers = _context.User.Count(u => u.Gender == Models.User.Genders.Divers);
            

@@ -1265,7 +1265,7 @@ namespace Zwitscher.Controllers
                 { "lastname", lastname },
                 { "firstname", firstname },
                 { "username", username },
-                { "birthday", birthday },
+                { "birthday", birthday.ToString("dd.MM.yyyy") },
                 { "biography", biography },
                 { "gender", gender },
                 { "followedCount", followedCount },
@@ -1278,7 +1278,7 @@ namespace Zwitscher.Controllers
         }
         [HttpPost]
         [Route("API/Users/Edit")]
-        public async Task<IActionResult> EditUser(Guid userID, string LastName, string FirstName, string Username, string Password, string Birthday, string? Biography,int Gender) //Only works while logged in!
+        public async Task<IActionResult> EditUser([Bind("userID,LastName,FirstName,Username,Password,Birthday,Biography,Gender")]Guid userID, string LastName, string FirstName, string Username, string Password, string Birthday, string? Biography,int Gender) //Only works while logged in!
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1427,7 +1427,7 @@ namespace Zwitscher.Controllers
                     { "lastname", lastname },
                     { "firstname", firstname },
                     { "username", username },
-                    { "birthday", birthday },
+                    { "birthday", birthday.ToString("dd.MM.yyyy") },
                     { "biography", biography },
                     { "gender", gender },
                     { "followedCount", followedCount },

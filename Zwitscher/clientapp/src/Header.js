@@ -14,7 +14,7 @@ function Header() {
 
   // Get authorization data from backend
   const [data, setData] = useState([]);
-    console.log(data.Username);
+    //console.log(data.Username);
   useEffect(() => {
     const fetchData = async () => {
       try {

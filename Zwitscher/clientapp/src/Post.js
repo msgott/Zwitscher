@@ -202,6 +202,14 @@ function Post({
                     <div className="post_headerDescription"></div>
                     <p>{text}</p>
                 </div>
+                {image.endsWith("mp4") && (
+                    <video controls>
+                        <source src={image} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                )
+
+                }
                 <img src={image} alt="" />
                 <div className="post_footer">
                     <ChatBubbleOutlineIcon

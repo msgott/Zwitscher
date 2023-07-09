@@ -8,7 +8,7 @@ namespace Zwitscher.Models
     {
         public enum Genders
         {
-            Männlich,
+            Maennlich,
             Weiblich,
             Divers
         }
