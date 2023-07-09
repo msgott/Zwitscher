@@ -11,10 +11,15 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 
 function Comments({ postId, name }) {
   const [data, setData] = useState([]);
+  const [isReplying, setIsReplying] = useState(false);
 
-  {
+function onCommentReply(message) {
+  
+}   
+
+
     /*Get data from the Database/API */
-  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,11 +60,16 @@ function Comments({ postId, name }) {
               <IconBtn Icon={FaHeart} aria-label="Like">
                 2
               </IconBtn>
-              <IconBtn Icon={FaReply} aria-label="Reply" />
+              <IconBtn onClick={() => setIsReplying(prev => !prev)} isActive={isReplying} Icon={FaReply}/>
               <IconBtn Icon={FaEdit} aria-label="Edit" />
               <IconBtn Icon={FaTrash} aria-label="Delete" color="danger" />
             </div>
           </div>
+          {isReplying && (
+            <div className="mt-1 ml-3">
+              <CommentForm autoFocus onSubmit />
+              </div>
+          )}
         </div>
       ))}
     </>

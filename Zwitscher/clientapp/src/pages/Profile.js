@@ -53,7 +53,7 @@ function Profile() {
   const [biography, setBiography] =useState("");
   const [followedCount, setFollowedCount] = useState(0);
   const [followerCount, setFollowerCount] =useState(0);
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState(parseInt("0"));
   const [password, setPassword] = useState("");
 
   // Persons PostCount
@@ -99,7 +99,7 @@ function Profile() {
         setFirstname(currentUser ? currentUser.firstname : "");
         setLastname( currentUser ? currentUser.lastname :"");
         setUsername(currentUser ? currentUser.username : "" )
-        setBirthday(currentUser ? currentUser.brithday: "") ;
+        setBirthday(currentUser ? currentUser.birthday: "") ;
         setBiography(currentUser ? currentUser.biography: "");
         setFollowedCount(currentUser ? currentUser.followedCount: 0);
         setFollowerCount(currentUser ? currentUser.followerCount: 0) ;
@@ -194,13 +194,13 @@ function Profile() {
                   <div className="line"></div> 
                   <select
                     value={gender}
-                    onChange={(e) => setGender(e.target.value)}
+                    onChange={(e) => setGender(parseInt(e.target.value))}
                     className="inputs"
                   >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="Diverse">Diverse</option>
+                    <option value="" disabled>Select Gender</option>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                    <option value="2">Diverse</option>
                   </select>
                   <div className="line"></div> 
                   <input
