@@ -51,8 +51,8 @@ function Feed() {
           image={"https://localhost:7160/Media/" + post.mediaList[0]}
           avatar={"https://localhost:7160/Media/" + post.user_profilePicture}
           rating={post.rating}
-          currentUserVoted={post.currentUserVoted}
-          userVoteIsUpvote={post.userVoteIsUpvote}
+          _currentUserVoted={post.currentUserVoted}
+          _userVoteIsUpvote={post.userVoteIsUpvote}
         />
       ))}
     </div>

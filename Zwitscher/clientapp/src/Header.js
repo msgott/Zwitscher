@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Header.css";
 import zwitscher_logo from "./zwitscher_logo.svg";
-import ReactSwitch from "react-switch";
+
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import LoginIcon from "@mui/icons-material/Login";
+import LoginIcon from "@mui/icons-material/LoginOutlined";
+import LogoutIcon from "@mui/icons-material/ExitToAppOutlined";
 import { ThemeContext } from "./AppZwitscher"; // Access ThemeContext from App function to have toggle in the header
 
 function Header() {
@@ -13,7 +14,7 @@ function Header() {
 
   // Get authorization data from backend
   const [data, setData] = useState([]);
-
+    console.log(data.Username);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,9 +30,9 @@ function Header() {
   }, []);
 
   // Function to check if user is a moderator or administrator
-  const isModeratorOrAdmin = () => {
-    return data.RoleName === "Moderator" || data.RoleName === "Administrator";
-  };
+  //const isModeratorOrAdmin = () => {
+  //  return data.RoleName === "Moderator" || data.RoleName === "Administrator";
+  //};
 
   return (
     <div className="Header">
@@ -47,22 +48,35 @@ function Header() {
           </div>
         </Link>
       </div>
-      <div className="Header_Middle"></div>
+          <div className="Header_Middle">
+              <span></span>
+          </div>
       <div className="Header_Right">
         <div className="toggle">
           {theme === "dark" ? (
-            <LightModeIcon onClick={toggleTheme} />
+            <LightModeIcon  onClick={toggleTheme} />
           ) : (
             <DarkModeIcon onClick={toggleTheme} />
           )}
         </div>
 
-        <div className="Login_Icon">
-          <LoginIcon
-            onClick={() =>
-              (window.location.href = "https://localhost:7160/Auth")
-            }
-          />
+              <div className="Login_Icon">
+                  {data.Username === "" ?
+                      (<LoginIcon
+                      onClick={() =>
+                          (window.location.href = "https://localhost:7160/Auth")
+                      }
+                  />)
+                      : (                                                   
+                   
+                              <LogoutIcon
+                                  onClick={() =>
+                                      (window.location.href = "https://localhost:7160/Auth/logout")
+                                  }
+                          />
+                           
+                      )
+                  }
         </div>
       </div>
     </div>

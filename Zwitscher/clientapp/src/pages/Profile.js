@@ -1,25 +1,21 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
-import ReactSwitch from "react-switch";
+import { useState, createContext, useEffect} from "react";
+
 import {
-  BrowserRouter,
-  Link,
-  Switch,
+  
   Routes,
   Route,
-  NavLink,
+  
   useNavigate,
 } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
+
 import Header from "../Header";
 import Sidebar2 from "../Sidebar2";
-import Feed from "../Feed";
-import Widgets from "../Widgets";
-import "./Profile.css";
+
+import "../Profile.css";
 import { ThemeContext } from "../AppZwitscher";
 
 import Button from "@mui/material/Button";
-import HomeIcon from "@mui/icons-material/Home";
+
 
 export const goToProfileContext = createContext(null);
 
@@ -37,7 +33,7 @@ function Profile() {
   // routing with React v18
 
   const [goToProfile, setGoToProfile] = useState(false);
-  const navigate = useNavigate();
+  /*const navigate = useNavigate();*/
 
   // Get all users information and session data from the current logged-in user
   const [usersData, setUsersData] = useState([]);
@@ -212,7 +208,7 @@ function Profile() {
                   />
                   <div className="line"></div> 
                   <Button
-                    className="zwitscherButton"
+                    class="saveButton"
                     type="submit"
                   >
                     Save

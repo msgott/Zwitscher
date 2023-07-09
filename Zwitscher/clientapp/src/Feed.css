@@ -3,25 +3,48 @@
 }
 
 .feed {
-  overflow-y: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  border-radius: 30px;
-  max-width: 650px;
-  justify-content: center;
-  margin-left: 5%;
-  flex: 0.7;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    border-left: 1px solid var(--Light_BorderColor);
+    border-right: 1px solid var(--Light_BorderColor);
+    border-radius: 0px 0px 0px 0px;
+    max-width: 800px;
+    justify-content: center;
+    padding-left: 40px;
+    padding-right: 40px;
+    flex: 0.7;
+    min-width: 550px !important;
 }
 
 .feed_header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border: 1px solid var(--zwitscher-background);
-  padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    
+    padding: 15px 20px;
 }
 
 .feed_header > h2 {
   font-size: 20px;
   font-weight: 800;
+}
+#dark .feed {
+    background-color: var(--DarkBaseColor);
+    opacity: 1;
+    background: repeating-linear-gradient( 45deg, var(--DarkBaseColor), var(--DarkBaseColor) 5px, var(--DarkBetweenColor) 5px, var(--DarkBetweenColor) 25px );
+    color: var(--Dark_TextColor);
+}
+
+#light .feed {
+    /*background-color: white;
+    opacity: 1;*/
+    background: transparent;
+    background-attachment: fixed;
+    background-image: url( "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='170px' height='50px'> \
+    <rect x='0' y='0' width='170' height='50' style='stroke:white; fill:white; stroke-opacity: 0.3; stroke-width: 3px; fill-opacity: 0.7; stroke-dasharray: 10 5; stroke-linecap=round; '/> \
+    <text x='85' y='30' style='fill:Gainsboro; text-anchor: middle' font-size='30' transform='rotate(10,85,25)'>Zwitscher!</text></svg>");
+    /* background-repeat: repeat;
+    background: repeating-linear-gradient( 45deg, var(--LightBaseColor), var(--LightBaseColor) 5px, var(--LightBetweenColor) 5px, var(--LightBetweenColor) 25px );
+*/
 }

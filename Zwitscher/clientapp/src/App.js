@@ -1,13 +1,9 @@
-import React, { useState, createContext, useEffect } from "react";
-import ReactSwitch from "react-switch";
+
 import {
-  BrowserRouter,
-  Link,
-  Switch,
+  
   Routes,
-  Route,
-  NavLink,
-  useNavigate,
+  Route
+  
 } from "react-router-dom";
 import AppZwitscher from "./AppZwitscher";
 import Profile from "./pages/Profile";

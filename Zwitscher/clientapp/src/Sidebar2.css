@@ -1,48 +1,69 @@
 .sidebar {
-  flex: 0.2;
-  min-width: 15%;
-  margin-top: 20px;
-  padding: 0;
-  border-radius: 20px;
-  overflow: hidden;
+    flex: 0.2;
+    min-width: 15%;
+    width: 400px;
+    padding: 0;
+    overflow: hidden;
 }
 
 .sidebarList {
-  width: 100%;
-  height: auto;
-  padding: 0;
-  box-sizing: border-box;
-  margin-top: 20px;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.sidebarList .row {
-  width: 100%;
-  height: 60px;
-  list-style-type: none;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
+    .sidebarList .row {
+        width: 100%;
+        height: 100px;
+        list-style-type: none;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
 
 .row .icon {
-  flex: 30%;
-  display: grid;
-  place-items: center;
+    flex: 30%;
+    display: grid;
+    place-items: center;
 }
 
 .row .text {
-  flex: 70%;
+    flex: 70%;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--Light_TextColor);
+}
+
+#dark .row .text {
+    
+    color: var(--Dark_TextColor);
 }
 
 .row:hover {
-  cursor: pointer;
-  border-radius: 30px;
-  transition: color 100ms ease-out;
+    cursor: pointer;
+    border-radius: 0px 100px 100px 0px;
+    background-color: var(--LightSidebarLinkColor);
+    /*transition: color 100ms ease-out;*/
 }
 
-.row .text {
-  font-weight: 800;
-  font-size: 20px;
+#dark .sidebar {
+    background-color: #201c1c;
+    color: #d1d1d1;
+}
+
+#light .sidebar {
+    background-color: #e5fff6;
+}
+
+#dark .row:hover {
+    color: #d1d1d1;
+    background-color: #302c2c;
+}
+
+#light .row:hover {
+    background-color: #7fffd4;
+    color: black;
 }

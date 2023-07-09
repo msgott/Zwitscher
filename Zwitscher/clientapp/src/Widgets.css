@@ -12,23 +12,23 @@
   margin-left: 20px;
 }
 
-.widgets_input > input {
-  border: none;
-  background-color: var(--zwitscher-background);
-}
+    .widgets_input > input {
+        border: none;
+        background-color: var(--LightBaseColor);
+    }
 
 .widget_searchIcon {
   color: grey;
 }
 
 .darkmode_input {
-  display: flex;
-  align-items: center;
-  background-color: var(--zwitscher-background);
-  padding: 10px;
-  border-radius: 20px;
-  margin-top: 10px;
-  margin-left: 20px;
+    display: flex;
+    align-items: center;
+    background-color: var(--LightBaseColor);
+    padding: 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-left: 20px;
 }
 
 .widgets_widgetContainer {

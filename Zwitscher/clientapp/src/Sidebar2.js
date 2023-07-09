@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Sidebar2.css";
-import SidebarOption from "./SidebarOption";
-import HomeIcon from "@mui/icons-material/Home";
-import GroupsIcon from "@mui/icons-material/Groups";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import FiberNewIcon from "@mui/icons-material/FiberNew";
+
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
-import Button from "@mui/material/Button";
-import { Link, Switch, Route } from "react-router-dom";
+
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
