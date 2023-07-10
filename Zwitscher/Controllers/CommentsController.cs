@@ -345,7 +345,7 @@ namespace Zwitscher.Controllers
                     { "commentId", commentId },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
-                    { "createdDate", createdDate },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
                     { "commentText", commentText },
                     { "loggedInUserIsCreator", loggedInUserIsCreator }
 
