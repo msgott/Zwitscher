@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
+
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
+
 
 namespace Zwitscher.Controllers
 {
@@ -165,5 +168,39 @@ namespace Zwitscher.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpGet]
+        [Route("Download/UsersSortedByFollowedBy")]
+        public FileResult UsersSortedByFollowedBy()
+        {
+            string csvresult = "Username,FollowedByCount";
+            var users = _context.User.Include(u=>u.FollowedBy).ToList();
+            users = users.OrderByDescending(u => u.FollowedBy.Count).ToList();
+            
+            foreach (var user in users)
+            {
+                csvresult += System.Environment.NewLine+user.Username + "," + user.FollowedBy.Count;
+            }
+            
+            byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
+            return File(bytes, "text/csv", DateTime.Now+"UsersSortedByFollowedBy.csv");
+        }
+        [HttpGet]
+        [Route("Download/UsersSortedByBlockedBy")]
+        public FileResult UsersSortedByBlockedBy()
+        {
+            string csvresult = "Username,BlockedByCount";
+            var users = _context.User.Include(u => u.BlockedBy).ToList();
+            users = users.OrderByDescending(u => u.BlockedBy.Count).ToList();
+
+            foreach (var user in users)
+            {
+                csvresult += System.Environment.NewLine + user.Username + "," + user.BlockedBy.Count;
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
+            return File(bytes, "text/csv", DateTime.Now + "UsersSortedByBlockedBy.csv");
+        }
     }
+    
 }

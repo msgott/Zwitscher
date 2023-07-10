@@ -45,14 +45,15 @@ function Feed() {
 
       {postsData.map((post) => (
         <Post
-          postId={post.postID}
-          name={post.user_username}
-          text={post.postText}
-          image={"https://localhost:7160/Media/" + post.mediaList[0]}
-          avatar={"https://localhost:7160/Media/" + post.user_profilePicture}
-          rating={post.rating}
-          _currentUserVoted={post.currentUserVoted}
-          _userVoteIsUpvote={post.userVoteIsUpvote}
+              postId={post.postID}
+              name={post.user_username}
+              text={post.postText}
+              image={"https://localhost:7160/Media/" + post.mediaList[0]}
+              avatar={"https://localhost:7160/Media/" + post.user_profilePicture}
+              rating={post.rating}
+              _currentUserVoted={post.currentUserVoted}
+              _userVoteIsUpvote={post.userVoteIsUpvote}
+              _retweetsPost={post.retweetsPost }
         />
       ))}
     </div>

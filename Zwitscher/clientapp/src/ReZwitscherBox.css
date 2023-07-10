@@ -1,0 +1,144 @@
+.zwitscherBox {
+    /*  padding-bottom: 10px;
+*/ border-bottom: 8px solid rgb(228, 225, 225);
+    border: 1px solid var(--Light_BorderColor);
+    box-shadow: 5px 5px var(--Light_ShadowColor);
+    border-radius: 0px 0px 20px 20px;
+    /*  padding-right: 10px;
+*/ flex: 1;
+    height: auto;
+    width: auto;
+    padding: 0px 10px;
+    padding-bottom:10px;
+}
+#dark .zwitscherBox {
+    border-radius: 0px 0px 20px 20px;
+    border-bottom: 0px solid var(--Dark_BorderColor);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
+
+.zwitscherBox > form {
+    display: fex;
+    flex-direction: column;
+    border-radius: 0px 0px 20px 20px;
+    /*margin-left: 15px;*/
+    height: 100%;
+}
+
+.zwitscherBox_input {
+  padding: 20px;
+  display: flex;
+  
+}
+
+    .zwitscherBox_input > input {
+        flex: 1;
+        margin-left: 20px;
+        font-size: 20px;
+        
+        border-radius: 9px;
+        border: 1px solid;
+    }
+
+::placeholder {
+    color: var(--Light_TextColor);
+}
+
+.zwitscherbox_footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.zwitscherbox_footerLeft {
+  display: flex;
+  margin-left: 3%;
+  margin-top: 30px;
+}
+
+.zwitscherBox_imageInput {
+  border: none;
+  border-radius: 9px;
+  padding: 10px;
+  cursor: pointer;
+  transform: scale(7);
+}
+#dark .zwitscherBox_imageInput {
+    color: var(--Dark_HeaderIconColor) !important;
+}
+    #dark .zwitscherBox_imageInput:hover {
+        color: var(--Dark_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+
+#light .zwitscherBox_imageInput {
+    color: var(--Light_HeaderIconColor) !important;
+}
+    #light .zwitscherBox_imageInput:hover {
+        color: var(--Light_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+
+.zwitscherBox_videoInput {
+  cursor: pointer;
+  transform: scale(1.35);
+  margin-left: 30px;
+}
+#dark .zwitscherBox_videoInput {
+    color: var(--Dark_HeaderIconColor) !important;
+}
+    #dark .zwitscherBox_videoInput:hover {
+        color: var(--Dark_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+
+#light .zwitscherBox_videoInput {
+    color: var(--Light_HeaderIconColor) !important;
+}
+    #light .zwitscherBox_videoInput:hover {
+        color: var(--Light_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+
+.zwitscherBox_zwitscherButton {
+    background-color: var(--Light_ButtomPrimaryColor) !important;
+    border: none !important;
+    color: var(--Light_TextColor) !important;
+    font-weight: 900 !important;
+    text-transform: inherit !important;
+    border-radius: 30px !important;
+    width: 150px;
+    height: 40px !important;
+    margin-right: 2% !important;
+    margin-top: 30px !important;
+}
+#dark .zwitscherBox_zwitscherButton {
+    background-color: var(--Dark_ButtonPrimaryColor) !important;
+    color: var(--Dark_TextColor) !important;
+}
+
+    #dark .zwitscherBox_zwitscherButton:hover {
+        background-color: var(--Dark_Hover_ButtonPrimaryColor) !important;
+    }
+
+
+#dark .zwitscherBox > form {
+    background-color: #302c2c;
+}
+
+#light .zwitscherBox > form {
+    background-color: #f5f8fa;
+}
+
+.zwitscherBox_input > input {
+}
+
+#dark .zwitscherBox_input > input {
+    background-color: #d1d1d1;
+}
+
+#light .zwitscherBox_input > input {
+    background-color: white;
+}

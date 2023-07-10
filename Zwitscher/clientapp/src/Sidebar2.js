@@ -62,7 +62,7 @@ function Sidebar() {
           </li>
         )}
 
-        {/*Dashboard only visibale, if the role is either Admin or Mod*/}
+        {/*Dashboard only visible, if the role is either Admin or Mod*/}
         {isModeratorOrAdmin() && (
           <li
             className="row"
@@ -75,7 +75,8 @@ function Sidebar() {
             </div>
             <div className="text">Dashboard</div>
           </li>
-        )}
+              )}
+              <a href="mailto:support@Zwitscher.de" style={{ 'top': 'auto','bottom':'0' }} >Support-Anfrage</a>
       </ul>
     </div>
   );

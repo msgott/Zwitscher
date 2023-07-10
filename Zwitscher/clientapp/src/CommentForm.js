@@ -15,7 +15,11 @@ function CommentForm({
       var requestOptions = {
         method: "POST",
         redirect: "follow",
-      };
+        };
+        if (message.length == 0) {
+            alert('Bitte gebe einen Kommentartext ein')
+            return;
+        }
       let response = await fetch(
         "https://localhost:7160/API/Posts/Comment/Add?postId=" +
           postId +
@@ -44,14 +48,14 @@ function CommentForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div class_name="comment-form-row">
-        <textarea
+          <div class_name="comment-form-row" style={{ 'border': '1px solid', 'border-radius': '5px', 'margin-bottom': '5px' }} >
+              <textarea placeholder="Gebe einen Kommentar ein" style={{ 'width': '100%', 'border': 'none', 'border-radius': '0', 'border-bottom': '1px solid' }}
           autoFocus={autoFocus}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="message-input"
         />
-        <button className="btn" type="submit">
+              <button className="btn" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
           Post
         </button>
       </div>

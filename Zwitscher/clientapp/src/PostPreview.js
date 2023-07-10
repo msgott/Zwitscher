@@ -3,10 +3,10 @@ import "./Post.css";
 import Comments from "./Comments";
 import Avatar from "@mui/material/Avatar";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import RetzitscherIcon from "@mui/icons-material/Sync";
 import UpVote from "./Images/icons8-pfeil-50.png";
 import DownVote from "./Images/icons8-pfeil-50-down_not_filled.png";
 import VoteClicked from "./Images/icons8-arrow-50.png";
+import RetzitscherIcon from "@mui/icons-material/Sync";
 import VotedClickDown from "./Images/icons8-pfeil-50_down-filled.png";
 import { goToProfileContext } from "./AppZwitscher";
 import Box from '@mui/material/Box';
@@ -16,10 +16,8 @@ import Modal from '@mui/material/Modal';
 import ZwitscherBox from "./ZwitscherBox";
 import ReZwitscherBox from "./ReZwitscherBox";
 
-import PostPreview from "./PostPreview";
-
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
-function Post({
+function PostPreview({
     postId,
     name,
     text,
@@ -28,45 +26,17 @@ function Post({
     rating,
     _currentUserVoted,
     _userVoteIsUpvote,
-    _retweetsPost
 }) {
-    const [retweetsData, setRetweetsData] = useState();
-
-    //Get Posts information from backend
-    useEffect(() => {
-        const fetchRetweetsData = async () => {
-            try {
-                if (_retweetsPost !== "") {
-                    console.log("RETWEETS: "+_retweetsPost);
-                    const response = await fetch("https://localhost:7160/API/Post?id=" + _retweetsPost); // Replace with your API endpoint
-                    const jsonData = await response.json();
-                    setRetweetsData(jsonData);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchRetweetsData();
-    }, []);
-
     const style = {
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 600,
-        height: 600,
-        'overflow-y': 'auto',
         bgcolor: 'background.paper',
         border: '2px solid #000',
-        'border-radius': '15px',
         boxShadow: 24,
         p: 4,
-    };
-    const style2 = {
-        flex: '1'
-        
     };
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -261,27 +231,15 @@ function Post({
                         Your browser does not support the video tag.
                     </video>
                 )}
-                {(_retweetsPost !== "" && retweetsData)?  (<PostPreview
-                    postId={retweetsData.postID}
-                    name={retweetsData.user_username}
-                    text={retweetsData.postText}
-                    image={"https://localhost:7160/Media/" + retweetsData.mediaList[0]}
-                    avatar={"https://localhost:7160/Media/" + retweetsData.user_profilePicture}
-                    rating={retweetsData.rating}
-                    _currentUserVoted={retweetsData.currentUserVoted}
-                    _userVoteIsUpvote={retweetsData.userVoteIsUpvote}
-                    
-                />) : (<img src={image} alt="" />)}
-                
+                <img src={image} alt="" />
                 <div className="post_footer">
                     <ChatBubbleOutlineIcon
                         onClick={toggleComments}
                         className="chat-icon" />
                     <RetzitscherIcon
                         onClick={handleOpen}
-                        className="chat-icon" 
+                        className="chat-icon"
                     />
-
                     <div className="vote_container">
 
 
@@ -356,7 +314,7 @@ function Post({
             >
         
                 <Box sx={style}>
-                    <ReZwitscherBox 
+                    <ReZwitscherBox
                         postId={postId}
                         name={name}
                         text={text}
@@ -365,7 +323,7 @@ function Post({
                         rating={rating}
                         _currentUserVoted={_currentUserVoted}
                         _userVoteIsUpvote={_userVoteIsUpvote}
-                        _handleClose={handleClose }
+                        _handleClose={handleClose}
                     />
                     
                 </Box>
@@ -373,6 +331,6 @@ function Post({
     );
 }
 
-export default Post;
+export default PostPreview;
 
 

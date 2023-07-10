@@ -270,4 +270,7 @@
 .half {
   flex-grow: 1; /* Allow each half to grow and take equal space */
   padding: 10px; /* Optional: Add padding for spacing between elements */
+  border: 1px solid;
+  border-radius: 20px;
+  margin-left: 30px;
 }
