@@ -6,6 +6,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 
+
 export const SidebarData = [
   {
     text: "Home",
@@ -27,4 +28,5 @@ export const SidebarData = [
     icon: <FiberNewIcon />,
     link: "/Zwitscher/new",
   },
+
 ];

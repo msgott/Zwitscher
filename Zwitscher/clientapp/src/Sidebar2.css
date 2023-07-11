@@ -3,7 +3,7 @@
     min-width: 15%;
     width: 400px;
     padding: 0;
-    overflow: hidden;
+    overflow-y: scroll;
 }
 
 .sidebarList {

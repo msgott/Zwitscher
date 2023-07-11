@@ -283,7 +283,7 @@ namespace Zwitscher.Controllers
                 var session_user = await _context.User.FirstOrDefaultAsync(m => m.Id == Guid.Parse(HttpContext.Session.GetString("UserId")));
                 var profilePicture = HttpContext.Session.GetString("pbFileName");
 
-                return JsonSerializer.Serialize(new { Username = HttpContext.Session.GetString("Username"), ProfilePicture = profilePicture, RoleName = HttpContext.Session.GetString("RoleName"), Success = false, userID=session_user.Id });
+                return JsonSerializer.Serialize(new { Username = HttpContext.Session.GetString("Username"), ProfilePicture = profilePicture, RoleName = HttpContext.Session.GetString("RoleName"), Success = true, userID=session_user.Id });
             }
 
             return JsonSerializer.Serialize(new { Username = "", ProfilePicture = "", RoleName = "", Success = false });
