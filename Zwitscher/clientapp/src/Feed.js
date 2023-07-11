@@ -44,7 +44,8 @@ function Feed() {
       {data.Username !== "" && <ZwitscherBox />}
 
       {postsData.map((post) => (
-        <Post
+          <Post
+              userId={post.userID }
               postId={post.postID}
               name={post.user_username}
               text={post.postText}
@@ -53,7 +54,9 @@ function Feed() {
               rating={post.rating}
               _currentUserVoted={post.currentUserVoted}
               _userVoteIsUpvote={post.userVoteIsUpvote}
-              _retweetsPost={post.retweetsPost }
+              _retweetsPost={post.retweetsPost}
+              createdDate={post.createdDate}
+              commentCount={post.commentCount }
         />
       ))}
     </div>

@@ -1751,6 +1751,7 @@ namespace Zwitscher.Controllers
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
             foreach (Post post in posts)
             {
+                string userID = post.UserId.ToString();
                 string postID = post.Id.ToString();
                 string user_username = post.User.Username;
                 string user_profilePicture = (await _dbContext.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _dbContext.Media.FindAsync(post.User.MediaId)).FileName;
@@ -1774,6 +1775,7 @@ namespace Zwitscher.Controllers
 
                 Dictionary<string, Object> result = new Dictionary<string, Object>
                 {
+                    { "userID", userID },
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },

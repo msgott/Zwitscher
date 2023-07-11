@@ -781,6 +781,7 @@ namespace Zwitscher.Controllers
 
             foreach (Post post in posts)
             {
+                string _userID = post.UserId.ToString();
                 string postID = post.Id.ToString();
                 string user_username = post.User.Username;
                 string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
@@ -805,6 +806,7 @@ namespace Zwitscher.Controllers
 
                 Dictionary<string, Object> result = new()
                 {
+                    { "userID", _userID },
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
@@ -853,7 +855,7 @@ namespace Zwitscher.Controllers
             }
 
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId")!);
-
+            string _userID = post.UserId.ToString();
             string postID = post.Id.ToString();
             string user_username = post.User.Username;
             string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
@@ -878,6 +880,7 @@ namespace Zwitscher.Controllers
 
             Dictionary<string, Object> result = new()
             {
+                { "userID", _userID },
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
@@ -1116,7 +1119,7 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Posts/Vote")]
-        public async Task<ActionResult> ManageVotes([Bind("postId,IsUpVote")]Guid? postId, bool IsUpVote = true)
+        public async Task<ActionResult> ManageVotes([Bind("postId,IsUpVote")] Guid? postId, bool IsUpVote = true)
         //Manages the Vote of the currently logged in User for a given Post
         //Only works while logged in!
         //Parameters:

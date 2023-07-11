@@ -17,15 +17,20 @@ import ZwitscherBox from "./ZwitscherBox";
 import ReZwitscherBox from "./ReZwitscherBox";
 
 import PostPreview from "./PostPreview";
+import { Route, useNavigate } from "react-router-dom";
+import Profile from "./pages/Profile";
 
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
 function Post({
+    userId,
     postId,
     name,
     text,
     image,
     avatar,
     rating,
+    createdDate,
+    commentCount,
     _currentUserVoted,
     _userVoteIsUpvote,
     _retweetsPost
@@ -37,7 +42,7 @@ function Post({
         const fetchRetweetsData = async () => {
             try {
                 if (_retweetsPost !== "") {
-                    console.log("RETWEETS: "+_retweetsPost);
+                    //console.log("RETWEETS: "+_retweetsPost);
                     const response = await fetch("https://localhost:7160/API/Post?id=" + _retweetsPost); // Replace with your API endpoint
                     const jsonData = await response.json();
                     setRetweetsData(jsonData);
@@ -240,12 +245,15 @@ function Post({
     const toggleComments = () => {
         setShowComments(!showComments);
     };
-
+    const navigate = useNavigate();
     return (
         <><div className="post">
             <div className="post_avatar">
                 <Avatar src={avatar} />
                 <p>{name}</p>
+                <Button onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }}>Profil</Button>
+                <h5 style={{'margin-left': 'auto', 'margin-right': '0'} }>{createdDate}</h5>
+                
             </div>
             <div className="post_body">
                 <div className="post_header">
@@ -261,7 +269,7 @@ function Post({
                         Your browser does not support the video tag.
                     </video>
                 )}
-                {(_retweetsPost !== "" && retweetsData)?  (<PostPreview
+                {(_retweetsPost !== "" && retweetsData) ? (<PostPreview
                     postId={retweetsData.postID}
                     name={retweetsData.user_username}
                     text={retweetsData.postText}
@@ -270,13 +278,15 @@ function Post({
                     rating={retweetsData.rating}
                     _currentUserVoted={retweetsData.currentUserVoted}
                     _userVoteIsUpvote={retweetsData.userVoteIsUpvote}
+                    isInRezwitscherBox={false}
                     
                 />) : (<img src={image} alt="" />)}
                 
                 <div className="post_footer">
                     <ChatBubbleOutlineIcon
                         onClick={toggleComments}
-                        className="chat-icon" />
+                        className="chat-icon" > <p>{commentCount}</p></ChatBubbleOutlineIcon>
+                   
                     <RetzitscherIcon
                         onClick={handleOpen}
                         className="chat-icon" 

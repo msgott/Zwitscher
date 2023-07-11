@@ -119,6 +119,7 @@ function ReZwitscherBox({
                     rating={rating}
                     _currentUserVoted={_currentUserVoted}
                     _userVoteIsUpvote={_userVoteIsUpvote}
+                    isInRezwitscherBox={true}
                 />
                 <div className="zwitscherbox_footer">
                     

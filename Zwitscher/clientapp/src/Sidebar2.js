@@ -5,6 +5,7 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar() {
   // Get the current session data from the User whos online
@@ -20,13 +21,14 @@ function Sidebar() {
         console.error("Error fetching data:", error);
       }
     };
-
+    
     fetchData();
   }, []);
   // Function to check if user is a moderator or administrator
   const isModeratorOrAdmin = () => {
     return data.RoleName === "Moderator" || data.RoleName === "Administrator";
-  };
+    };
+    const navigate = useNavigate();
 
   return (
     <div className="sidebar">
@@ -49,11 +51,10 @@ function Sidebar() {
 
         {/*Profile only visibale, if registered*/}
         {data.Username !== "" && (
-          <li
+                  <li
+
             className="row"
-            onClick={() => {
-              window.location.pathname = "/Zwitscher/profile";
-            }}
+                      onClick={() => { navigate('/profile', { state: { foreignUserObject: data.userID } }) }}
           >
             <div className="icon">
               <PermIdentityIcon />

@@ -47,11 +47,14 @@ body {
     position: sticky;
     top: 0;
 }
+img{
+    border-radius: 60px;
+}
 
 .inputfields {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /*align-items: center;*/
     justify-content: flex-start;
     height: 50vh;
     width: 100%;
@@ -94,7 +97,7 @@ h1 {
     font-size: 1.5em;
     transition: padding 0.3s 0.2s ease;
     text-align: center;
-    margin-top: 40px;
+    /*margin-top: 40px;*/
     color: var(--Light_TextColor);
 }
 #dark .inputs {
@@ -164,5 +167,18 @@ h1 {
     }
 
 .statistics_profile {
-    margin-top: 350px;
+   
+}
+.EditProfileButton {
+    float: right;
+    margin: 10px;
+    
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    height: 40px;
 }

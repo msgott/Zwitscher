@@ -1,11 +1,16 @@
-﻿import { ChangeEvent,useState, createContext, useEffect } from "react";
+﻿import { ChangeEvent, useState, createContext, useEffect } from "react";
+import React, { useContext } from "react";
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
+import Modal from '@mui/material/Modal';
 import {
 
     Routes,
     Route,
 
     useNavigate,
+    useLocation,
 } from "react-router-dom";
 
 import Header from "../Header";
@@ -14,13 +19,28 @@ import Sidebar2 from "../Sidebar2";
 import "../Profile.css";
 import { ThemeContext } from "../AppZwitscher";
 
-import Button from "@mui/material/Button";
+
+import EditProfileDialog from "../EditProfileDialog";
 
 
 export const goToProfileContext = createContext(null);
 
-function Profile() {
-    // Main File to load all the Components on the page (Header, Sidebar, Feed etc.)
+const Profile = () => {
+    const { state } = useLocation();
+    const { foreignUserObject } = state;
+    const navigate = useNavigate();
+    if (foreignUserObject == undefined) {
+        navigate('/Zwitscher')
+    }
+    //console.log(foreignUserObject);
+    //Modal stuff------------------------------------------------
+    const [EditProfileOpen, setEditProfileOpen] = React.useState(false);
+    const EditProfilehandleOpen = () => setEditProfileOpen(true);
+    const EditProfilehandleClose = () => setEditProfileOpen(false);
+
+    
+
+
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
     // depending on toggleTheme
@@ -34,278 +54,333 @@ function Profile() {
 
     const [goToProfile, setGoToProfile] = useState(false);
     /*const navigate = useNavigate();*/
-
-    // Get all users information and session data from the current logged-in user
-    const [usersData, setUsersData] = useState([]);
-    const [sessionData, setSessionData] = useState([]);
-    const [pbFileName, setPbFileName] = useState("");
-
-    // Persons attribute assignment React
-    const [userId, setUserId] = useState("");
-    const [firstname, setFirstname] = useState("");
-    const [lastname, setLastname] = useState("");
-    const [username, setUsername] = useState("");
-    const [birthday, setBirthday] = useState("");
-    const [biography, setBiography] = useState("");
-    const [followedCount, setFollowedCount] = useState(0);
-    const [followerCount, setFollowerCount] = useState(0);
-    const [gender, setGender] = useState("");
-    const [password, setPassword] = useState("");
     const [file, setFile] = useState(null);
+    // Get all users information and session data from the current logged-in user
+
+    //User Data
+    const [userData, setUserData] = useState(null);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch("https://localhost:7160/API/User?id=" + foreignUserObject);
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserData(data);
+                } else {
+                    console.log('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.log('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    },[]);
+    
 
 
-    // Persons PostCount
-    const [postCount, setPostCount] = useState(0);
+    
+    //Session Data
+    const [sessionData, setSessionData] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchUserSession = async () => {
             try {
-                // Fetch users data
-                const usersResponse = await fetch("https://localhost:7160/API/Users");
-                const usersJsonData = await usersResponse.json();
-                console.log(usersJsonData);
-                setUsersData(usersJsonData);
-
-
                 // Fetch session data
-                const sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
-                const sessionJsonData = await sessionResponse.json();
+                var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+                var sessionJsonData = await sessionResponse.json();
                 setSessionData(sessionJsonData);
-                /*console.log(sessionJsonData);*/
-                const currentUsername = sessionJsonData.Username;
-                const currentUserID = sessionJsonData.userID;
-                /*console.log(currentUserID);*/
-                // Fetch PostCount data
-                const currentUser = usersJsonData.find(user => user.username === currentUsername);
-
-                const postCountResponse = await fetch("https://localhost:7160/API/Users/Posts");
-                const postCountJsonData = await postCountResponse.json();
-                setPostCount(postCountJsonData.length);
-
-                // Search the username of the Session User
-
-
-                // Get the entire Person with all attributes and assign it to currentUser (object), where the Session User 
-                // matches with all users.
-                // (in short) Get the data from that specific person whos logged in
-
-
-                // If currentUser is truthy (i.e., not null, undefined, false, 0, or an empty string),
-                // then the value of currentUser.userID is assigned to currentUserId.
-                // If currentUser is falsy (i.e., null, undefined, false, 0, or an empty string), then an empty
-                // string ("") is assigned to currentUserId.
-                if (currentUser != undefined) {
-
-                    if (!currentUser.pbFileName) {
-                        
-                        setPbFileName("real-placeholder.png");
-                        
-                            
-                        
-                    } else {
-                        
-                        setPbFileName(currentUser.pbFileName);
-                    };
-
-
-
-
-
-                }
                 
-                setUserId(currentUser ? currentUser.userID : "");
-                setFirstname(currentUser ? currentUser.firstname : "");
-                setLastname(currentUser ? currentUser.lastname : "");
-                setUsername(currentUser ? currentUser.username : "")
-                setBirthday(currentUser ? currentUser.birthday : "");
-                setBiography(currentUser ? currentUser.biography : "");
-                setFollowedCount(currentUser ? currentUser.followedCount : 0);
-                setFollowerCount(currentUser ? currentUser.followerCount : 0);
-
-
-
-                if (currentUser != undefined) {
-
-                    if (currentUser.gender === "Maennlich") setGender(0);
-                    if (currentUser.gender === "Weiblich") setGender(1);
-                    if (currentUser.gender === "Divers") setGender(2);
-
-                }
-
-
-                // Check if the current user is in the list of all registered users and then retrieve the filePath from that API
-                const currentUserData = usersJsonData.find(
-                    (user) => user.username === currentUsername
-                );
-
 
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
-        };
+        }
+        fetchUserSession();
 
-        fetchData();
     }, []);
+
+    //FollowedBy
+    const [userFollowedByData, setuserFollowedByData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserFollowedBy = async () => {
+            try {
+                // Fetch session data
+                var FollowedByResponse = await fetch("https://localhost:7160/API/Users/FollowedBy?UserID=" + foreignUserObject);
+                var FollowedByJsonData = await FollowedByResponse.json();
+                setuserFollowedByData(FollowedByJsonData);
+                /*console.log(FollowedByJsonData);*/
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserFollowedBy();
+
+    }, []);
+
+
+    //Follows
+    const [userFollowingData, setuserFollowingData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserFollows = async () => {
+            try {
+                // Fetch session data
+                var FollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + foreignUserObject);
+                var FollowsJsonData = await FollowsResponse.json();
+                setuserFollowingData(FollowsJsonData);
+                /*console.log(FollowsJsonData);*/
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserFollows();
+
+    }, []);
+
+    //OwnFollows
+    const [OwnuserFollowingData, setOwnuserFollowingData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserOwnFollows = async () => {
+            console.log(sessionData);
+            if (sessionData) {
+                
+                try {
+                    // Fetch session data
+                    var OwnFollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + sessionData.userID);
+                    var OwnFollowsJsonData = await OwnFollowsResponse.json();
+                    setOwnuserFollowingData(OwnFollowsJsonData);
+                    console.log(OwnFollowsJsonData);
+
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
+            
+        }
+        fetchUserOwnFollows();
+    }, [sessionData]);
+    
+    //Posts
+    const [userPostData, setuserPostData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserFollows = async () => {
+            try {
+                // Fetch session data
+                var userPostDataResponse = await fetch("https://localhost:7160/API/Users/Posts?id=" + foreignUserObject);
+                var userPostDataJsonData = await userPostDataResponse.json();
+                setuserPostData(userPostDataJsonData);
+                //console.log(userPostDataJsonData);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserFollows();
+
+    }, []);
+
+    //Comments
+    //const [userCommentData, setuserCommentData] = useState(null);
+
+    //useEffect(() => {
+    //    const fetchUserFollows = async () => {
+    //        try {
+    //            // Fetch session data
+    //            var userCommentDataResponse = await fetch("https://localhost:7160/API/Users/Posts?id=" + foreignUserObject);
+    //            var userCommentDataJsonData = await userCommentDataResponse.json();
+    //            setuserCommentData(userCommentDataJsonData);
+    //            //console.log(userCommentDataJsonData);
+
+    //        } catch (error) {
+    //            console.error("Error fetching data:", error);
+    //        }
+    //    }
+    //    fetchUserFollows();
+
+    //}, []);
+
+
+
+
+
+
+
+
+
+
+
+    if (!userData || !sessionData) {
+        return (
+            <>
+            <ThemeContext.Provider value={{ theme, toggleTheme }}>
+                <goToProfileContext.Provider value={{ goToProfile, setGoToProfile }}>
+                    <div className="beginning" id={theme}>
+                        <div className="sticky-header">
+                            <Header />
+                        </div>
+                        <div className="app">
+                            <Sidebar2 className="sticky-sidebar" />
+                        </div>
+                        <div className="Profile">
+                        Loading...
+                        </div>
+                    </div>
+                    
+                </goToProfileContext.Provider>
+            </ThemeContext.Provider>
+            </>);
+    }
+
+    
+
+
+
+
+
+
+    const { userID, lastname, firstname, username, birthday, biography, gender, followedCount, followerCount, pbFileName } = userData;
+
+    
+
+    var _pbfileName = ""
+    if (!pbFileName) {
+
+        _pbfileName = "real-placeholder.png";
+
+
+
+    } else {
+
+        _pbfileName = pbFileName;
+    };
+    
+    /*const [pbFileName, setPbFileName] = useState(_pbfileName);*/
+
 
     const handleFileChange = (e) => {
         if (e.target.files) {
             setFile(e.target.files[0]);
         }
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const isOwnProfile = () => {
+        return sessionData.userID === userID;
+    };
 
+    const unfollow = async () => {
+        try {
+            const response = await fetch(
+                "https://localhost:7160/API/Users/Following/Remove?userToUnfollowId=" + foreignUserObject,
+                
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
 
-
-        // Prevent the default form submission behavior
-        // Perform any necessary actions here, such as saving the form data or making API calls
-        var requestOptions = {
-            method: 'POST',
-            //body: JSON.stringify({
-            //    "userID": userId,
-            //   "LastName": lastname,
-            //    "FirstName": firstname,
-            //    "Username": username,
-            //    "Password": password,
-            //    "Birthday": birthday,
-            //    "Biography": biography,
-            //    "Gender": gender
-            /*}),*/
-            redirect: 'follow'
-        };
-
-
-        fetch("https://localhost:7160/API/Users/Edit?userID=" + userId + "&LastName=" + lastname + "&FirstName=" + firstname + "&Username=" + username + "&Password=" + password + "&Birthday=" + birthday + "&Biography=" + biography + "&Gender=" + gender, requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
-
-        if (file != null) {
-
-            var formdata = new FormData();
-            formdata.append("userID", userId);
-            formdata.append("file", file);
-
-            var requestOptions = {
-                method: 'POST',
-                body: formdata,
-                redirect: 'follow'
-            };
-            fetch('https://localhost:7160/API/Users/Media/Add', requestOptions)
-                .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((err) => console.error(err));
-
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
+            window.location.reload(false);
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error updating vote:", error);
         }
     };
 
+    const follow = async () => {
+        try {
+            const response = await fetch(
+                "https://localhost:7160/API/Users/Following/Add?userToFollowId=" + foreignUserObject,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
+            window.location.reload(false);
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error updating vote:", error);
+        }
+    };
+    /*console.log((OwnuserFollowingData && foreignUserObject !== sessionData.userID));*/
+
     return (
         // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            <goToProfileContext.Provider value={{ goToProfile, setGoToProfile }}>
-                <div className="beginning" id={theme}>
-                    <div className="sticky-header">
-                        <Header />
-                    </div>
-                    <div className="app">
-                        <Sidebar2 className="sticky-sidebar" />
-                        <div className="Profile">
-                            <h1 style={{ padding: '10px' }}>Profile: {username}</h1>
-                            <img src={"/Media/" + pbFileName} style={{ width: '300px', height: '300px' }} ></img>
-                            <input type='file' id='file' accept='image/png, image/gif, image/jpeg' onChange={handleFileChange} />
-                            <form id="profileform">
-                                <input type="hidden" name="userID" value={userId} />
-                                <div className="inputfields">
-                                    <h1 className="input_header">Name:</h1>
-                                    <div className="inputfiled_button">
-                                        <input
-                                            value={firstname}
-                                            onChange={(e) => setFirstname(e.target.value)}
-                                            placeholder="Firstname..."
-                                            type="text"
-                                            className="inputs"
-                                            name="FirstName"
-                                        />
-                                        <div className="line"></div>
-                                    </div>
-                                    <h1 className="input_header">Lastname:</h1>
-                                    <input
-                                        value={lastname}
-                                        onChange={(e) => setLastname(e.target.value)}
-                                        placeholder="Lastname..."
-                                        type="text"
-                                        className="inputs"
-                                        name="LastName"
-                                    />
-                                    <div className="line"></div>
-                                    <input type="hidden" name="Username" value={username} />
+        <>
+            <ThemeContext.Provider value={{ theme, toggleTheme }}>
+                <goToProfileContext.Provider value={{ goToProfile, setGoToProfile }}>
+                    <div className="beginning" id={theme}>
+                        <div className="sticky-header">
+                            <Header />
+                        </div>
+                        <div className="app">
+                            <Sidebar2 className="sticky-sidebar" />
+                            <div className="Profile">
 
-                                    <h1 className="input_header">About:</h1>
-                                    <input
-                                        value={biography}
-                                        onChange={(e) => setBiography(e.target.value)}
-                                        placeholder="Tell something about you ..."
-                                        type="text"
-                                        className="inputs"
-                                        name="Biography"
-                                    />
-                                    <div className="line"></div>
-                                    <h1 className="input_header">Birthday: </h1>
-                                    <input
-                                        value={birthday}
-                                        onChange={(e) => setBirthday(e.target.value)}
-                                        placeholder="01.01.2000"
-                                        type="text"
-                                        className="inputs"
-                                        name="Birthday"
-                                    />
-                                    <div className="line"></div>
-                                    <select
-                                        value={gender}
-                                        onChange={(e) => setGender(parseInt(e.target.value))}
-                                        className="inputs"
-                                        name="Gender"
-                                    >
-                                        <option value="" disabled>Select Gender</option>
-                                        <option value="0">Maennlich</option>
-                                        <option value="1">Weiblich</option>
-                                        <option value="2">Divers</option>
-                                    </select>
-                                    <div className="line"></div>
-                                    <input
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        type="password"
-                                        placeholder="Enter new password"
-                                        className="inputs"
-                                        name="Password"
-                                    />
-                                    <div className="line"></div>
-                                    <Button
-                                        onClick={handleSubmit}
-                                        class="saveButton"
-                                        type="submit"
-                                    >
-                                        Save
-                                    </Button>
+
+                                <img src={"/Media/" + (pbFileName!=="" ? pbFileName: "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
+                                {isOwnProfile() == true&&(
+                                    <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
+                                )
+                                }
+                                {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === foreignUserObject) ?
+                                    (<Button onClick={() => { unfollow() }}> Geflogt</Button>)
+                                    :
+                                    (<Button onClick={() => { follow() }}> Folgen</Button>)
+
+                                    : ""}
+                                <br></br>
+                                <h1 style={{ padding: '10px' }}>{username}</h1>
+                                <div className="statistics_profile">
+                                    <h3>Followed by: </h3>
+                                    <span>{followerCount}</span>
+                                    <h3>Follows:</h3>
+                                    <span>{followedCount}</span>
+                                    <h3>Posts:</h3>
+                                    {/*<span>{postCount}</span>*/}
                                 </div>
-                            </form>
-                            <div className="statistics_profile">
-                                <h1>Followered by: </h1>
-                                <span>{followerCount}</span>
-                                <h1>Follows:</h1>
-                                <span>{followedCount}</span>
-                                <h1>Posts:</h1>
-                                <span>{postCount}</span>
+
+
+
                             </div>
                         </div>
+                        <Routes>
+                            <Route path="/profile" element={<Profile />} />
+                        </Routes>
                     </div>
-                    <Routes>
-                        <Route path="/profile" element={<Profile />} />
-                    </Routes>
-                </div>
-            </goToProfileContext.Provider>
-        </ThemeContext.Provider>
+                </goToProfileContext.Provider>
+            </ThemeContext.Provider>
+           
+            <Modal
+                open={EditProfileOpen}
+                onClose={EditProfilehandleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+
+                <EditProfileDialog
+                    userObject={userData}
+                    handleClose={EditProfilehandleClose}
+                />
+
+
+            </Modal>
+
+            
+        </>
     );
 }
 

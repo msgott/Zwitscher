@@ -5,6 +5,7 @@ import CommentForm from "./CommentForm";
 import { FaEdit, FaHeart, FaRegHeart, FaReply, FaTrash } from "react-icons/fa";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import EditCommentDialog from "./EditCommentDialog";
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -15,23 +16,11 @@ function Comments({ postId, name }) {
     const [commentToEdit, setcommentToEdit] = useState();
     const [commentToEditText, setcommentToEditText] = useState("");
     const [isReplying, setIsReplying] = useState(false);
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        height: 200,
-        'overflow-y': 'auto',
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        'border-radius': '15px',
-        boxShadow: 24,
-        p: 4,
-    };
+
+    const [EditCommentopen, setEditCommentOpen] = React.useState(false);
+    const EditCommenthandleOpen = () => setEditCommentOpen(true);
+    const EditCommenthandleClose = () => setEditCommentOpen(false);
+    
     
     async function deleteOwnComment(postId, commentId){
         try
@@ -59,7 +48,7 @@ function Comments({ postId, name }) {
         console.log("test");
         setcommentToEdit(commentId);
         setcommentToEditText(text)
-        handleOpen();
+        EditCommenthandleOpen();
         
     };
     async function editOwnComment(commentId, text) {
@@ -139,19 +128,19 @@ function Comments({ postId, name }) {
                 ))}
             </div>
             <Modal
-                open={open}
-                onClose={handleClose}
+                open={EditCommentopen}
+                onClose={EditCommenthandleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
                 
             >
+                <EditCommentDialog
+                    _commentId={commentToEdit}
+                    _commentText={commentToEditText}
+                    handleClose={EditCommenthandleClose}
+                />
 
-                <Box sx={style}>
-                    <label> Text:</label>
-                    <input type="text" id="CommentTextInput" onChange={(e) => {setcommentToEditText(e.target.value) } } defaultValue={commentToEditText}></input>
-                    <br/>
-                    <button onClick={() => editOwnComment(commentToEdit,commentToEditText) }>Anpassen</button>
-                </Box>
+                
             </Modal>
         </>
     );
