@@ -5,6 +5,7 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import HelpIcon from '@mui/icons-material/Help';
 
 function Sidebar() {
   // Get the current session data from the User whos online
@@ -76,7 +77,17 @@ function Sidebar() {
             <div className="text">Dashboard</div>
           </li>
               )}
-              <a href="mailto:support@Zwitscher.de" style={{ 'top': 'auto','bottom':'0' }} >Support-Anfrage</a>
+        <li 
+          className="row"
+          onClick={() => {
+            window.location.href = 'mailto:support@Zwitscher.de';
+          }}>
+            <div className="icon">
+              <HelpIcon />
+            </div>
+            <div className="text">Support</div>
+            </li>  
+      
       </ul>
     </div>
   );

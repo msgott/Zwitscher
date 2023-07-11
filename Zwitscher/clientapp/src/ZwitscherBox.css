@@ -55,6 +55,28 @@
   margin-top: 30px;
 }
 
+.label_upload{
+    display: flex;
+    cursor: pointer;
+    transform: scale(1.35);
+    padding: 10px 20px !important;
+
+}
+#dark .label_upload{
+    color: var(--Dark_HeaderIconColor) !important;
+}
+    #dark .label_upload:hover{
+        color: var(--Dark_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+#light .label_upload {
+    color: var(--Light_HeaderIconColor) !important;
+}
+    #light .label_upload:hover {
+        color: var(--Light_Hover_HeaderIconColor) !important;
+        transition: color 1000ms ease-out;
+    }
+
 .zwitscherBox_imageInput {
   border: none;
   border-radius: 9px;

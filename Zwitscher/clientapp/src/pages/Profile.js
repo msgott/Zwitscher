@@ -211,76 +211,124 @@ function Profile() {
                         <Sidebar2 className="sticky-sidebar" />
                         <div className="Profile">
                             <h1 style={{ padding: '10px' }}>Profile: {username}</h1>
-                            <img src={"/Media/" + pbFileName} style={{ width: '300px', height: '300px' }} ></img>
-                            <input type='file' id='file' accept='image/png, image/gif, image/jpeg' onChange={handleFileChange} />
+
+                            <div className="media_upload">
+                                <img src={"/Media/" + pbFileName} style={{ width: '300px', height: '300px', }} ></img>
+                                <div className="file_inputbutton">
+                                    <input type='file' id='file' accept='image/png, image/gif, image/jpeg' onChange={handleFileChange} />
+                                </div>
+                            </div>
+
+                            <div className="statistics_profile">
+                                <h4>Followers:</h4>
+                                <span>{followerCount}</span>
+                                <h4>Followers</h4>
+                                <span>{followedCount}</span>
+                                <h4>Posts:</h4>
+                                <span>{postCount}</span>
+                            </div>
+
                             <form id="profileform">
                                 <input type="hidden" name="userID" value={userId} />
                                 <div className="inputfields">
-                                    <h1 className="input_header">Name:</h1>
-                                    <div className="inputfiled_button">
-                                        <input
-                                            value={firstname}
-                                            onChange={(e) => setFirstname(e.target.value)}
-                                            placeholder="Firstname..."
-                                            type="text"
-                                            className="inputs"
-                                            name="FirstName"
-                                        />
-                                        <div className="line"></div>
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="firstname">Name</label>
+                                        <div className="input_and_line">
+                                            <input
+                                                value={firstname}
+                                                onChange={(e) => setFirstname(e.target.value)}
+                                                placeholder="Vorname..."
+                                                type="text"
+                                                className="inputs"
+                                                name="FirstName"
+                                                id="firstname"
+                                            />
+                                            <div className="line"></div>
+                                        </div>    
                                     </div>
-                                    <h1 className="input_header">Lastname:</h1>
-                                    <input
-                                        value={lastname}
-                                        onChange={(e) => setLastname(e.target.value)}
-                                        placeholder="Lastname..."
-                                        type="text"
-                                        className="inputs"
-                                        name="LastName"
-                                    />
-                                    <div className="line"></div>
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="lastname">Nachname</label>
+                                        <div className="input_and_line">
+                                            <input
+                                                value={lastname}
+                                                onChange={(e) => setLastname(e.target.value)}
+                                                placeholder="Nachname..."
+                                                type="text"
+                                                className="inputs"
+                                                name="LastName"
+                                                id="lastname"
+                                            />
+                                             <div className="line"></div>
+                                        </div>     
+                                    </div>
                                     <input type="hidden" name="Username" value={username} />
 
-                                    <h1 className="input_header">About:</h1>
-                                    <input
-                                        value={biography}
-                                        onChange={(e) => setBiography(e.target.value)}
-                                        placeholder="Tell something about you ..."
-                                        type="text"
-                                        className="inputs"
-                                        name="Biography"
-                                    />
-                                    <div className="line"></div>
-                                    <h1 className="input_header">Birthday: </h1>
-                                    <input
-                                        value={birthday}
-                                        onChange={(e) => setBirthday(e.target.value)}
-                                        placeholder="01.01.2000"
-                                        type="text"
-                                        className="inputs"
-                                        name="Birthday"
-                                    />
-                                    <div className="line"></div>
-                                    <select
-                                        value={gender}
-                                        onChange={(e) => setGender(parseInt(e.target.value))}
-                                        className="inputs"
-                                        name="Gender"
-                                    >
-                                        <option value="" disabled>Select Gender</option>
-                                        <option value="0">Maennlich</option>
-                                        <option value="1">Weiblich</option>
-                                        <option value="2">Divers</option>
-                                    </select>
-                                    <div className="line"></div>
-                                    <input
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        type="password"
-                                        placeholder="Enter new password"
-                                        className="inputs"
-                                        name="Password"
-                                    />
-                                    <div className="line"></div>
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="biography">Biografie</label>
+                                        <div className="input_and_line">
+                                            <input
+                                                value={biography}
+                                                onChange={(e) => setBiography(e.target.value)}
+                                                placeholder="Erzaehl etwas von dir ..."
+                                                type="text"
+                                                className="inputs"
+                                                name="Biography"
+                                                id="biography"
+                                            />
+                                            <div className="line"></div>
+                                        </div>
+                                    </div>        
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="birthday">Geburtstag</label>
+                                        <div className="input_and_line">
+                                            <input
+                                            value={birthday}
+                                            onChange={(e) => setBirthday(e.target.value)}
+                                            placeholder="01.01.2000"
+                                            type="text"
+                                            className="inputs"
+                                            name="Birthday"
+                                            id="birthday"
+                                            />
+                                            <div className="line"></div>
+                                        </div>
+                                    </div>
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="gender">
+                                            Geschlecht
+                                        </label>
+                                        <div className="input_and_line">
+                                            
+                                            <select
+                                                value={gender}
+                                                onChange={(e) => setGender(parseInt(e.target.value))}
+                                                className="inputs"
+                                                name="Gender"
+                                                id="gender"
+                                            >
+                                                <option value="" disabled>Select Gender</option>
+                                                <option value="0">Maennlich</option>
+                                                <option value="1">Weiblich</option>
+                                                <option value="2">Divers</option>
+                                            </select>
+                                            <div className="line"></div>
+                                        </div>
+                                    </div>
+                                    <div className="inputfiled_left">
+                                        <label className="label_input_and_line" for="password">Passwort</label>
+                                        <div className="input_and_line">
+                                            <input
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                type="password"
+                                                placeholder="Neues Passwort"
+                                                className="inputs"
+                                                name="Password"
+                                                id="password"
+                                            />
+                                            <div className="line"></div>
+                                        </div>
+                                    </div>        
                                     <Button
                                         onClick={handleSubmit}
                                         class="saveButton"
@@ -290,14 +338,6 @@ function Profile() {
                                     </Button>
                                 </div>
                             </form>
-                            <div className="statistics_profile">
-                                <h1>Followered by: </h1>
-                                <span>{followerCount}</span>
-                                <h1>Follows:</h1>
-                                <span>{followedCount}</span>
-                                <h1>Posts:</h1>
-                                <span>{postCount}</span>
-                            </div>
                         </div>
                     </div>
                     <Routes>

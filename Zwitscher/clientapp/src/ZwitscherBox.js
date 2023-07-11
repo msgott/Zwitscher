@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import ImageIcon from "@mui/icons-material/Image";
 import VideocamIcon from "@mui/icons-material/Videocam";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 function ZwitscherBox() {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
@@ -108,10 +109,10 @@ function ZwitscherBox() {
                 <div className="zwitscherbox_footer">
                     {/*Image Input*/}
                     <div className="zwitscherbox_footerLeft">
-                        <ImageIcon className="zwitscherBox_imageInput" />
-                        <input type='file' id='files' multiple="multiple" accept='image/png, image/gif, image/jpeg, video/mp4' onChange={handleFileChange} />
-
-                        <VideocamIcon className="zwitscherBox_videoInput" />
+                    <label className="label_upload" for="fileselect">
+                        <FileUploadIcon />
+                        </label>
+                        <input className ="zwitscherBox_imageInput" type="file" id="fileselect" name="fileselect[]" multiple="multiple" accept='image/png, image/gif, image/jpeg, video/mp4' onChange={handleFileChange} style={{display:'none' }}/>
                     </div>
                     {/*Submit all Inputs*/}
                     <Button
