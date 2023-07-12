@@ -22,11 +22,7 @@ export const SidebarData = [
     text: "Trending",
     icon: <TrendingUpIcon />,
     link: "/Zwitscher/trending",
-  },
-  {
-    text: "New",
-    icon: <FiberNewIcon />,
-    link: "/Zwitscher/new",
-  },
+  }
+  
 
 ];

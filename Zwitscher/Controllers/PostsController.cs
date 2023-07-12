@@ -740,7 +740,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
-                .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); ;
+                .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); 
 
                 if (HttpContext.Session.GetString("UserId") is not null)
                 {
@@ -827,6 +827,219 @@ namespace Zwitscher.Controllers
 
             return Json(results);
         }
+        //----------------------------------------------------------------------------------------------------------------------
+        [HttpGet]
+        [Route("API/PostsSortedByRating")]
+        public async Task<ActionResult> PostsSortedByRatingList()
+        //Returns JSON of all Posts with regard for Admin and Moderator roles, User Following status and user Blocking status
+        {
+            if (_context.Post == null)
+            {
+                return BadRequest();
+            }
+            var posts = new List<Post>();
+            if (HttpContext.Session.GetString("RoleName") == "Administrator" || HttpContext.Session.GetString("RoleName") == "Moderator")
+            {
+                posts = (await _context.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .Include(p => p.retweets)
+                .ToListAsync()).OrderByDescending(p => p.CreatedDate).ToList();
+                
+
+            }
+            else
+            {
+                posts = (await _context.Post
+                .Include(u => u.User)
+                .Include(u => u.Media)
+                .Include(u => u.Votes)
+                .ThenInclude(v => v.User)
+                .Include(u => u.Comments)
+                .Include(p => p.retweets)
+                .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList();
+
+                if (HttpContext.Session.GetString("UserId") is not null)
+                {
+                    User usr = _context.User.Find(Guid.Parse(HttpContext.Session.GetString("UserId")!))!;
+                    if (usr != null)
+                    {
+                        var userSpecificPosts = (await _context.Post
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.FollowedBy)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.Blocking)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.BlockedBy)
+                        .Include(u => u.Media)
+                        .Include(u => u.Votes)
+                        .ThenInclude(v => v.User)
+                        .Include(u => u.Comments)
+                        .Include(p => p.retweets)
+                        .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); 
+
+                        posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.Votes).ToList();
+                    }
+                }
+            }
+            posts = posts.OrderByDescending(p => (p.Votes.ToList().FindAll(p => p.isUpVote == true).Count - p.Votes.ToList().FindAll(p => p.isUpVote == false).Count)).ToList();
+
+
+
+
+            if (posts == null || posts.Count == 0)
+            {
+                return NotFound();
+
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId")!);
+            List<Dictionary<string, Object>> results = new();
+
+            foreach (Post post in posts)
+            {
+                string _userID = post.UserId.ToString();
+                string postID = post.Id.ToString();
+                string user_username = post.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
+                DateTime createdDate = post.CreatedDate;
+                int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
+                int commentCount = post.Comments.Count;
+                string postText = post.TextContent;
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true" : "false") : "null";
+                string retweetsPost = post.retweetsID.ToString()!;
+                List<string> mediaList = new();
+
+                if (post.Media is not null)
+                {
+                    foreach (Media media in post.Media)
+                    {
+                        mediaList.Add(media.FileName);
+                    }
+
+                }
+
+
+                Dictionary<string, Object> result = new()
+                {
+                    { "userID", _userID },
+                    { "postID", postID },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
+                    { "rating", rating },
+                    { "commentCount", commentCount },
+                    { "currentUserVoted", currentUserVoted },
+                    { "userVoteIsUpvote", userVoteIsUpvote },
+                    { "mediaList", mediaList },
+                    { "postText", postText },
+                    { "retweetsPost", retweetsPost }
+
+
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        //---------------------------------------------------------------------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("API/OnlyPublicPosts")]
+        public async Task<ActionResult> onlyPublicPosts()
+        //Returns JSON of all Posts with regard for Admin and Moderator roles, User Following status and user Blocking status
+        {
+            if (_context.Post == null)
+            {
+                return BadRequest();
+            }
+            var posts = new List<Post>();
+            
+                posts = (await _context.Post
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.FollowedBy)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.Blocking)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.BlockedBy)
+                        .Include(u => u.Media)
+                        .Include(u => u.Votes)
+                        .ThenInclude(v => v.User)
+                        .Include(u => u.Comments)
+                        .Include(p => p.retweets)
+                        .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList();
+
+
+
+
+
+
+
+            if (posts == null || posts.Count == 0)
+            {
+                return NotFound();
+
+            }
+
+            Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId") is null ? Guid.NewGuid().ToString() : HttpContext.Session.GetString("UserId")!);
+            List<Dictionary<string, Object>> results = new();
+
+            foreach (Post post in posts)
+            {
+                string _userID = post.UserId.ToString();
+                string postID = post.Id.ToString();
+                string user_username = post.User.Username;
+                string user_profilePicture = (await _context.Media.FindAsync(post.User.MediaId)) is null ? "" : (await _context.Media.FindAsync(post.User.MediaId))!.FileName;
+                DateTime createdDate = post.CreatedDate;
+                int rating = post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == true).Count - post.Votes.ToList<Vote>().FindAll(v => v.isUpVote == false).Count;
+                int commentCount = post.Comments.Count;
+                string postText = post.TextContent;
+                bool currentUserVoted = (post.Votes.ToList().Find(v => v.User.Id == userID) is not null && post.Votes.ToList().Find(v => v.User.Id == userID)!.User.Id == userID);
+                string userVoteIsUpvote = currentUserVoted ? (post.Votes.ToList().Find(v => v.User.Id == userID)!.isUpVote ? "true" : "false") : "null";
+                string retweetsPost = post.retweetsID.ToString()!;
+                List<string> mediaList = new();
+
+                if (post.Media is not null)
+                {
+                    foreach (Media media in post.Media)
+                    {
+                        mediaList.Add(media.FileName);
+                    }
+
+                }
+
+
+                Dictionary<string, Object> result = new()
+                {
+                    { "userID", _userID },
+                    { "postID", postID },
+                    { "user_username", user_username },
+                    { "user_profilePicture", user_profilePicture },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
+                    { "rating", rating },
+                    { "commentCount", commentCount },
+                    { "currentUserVoted", currentUserVoted },
+                    { "userVoteIsUpvote", userVoteIsUpvote },
+                    { "mediaList", mediaList },
+                    { "postText", postText },
+                    { "retweetsPost", retweetsPost }
+
+
+
+                };
+                results.Add(result);
+            }
+
+            return Json(results);
+        }
+
+        //---------------------------------------------------------------------------------------------------------------------------------
 
         [HttpGet]
         [Route("API/Post")]
@@ -1022,6 +1235,7 @@ namespace Zwitscher.Controllers
                 .Include(post => post.Comments)
                 .Include(post => post.Media)
                 .Include(post => post.Votes)
+                .Include(post => post.retweets)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post is null) return NotFound();
             if (post.Id != id || post.UserId != userID) return Unauthorized();
@@ -1055,6 +1269,13 @@ namespace Zwitscher.Controllers
                 _context.Media.Remove(m);
             }
             post.Media.Clear();
+            var temppost = _context.Post.Include(p => p.retweets).ToList().Find(p => p.retweetsID == post.Id);
+            if (temppost != null)
+            {
+                temppost.retweets = null;
+                _context.Update(temppost);
+            }
+            post.retweets = null;
             _context.Post.Remove(post);
 
 
