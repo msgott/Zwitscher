@@ -743,14 +743,7 @@ namespace Zwitscher.Controllers
             }
             else
             {
-                posts = (await _context.Post
-                .Include(u => u.User)
-                .Include(u => u.Media)
-                .Include(u => u.Votes)
-                .ThenInclude(v => v.User)
-                .Include(u => u.Comments)
-                .Include(p => p.retweets)
-                .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); 
+                
 
                 if (HttpContext.Session.GetString("UserId") is not null)
                 {
@@ -774,6 +767,25 @@ namespace Zwitscher.Controllers
                         posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
                     }
                 }
+                else
+                {
+                    var userSpecificPosts = (await _context.Post
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.FollowedBy)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.Blocking)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.BlockedBy)
+                        .Include(u => u.Media)
+                        .Include(u => u.Votes)
+                        .ThenInclude(v => v.User)
+                        .Include(u => u.Comments)
+                        .Include(p => p.retweets)
+                        .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); ;
+
+                    posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
+
+                }
             }
 
 
@@ -782,7 +794,27 @@ namespace Zwitscher.Controllers
 
             if (posts == null || posts.Count == 0)
             {
-                return NotFound();
+                Dictionary<string, Object> result = new()
+                {
+                    { "userID", Guid.Empty },
+                    { "postID", Guid.Empty },
+                    { "user_username", "Team Zwitscher" },
+                    { "user_profilePicture", "zwitscherlogo.png" },
+                    { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
+                    { "rating", 1000 },
+                    { "commentCount", 0 },
+                    { "currentUserVoted", false },
+                    { "userVoteIsUpvote", null },
+                    { "mediaList", "[]" },
+                    { "postText", "Folge einem User bevor du hier etwas siehst" },
+                    { "retweetsPost", "" }
+
+
+
+                };
+               
+                return Json(result);
+                
 
             }
 
@@ -902,7 +934,27 @@ namespace Zwitscher.Controllers
 
             if (posts == null || posts.Count == 0)
             {
-                return NotFound();
+                Dictionary<string, Object> result = new()
+                {
+                    { "userID", Guid.Empty },
+                    { "postID", Guid.Empty },
+                    { "user_username", "Team Zwitscher" },
+                    { "user_profilePicture", "zwitscherlogo.png" },
+                    { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
+                    { "rating", 1000 },
+                    { "commentCount", 0 },
+                    { "currentUserVoted", false },
+                    { "userVoteIsUpvote", null },
+                    { "mediaList", "[]" },
+                    { "postText", "Scheinbar noch keine Posts. Erstelle doch einen ;)" },
+                    { "retweetsPost", "" }
+
+
+
+                };
+
+                return Json(result);
+
 
             }
 
@@ -993,7 +1045,27 @@ namespace Zwitscher.Controllers
 
             if (posts == null || posts.Count == 0)
             {
-                return NotFound();
+                Dictionary<string, Object> result = new()
+                {
+                    { "userID", Guid.Empty },
+                    { "postID", Guid.Empty },
+                    { "user_username", "Team Zwitscher" },
+                    { "user_profilePicture", "zwitscherlogo.png" },
+                    { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
+                    { "rating", 1000 },
+                    { "commentCount", 0 },
+                    { "currentUserVoted", false },
+                    { "userVoteIsUpvote", null },
+                    { "mediaList", "[]" },
+                    { "postText", "Es gibt scheinbar noch keine öffentlichen Posts. Sei der erste" },
+                    { "retweetsPost", "" }
+
+
+
+                };
+
+                return Json(result);
+
 
             }
 
