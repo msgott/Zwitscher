@@ -48,3 +48,20 @@
     background: repeating-linear-gradient( 45deg, var(--LightBaseColor), var(--LightBaseColor) 5px, var(--LightBetweenColor) 5px, var(--LightBetweenColor) 25px );
 */
 }
+
+.scroll {
+    position: absolute;
+    bottom: 10px;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    width: 100px;
+    max-width: 100px;
+    background-color: #7fffd4;
+    border-radius: 5px;
+    cursor: pointer;
+    align-items: center;
+    text-align: center;
+    border: 1px solid;
+    font-size: larger;
+}
+    

@@ -114,7 +114,7 @@ function ReZwitscherBox({
                     postId={postId}
                     name={name}
                     text={text}
-                    image={"https://localhost:7160/Media/" + image}
+                    image={image}
                     avatar={"https://localhost:7160/Media/" + avatar}
                     rating={rating}
                     _currentUserVoted={_currentUserVoted}

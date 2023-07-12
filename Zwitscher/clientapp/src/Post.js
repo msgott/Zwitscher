@@ -19,6 +19,8 @@ import ReZwitscherBox from "./ReZwitscherBox";
 import PostPreview from "./PostPreview";
 import { Route, useNavigate } from "react-router-dom";
 import Profile from "./pages/Profile";
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
 function Post({
@@ -35,6 +37,7 @@ function Post({
     _userVoteIsUpvote,
     _retweetsPost
 }) {
+
     const [retweetsData, setRetweetsData] = useState();
 
     //Get Posts information from backend
@@ -71,7 +74,7 @@ function Post({
     };
     const style2 = {
         flex: '1'
-        
+
     };
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -81,9 +84,9 @@ function Post({
 
     const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
     const [currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
-    const [userVoteIsUpvote, setuserVoteIsUpvote] = useState(_userVoteIsUpvote === "true"? true : false);
-    
+    const [userVoteIsUpvote, setuserVoteIsUpvote] = useState(_userVoteIsUpvote === "true" ? true : false);
 
+    const [currentSlide, setCurrentSlide] = useState(0);
     // Get the current filename for the Avatar
     const [userName, setUserName] = useState("");
     // Sessions Data from the current logged in User
@@ -236,7 +239,7 @@ function Post({
     };
     //redirect to Login page
     const redirectToLogin = () => {
-        window.location.replace("Auth");
+        window.location.href = "https://localhost:7160/Auth";
     };
 
     //Open Comment section
@@ -245,15 +248,32 @@ function Post({
     const toggleComments = () => {
         setShowComments(!showComments);
     };
+    const responsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 3,
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 1,
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1,
+        },
+    };
+    const handleSlideChange = (current) => {
+        //setCurrentSlide(current);
+    };
     const navigate = useNavigate();
     return (
         <><div className="post">
             <div className="post_avatar">
-                <Avatar src={avatar} />
-                <p>{name}</p>
-                <Button onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }}>Profil</Button>
-                <h5 style={{'margin-left': 'auto', 'margin-right': '0'} }>{createdDate}</h5>
-                
+                <Avatar onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }} src={avatar} />
+                <p onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }}>{name}</p>
+
+                <h5 >{createdDate}</h5>
+
             </div>
             <div className="post_body">
                 <div className="post_header">
@@ -263,51 +283,88 @@ function Post({
                     <div className="post_headerDescription"></div>
                     <p>{text}</p>
                 </div>
-                {image.endsWith("mp4") && (
-                    <video controls>
-                        <source src={image} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                )}
+
                 {(_retweetsPost !== "" && retweetsData) ? (<PostPreview
                     postId={retweetsData.postID}
                     name={retweetsData.user_username}
                     text={retweetsData.postText}
-                    image={"https://localhost:7160/Media/" + retweetsData.mediaList[0]}
+                    image={retweetsData.mediaList}
                     avatar={"https://localhost:7160/Media/" + retweetsData.user_profilePicture}
                     rating={retweetsData.rating}
                     _currentUserVoted={retweetsData.currentUserVoted}
                     _userVoteIsUpvote={retweetsData.userVoteIsUpvote}
                     isInRezwitscherBox={false}
-                    
-                />) : (<img src={image} alt="" />)}
-                
+
+                />) : (
+
+                    <>
+
+                        <div className="carousel-container">
+                            <Carousel
+                                responsive={responsive}
+                                beforeChange={handleSlideChange}
+                                containerClass="carousel">
+                                {image.map((image, index) => (
+                                    <div key={`image-${index}`} className="carousel-item">
+                                        {image.endsWith("mp4") ? (
+                                            <video controls className="carousel-video">
+                                                <source src={"https://localhost:7160/Media/" + image} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>) :
+                                            <img src={"https://localhost:7160/Media/" + image} alt={`Image ${index}`} />
+                                        }
+
+                                    </div>
+                                ))}
+
+                            </Carousel>
+                        </div>
+
+                    </>
+
+
+
+                )}
+
                 <div className="post_footer">
                     <ChatBubbleOutlineIcon
                         onClick={toggleComments}
                         className="chat-icon" > <p>{commentCount}</p></ChatBubbleOutlineIcon>
-                   
+                    {sessionData.Username === "" ?(
                     <RetzitscherIcon
+                            onClick={()=>redirectToLogin()}
+                        className="chat-icon"
+                    />):
+                    (<RetzitscherIcon
                         onClick={handleOpen}
-                        className="chat-icon" 
-                    />
+                        className="chat-icon"
+                    />)}
 
                     <div className="vote_container">
 
 
                         {(currentUserVoted && userVoteIsUpvote) ?
                             /*Upvote filled */
-                            sessionData.Username === "" ? (<img
-                                src={VoteClicked}
-                                alt="Icon"
-                                text="ClickedIcon"
-                                className="UpvoteFilled"
-                                onClick={() => redirectToLogin()} />) : (<img
-                                    src={VoteClicked}
-                                    alt="Icon"
-                                    text="ClickedIcon"
-                                    className="UpvoteFilled"
-                                    onClick={() => handleUpvoteClick(postId)} />)
+                            sessionData.Username === "" ?
+                                (
+                                    <img
+                                        src={VoteClicked}
+                                        alt="Icon"
+                                        text="ClickedIcon"
+                                        className="UpvoteFilled"
+                                        onClick={() => redirectToLogin()}
+                                    />
+                                )
+                                :
+                                (
+                                    <img
+                                        src={VoteClicked}
+                                        alt="Icon"
+                                        text="ClickedIcon"
+                                        className="UpvoteFilled"
+                                        onClick={() => handleUpvoteClick(postId)}
+                                    />
+                                )
 
                             :
                             /*Upvote NOT-filled */
@@ -357,27 +414,27 @@ function Post({
                 </div>
                 {showComments && <Comments postId={postId} />}
             </div>
-            
+
         </div><Modal
             open={open}
             onClose={handleClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
-            >
-        
+        >
+
                 <Box sx={style}>
-                    <ReZwitscherBox 
+                    <ReZwitscherBox
                         postId={postId}
                         name={name}
                         text={text}
-                        image={"https://localhost:7160/Media/" + image}
+                        image={image}
                         avatar={"https://localhost:7160/Media/" + avatar}
                         rating={rating}
                         _currentUserVoted={_currentUserVoted}
                         _userVoteIsUpvote={_userVoteIsUpvote}
-                        _handleClose={handleClose }
+                        _handleClose={handleClose}
                     />
-                    
+
                 </Box>
             </Modal></>
     );

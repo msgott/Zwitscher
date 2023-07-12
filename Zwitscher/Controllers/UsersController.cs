@@ -1956,6 +1956,7 @@ namespace Zwitscher.Controllers
             }
             _dbContext.Remove(user);
             await _dbContext.SaveChangesAsync();
+            HttpContext.Session.Clear();
             return Ok();
         }
 

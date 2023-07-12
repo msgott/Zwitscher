@@ -722,14 +722,14 @@ namespace Zwitscher.Controllers
             var posts = new List<Post>();
             if (HttpContext.Session.GetString("RoleName") == "Administrator" || HttpContext.Session.GetString("RoleName") == "Moderator")
             {
-                posts = await _context.Post
+                posts = (await _context.Post
                 .Include(u => u.User)
                 .Include(u => u.Media)
                 .Include(u => u.Votes)
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
-                .ToListAsync();
+                .ToListAsync()).OrderByDescending(p=> p.CreatedDate).ToList();
             }
             else
             {
@@ -740,7 +740,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
-                .ToListAsync()).FindAll(p => p.IsPublic == true);
+                .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); ;
 
                 if (HttpContext.Session.GetString("UserId") is not null)
                 {
@@ -759,9 +759,9 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
-                        .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr));
+                        .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); ;
 
-                        posts = posts.Union(userSpecificPosts).ToList();
+                        posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
                     }
                 }
             }
@@ -810,7 +810,7 @@ namespace Zwitscher.Controllers
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
-                    { "createdDate", createdDate },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
                     { "rating", rating },
                     { "commentCount", commentCount },
                     { "currentUserVoted", currentUserVoted },
@@ -884,7 +884,7 @@ namespace Zwitscher.Controllers
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
-                    { "createdDate", createdDate },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
                     { "rating", rating },
                     { "commentCount", commentCount },
                     { "currentUserVoted", currentUserVoted },

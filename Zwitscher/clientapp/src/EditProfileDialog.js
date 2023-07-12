@@ -3,7 +3,8 @@ import "./EditProfileDialog.css";
 
 import Avatar from "@mui/material/Avatar";
 
-import { Button } from "@mui/material";
+import { Button, Modal } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -12,6 +13,12 @@ function EditProfileDialog({
     userObject,
     handleClose
 }) {
+    //Modal stuff------------------------------------------------
+    const [EditProfileDeleteOpen, setEditProfileDeleteOpen] = React.useState(false);
+    const EditProfileDeletehandleOpen = () => setEditProfileDeleteOpen(true);
+    const EditProfileDeletehandleClose = () => setEditProfileDeleteOpen(false);
+
+
     // Main File to load all the Components on the page (Header, Sidebar, Feed etc.)
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
@@ -157,95 +164,143 @@ function EditProfileDialog({
         }
         handleClose();
     };
+    const navigate = useNavigate();
+    const  handleDelete = async () => {
+       
+
+
+
+        // Prevent the default form submission behavior
+        // Perform any necessary actions here, such as saving the form data or making API calls
+        var requestOptions = {
+            method: 'DELETE',
+            //body: JSON.stringify({
+            //    "userID": userId,
+            //   "LastName": lastname,
+            //    "FirstName": firstname,
+            //    "Username": username,
+            //    "Password": password,
+            //    "Birthday": birthday,
+            //    "Biography": biography,
+            //    "Gender": gender
+            /*}),*/
+            redirect: 'follow'
+        };
+
+
+        var response = await fetch("https://localhost:7160/API/Users/Remove?id="+userId, requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        
+        window.location.href = "https://localhost:7160/Auth";
+        
+           
+        
+        handleClose();
+    };
 
     return (
         // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
-        <div Class="form-container">
-            <h1 Class="EditFormUsername">{ username}</h1>
-            <img Class="EditFormAvatar" src={"/Media/" + pbFileName}></img>
-            
+        <>
+            // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
+            <div Class="form-container">
+                <h1 Class="EditFormUsername">{username}</h1>
+                <img Class="EditFormAvatar" src={"/Media/" + pbFileName}></img>
 
-        <form id="profileform">
-            <input type="hidden" name="userID" value={userId} />
-            <div >
-                    <label>Profilbild Aendern:</label>
 
-                    <input type='file' id='file' accept='image/png, image/gif, image/jpeg' onChange={handleFileChange} />
-                <label for="nameinput" >Name:</label>
-                <input
-                    id="nameinput"
-                    value={userObject.firstname}
-                    onChange={(e) => setFirstname(e.target.value)}
-                    placeholder="Vorname..."
-                    type="text"
-                    
-                    name="FirstName"
-                />
-                
+                <form id="profileform">
+                    <input type="hidden" name="userID" value={userId} />
+                    <div>
+                        <label>Profilbild Aendern:</label>
 
-                <label >Lastname:</label>
-                <input
-                    value={lastname}
-                    onChange={(e) => setLastname(e.target.value)}
-                    placeholder="Nachname..."
-                    type="text"
-                    
-                    name="LastName"
-                />
-                
-                <input type="hidden" name="Username" value={username} />
+                        <input type='file' id='file' accept='image/png, image/gif, image/jpeg' onChange={handleFileChange} />
+                        <label for="nameinput">Name:</label>
+                        <input
+                            id="nameinput"
+                            value={userObject.firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                            placeholder="Vorname..."
+                            type="text"
 
-                <label >About:</label>
-                <input
-                    value={biography}
-                    onChange={(e) => setBiography(e.target.value)}
-                    placeholder="Biographie"
-                    type="text"
-                    
-                    name="Biographie"
-                />
-                
-                <label >Birthday: </label>
-                <input
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
-                    placeholder="01.01.2000"
-                    type="text"
-                    
-                    name="Geburtstag"
-                />
-                    <label >Geschlecht: </label>
-                <select
-                    value={gender}
-                    onChange={(e) => setGender(parseInt(e.target.value))}
-                    
-                    name="Gender"
-                >
-                    <option value="" disabled>Geschlecht auswaehlen</option>
-                    <option value="0">Maennlich</option>
-                    <option value="1">Weiblich</option>
-                    <option value="2">Divers</option>
-                </select>
-                    <label >Passwort: </label>
-                <input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    type="password"
-                    placeholder="neues Passwort"
-                    
-                    name="Password"
-                />
-                
-                <Button
-                    onClick={handleSubmit}
-                    
-                    type="submit"
-                >
-                    Speichern
-                </Button>
-            </div>
-        </form>
-        </div>
+                            name="FirstName" />
+
+
+                        <label>Lastname:</label>
+                        <input
+                            value={lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                            placeholder="Nachname..."
+                            type="text"
+
+                            name="LastName" />
+
+                        <input type="hidden" name="Username" value={username} />
+
+                        <label>About:</label>
+                        <input
+                            value={biography}
+                            onChange={(e) => setBiography(e.target.value)}
+                            placeholder="Biographie"
+                            type="text"
+
+                            name="Biographie" />
+
+                        <label>Birthday: </label>
+                        <input
+                            value={birthday}
+                            onChange={(e) => setBirthday(e.target.value)}
+                            placeholder="01.01.2000"
+                            type="text"
+
+                            name="Geburtstag" />
+                        <label>Geschlecht: </label>
+                        <select
+                            value={gender}
+                            onChange={(e) => setGender(parseInt(e.target.value))}
+
+                            name="Gender"
+                        >
+                            <option value="" disabled>Geschlecht auswaehlen</option>
+                            <option value="0">Maennlich</option>
+                            <option value="1">Weiblich</option>
+                            <option value="2">Divers</option>
+                        </select>
+                        <label>Passwort: </label>
+                        <input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="password"
+                            placeholder="neues Passwort"
+
+                            name="Password" />
+
+                        <Button
+                            onClick={handleSubmit}
+
+                            type="submit"
+                        >
+                            Speichern
+                        </Button>
+                    </div>
+                </form>
+                <Button Class="deleteAccountButton" onClick={() => { EditProfileDeletehandleOpen() } }>Account loeschen</Button>
+            </div><Modal
+                open={EditProfileDeleteOpen}
+                onClose={EditProfileDeletehandleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+
+                <div className="DeleteDialog">
+                    <p>Account wirklich loeschen?</p>
+                    <Button onClick={() => { handleDelete() } }>Ja, Loeschen</Button>
+                </div>
+
+
+            </Modal></>
+
 
     );
 }
