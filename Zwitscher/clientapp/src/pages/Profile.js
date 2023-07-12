@@ -342,15 +342,14 @@ const Profile = () => {
 
                                     : ""}
                                 <br></br>
-                                <h1 style={{ padding: '10px' }}>{username}</h1>
                                 <div className="statistics_profile">
-                                    <h3>Followed by: </h3>
-                                    <span>{followerCount}</span>
-                                    <h3>Follows:</h3>
-                                    <span>{followedCount}</span>
-                                    <h3>Posts:</h3>
-                                    {/*<span>{postCount}</span>*/}
-                                </div>
+                                <h4>Followers:</h4>
+                                <span>{followerCount}</span>
+                                <h4>Following</h4>
+                                <span>{followedCount}</span>
+                                <h4>Posts:Auskommentiert</h4>
+                                {/*<span>{postCount}</span>*/}
+                            </div>
 
 
 
