@@ -2,7 +2,12 @@ import React from "react";
 import "./Widgets.css";
 
 function Widgets() {
-  return <div></div>;
+    return (
+        <div>
+        Suche
+        </div>
+    
+    );
 }
 
 export default Widgets;
