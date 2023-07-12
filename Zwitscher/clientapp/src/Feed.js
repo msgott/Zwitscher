@@ -4,7 +4,9 @@ import ZwitscherBox from "./ZwitscherBox";
 import Post from "./Post";
 import { FaArrowCircleUp } from 'react-icons/fa';
 import { Button } from "@mui/material";
-function Feed() {
+function Feed({
+    userid
+}) {
     const [postsData, setPostsData] = useState([]);
     const [visible, setVisible] = useState(false)
 
@@ -30,7 +32,25 @@ function Feed() {
     };
     if (document.getElementById("feed"))
         document.getElementById("feed").addEventListener('scroll', toggleVisible);
+    //Session Data
+    const [sessionData, setSessionData] = useState(null);
 
+    useEffect(() => {
+        const fetchUserSession = async () => {
+            try {
+                // Fetch session data
+                var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+                var sessionJsonData = await sessionResponse.json();
+                setSessionData(sessionJsonData);
+
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserSession();
+
+    }, []);
 
     //Get Posts information from backend
     useEffect(() => {
@@ -46,6 +66,8 @@ function Feed() {
                     response = await fetch("https://localhost:7160/API/OnlyPublicPosts"); // Replace with your API endpoint
                 } else if (url.endsWith("/trending")) {
                     response = await fetch("https://localhost:7160/API/PostsSortedByRating"); // Replace with your API endpoint
+                }else if (url.endsWith("/profile")) {
+                    response = await fetch("https://localhost:7160/API/Users/Posts?id=" +userid? userid:sessionData.userID); // Replace with your API endpoint
                 }
 
                 console.log(response.text);
@@ -57,7 +79,7 @@ function Feed() {
         };
 
         fetchPostsData();
-    }, []);
+    }, [sessionData]);
 
 
 

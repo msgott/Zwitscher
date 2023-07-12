@@ -227,3 +227,8 @@ h1 {
     max-height: 200px;
     overflow-y: auto;
   }
+.PostWrapper {
+    max-width: 600px;
+    max-height:600px;
+    overflow-y:auto;
+}

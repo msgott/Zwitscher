@@ -14,6 +14,8 @@ import { ThemeContext } from "../AppZwitscher";
 
 
 import EditProfileDialog from "../EditProfileDialog";
+import Feed from "../Feed";
+import Post from "../Post";
 
 
 export const goToProfileContext = createContext(null);
@@ -37,7 +39,7 @@ const Profile = (props) => {
     const EditProfilehandleOpen = () => setEditProfileOpen(true);
     const EditProfilehandleClose = () => setEditProfileOpen(false);
 
-    
+
 
 
 
@@ -64,6 +66,7 @@ const Profile = (props) => {
                 const response = await fetch("https://localhost:7160/API/User?id=" + foreignUserObject);
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data);
                     setUserData(data);
                 } else {
                     console.log('Failed to fetch user data');
@@ -74,11 +77,11 @@ const Profile = (props) => {
         };
 
         fetchUserData();
-    },[]);
-    
+    }, []);
 
 
-    
+
+
     //Session Data
     const [sessionData, setSessionData] = useState(null);
 
@@ -89,7 +92,7 @@ const Profile = (props) => {
                 var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
                 var sessionJsonData = await sessionResponse.json();
                 setSessionData(sessionJsonData);
-                
+
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -147,7 +150,7 @@ const Profile = (props) => {
         const fetchUserOwnFollows = async () => {
             console.log(sessionData);
             if (sessionData) {
-                
+
                 try {
                     // Fetch session data
                     var OwnFollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + sessionData.userID);
@@ -159,7 +162,7 @@ const Profile = (props) => {
                     console.error("Error fetching data:", error);
                 }
             }
-            
+
         }
         fetchUserOwnFollows();
     }, [sessionData]);
@@ -187,7 +190,7 @@ const Profile = (props) => {
         }
         fetchUserOwnBlocking();
     }, [sessionData]);
-    
+
     //Posts
     const [userPostData, setuserPostData] = useState(null);
 
@@ -230,46 +233,30 @@ const Profile = (props) => {
 
 
 
-
-
-
-
-
-
-
-
     if (!userData || !sessionData) {
         return (
             <>
-            <ThemeContext.Provider value={{ theme, toggleTheme }}>
-                <goToProfileContext.Provider value={{ goToProfile, setGoToProfile }}>
-                    <div className="beginning" id={theme}>
-                        <div className="sticky-header">
-                            <Header />
+                <ThemeContext.Provider value={{ theme, toggleTheme }}>
+                    <goToProfileContext.Provider value={{ goToProfile, setGoToProfile }}>
+                        <div className="beginning" id={theme}>
+                            <div className="sticky-header">
+                                <Header />
+                            </div>
+                            <div className="app">
+                                <Sidebar2 className="sticky-sidebar" />
+                            </div>
+                            <div className="Profile">
+                                Loading...
+                            </div>
                         </div>
-                        <div className="app">
-                            <Sidebar2 className="sticky-sidebar" />
-                        </div>
-                        <div className="Profile">
-                        Loading...
-                        </div>
-                    </div>
-                    
-                </goToProfileContext.Provider>
-            </ThemeContext.Provider>
+
+                    </goToProfileContext.Provider>
+                </ThemeContext.Provider>
             </>);
     }
-
-    
-
-
-
-
-
-
     const { userID, lastname, firstname, username, birthday, biography, gender, followedCount, followerCount, pbFileName } = userData;
 
-    
+
 
     var _pbfileName = ""
     if (!pbFileName) {
@@ -282,7 +269,7 @@ const Profile = (props) => {
 
         _pbfileName = pbFileName;
     };
-    
+
     /*const [pbFileName, setPbFileName] = useState(_pbfileName);*/
 
 
@@ -299,7 +286,7 @@ const Profile = (props) => {
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Users/Following/Remove?userToUnfollowId=" + foreignUserObject,
-                
+
                 {
                     method: "POST",
                     headers: {
@@ -396,8 +383,8 @@ const Profile = (props) => {
                             <div className="Profile">
 
 
-                                <img src={"/Media/" + (pbFileName!=="" ? pbFileName: "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
-                                {isOwnProfile() == true&&(
+                                <img src={"/Media/" + (pbFileName !== "" ? pbFileName : "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
+                                {isOwnProfile() == true && (
                                     <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
                                 )
                                 }
@@ -415,23 +402,41 @@ const Profile = (props) => {
                                     : ""}
                                 <br></br>
                                 <div className="statistics_profile">
-                                <h4>Followers:</h4>
-                                <span>{followerCount}</span>
-                                <h4>Following</h4>
-                                <span>{followedCount}</span>
-                                <h4>Posts:Auskommentiert</h4>
-                                {/*<span>{postCount}</span>*/}
-                                <h4>{data ? data.title : "Go to home"}</h4>
+                                    <h4>Followers:</h4>
+                                    <span>{followerCount}</span>
+                                    <h4>Following</h4>
+                                    <span>{followedCount}</span>
+                                    <h4>Posts:Auskommentiert</h4>
+                                    {/*<span>{postCount}</span>*/}
+                                </div>
+                                <hr />
+                                <div className="PostWrapper">
+                                    {userPostData != null && userPostData.map((post) => (
+                                        <Post
+                                            key={post.postID}
+                                            userId={post.userID}
+                                            postId={post.postID}
+                                            name={post.user_username}
+                                            text={post.postText}
+                                            image={post.mediaList}
+                                            avatar={"https://localhost:7160/Media/" + post.user_profilePicture}
+                                            rating={post.rating}
+                                            _currentUserVoted={post.currentUserVoted}
+                                            _userVoteIsUpvote={post.userVoteIsUpvote}
+                                            _retweetsPost={post.retweetsPost}
+                                            createdDate={post.createdDate}
+                                            commentCount={post.commentCount} />
+                                    ))}
+                                </div>
                             </div>
 
 
-
-                            </div>
                         </div>
+
                     </div>
                 </goToProfileContext.Provider>
             </ThemeContext.Provider>
-           
+
             <Modal
                 open={EditProfileOpen}
                 onClose={EditProfilehandleClose}
@@ -448,7 +453,7 @@ const Profile = (props) => {
 
             </Modal>
 
-            
+
         </>
     );
 }
