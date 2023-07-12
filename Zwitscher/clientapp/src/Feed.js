@@ -47,6 +47,7 @@ function Feed() {
                 } else if (url.endsWith("/trending")) {
                     response = await fetch("https://localhost:7160/API/PostsSortedByRating"); // Replace with your API endpoint
                 }
+
                 console.log(response.text);
                 const jsonData = await response.json();
                 setPostsData(jsonData);

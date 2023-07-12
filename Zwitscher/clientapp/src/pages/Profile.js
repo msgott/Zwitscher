@@ -164,6 +164,30 @@ const Profile = () => {
         }
         fetchUserOwnFollows();
     }, [sessionData]);
+
+    //OwnBlocks
+    const [OwnuserBlockingData, setOwnuserBlockingData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserOwnBlocking = async () => {
+            console.log(sessionData);
+            if (sessionData) {
+
+                try {
+                    // Fetch session data
+                    var OwnBlockingResponse = await fetch("https://localhost:7160/API/Users/Blocking?UserID=" + sessionData.userID);
+                    var OwnBlockingJsonData = await OwnBlockingResponse.json();
+                    setOwnuserBlockingData(OwnBlockingJsonData);
+                    //console.log(OwnBlockingJsonData);
+
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
+
+        }
+        fetchUserOwnBlocking();
+    }, [sessionData]);
     
     //Posts
     const [userPostData, setuserPostData] = useState(null);
@@ -314,6 +338,49 @@ const Profile = () => {
             console.error("Error updating vote:", error);
         }
     };
+
+    const unblock = async () => {
+        try {
+            const response = await fetch(
+                "https://localhost:7160/API/Users/Blocking/Remove?userToUnblockId=" + foreignUserObject,
+
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
+            window.location.reload(false);
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error updating vote:", error);
+        }
+    };
+
+    const block = async () => {
+        try {
+            const response = await fetch(
+                "https://localhost:7160/API/Users/Blocking/Add?userToBlockId=" + foreignUserObject,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
+            window.location.reload(false);
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error updating vote:", error);
+        }
+    };
     /*console.log((OwnuserFollowingData && foreignUserObject !== sessionData.userID));*/
 
     return (
@@ -339,6 +406,12 @@ const Profile = () => {
                                     (<Button onClick={() => { unfollow() }}> Geflogt</Button>)
                                     :
                                     (<Button onClick={() => { follow() }}> Folgen</Button>)
+
+                                    : ""}
+                                {(OwnuserBlockingData && !isOwnProfile()) ? OwnuserBlockingData.find(user => user.userID === foreignUserObject) ?
+                                    (<Button onClick={() => { unblock() }}> Geblockt</Button>)
+                                    :
+                                    (<Button onClick={() => { block() }}> Blocken</Button>)
 
                                     : ""}
                                 <br></br>
