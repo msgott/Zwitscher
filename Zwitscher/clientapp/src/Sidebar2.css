@@ -67,3 +67,14 @@
     background-color: #7fffd4;
     color: black;
 }
+
+/*Shows active URL on Sidebar, similar to row:hover*/
+.active {
+    cursor: pointer;
+    border-radius: 0px 100px 100px 0px;
+    background-color: var(--LightSidebarLinkColor);
+}
+#dark .active{
+    color: #d1d1d1;
+    background-color: #302c2c;
+}

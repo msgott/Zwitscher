@@ -4,14 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
 import Modal from '@mui/material/Modal';
-import {
-
-    Routes,
-    Route,
-
-    useNavigate,
-    useLocation,
-} from "react-router-dom";
+import {Routes,Route,useNavigate,useLocation,} from "react-router-dom";
 
 import Header from "../Header";
 import Sidebar2 from "../Sidebar2";
@@ -25,9 +18,15 @@ import EditProfileDialog from "../EditProfileDialog";
 
 export const goToProfileContext = createContext(null);
 
-const Profile = () => {
+const Profile = (props) => {
+    const location = useLocation();
+    console.log(location);
+    const data = location.state?.data;
+
+    
+
     const { state } = useLocation();
-    const { foreignUserObject } = state;
+    const { foreignUserObject,screen } = state;
     const navigate = useNavigate();
     if (foreignUserObject == undefined) {
         navigate('/Zwitscher')
@@ -44,7 +43,7 @@ const Profile = () => {
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
     // depending on toggleTheme
-    const [theme, setTheme] = useState("light");
+    const [theme, setTheme] = useState(screen);
 
     const toggleTheme = () => {
         setTheme((curr) => (curr === "light" ? "dark" : "light"));
@@ -349,15 +348,13 @@ const Profile = () => {
                                 <span>{followedCount}</span>
                                 <h4>Posts:Auskommentiert</h4>
                                 {/*<span>{postCount}</span>*/}
+                                <h4>{data ? data.title : "Go to home"}</h4>
                             </div>
 
 
 
                             </div>
                         </div>
-                        <Routes>
-                            <Route path="/profile" element={<Profile />} />
-                        </Routes>
                     </div>
                 </goToProfileContext.Provider>
             </ThemeContext.Provider>

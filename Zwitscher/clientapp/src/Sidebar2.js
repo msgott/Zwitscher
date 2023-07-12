@@ -6,11 +6,13 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HelpIcon from '@mui/icons-material/Help';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Sidebar() {
   // Get the current session data from the User whos online
   const [data, setData] = useState([]);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +32,13 @@ function Sidebar() {
     return data.RoleName === "Moderator" || data.RoleName === "Administrator";
     };
     const navigate = useNavigate();
+
+    // Which Link is active Sidebar
+    const [isActive, setIsActive] = useState(false);
+
+    const location = useLocation();
+    const currentUrl = location.pathname;
+
 
   return (
     <div className="sidebar">
@@ -60,7 +69,7 @@ function Sidebar() {
             <div className="icon">
               <PermIdentityIcon />
             </div>
-            <div className="text">Profile</div>
+            <div className="text">Profil</div>
           </li>
         )}
 
@@ -79,7 +88,7 @@ function Sidebar() {
           </li>
               )}
         <li 
-          className="row"
+          className={`row ${currentUrl === '/' ? 'active' : ''}`}
           onClick={() => {
             window.location.href = 'mailto:support@Zwitscher.de';
           }}>

@@ -14,17 +14,17 @@ export const SidebarData = [
     link: "/Zwitscher",
   },
   {
-    text: "Public",
+    text: "Öffentlich",
     icon: <GroupsIcon />,
     link: "/Zwitscher/public",
   },
   {
-    text: "Trending",
+    text: "Im Trend",
     icon: <TrendingUpIcon />,
     link: "/Zwitscher/trending",
   },
   {
-    text: "New",
+    text: "Neu",
     icon: <FiberNewIcon />,
     link: "/Zwitscher/new",
   },
