@@ -269,9 +269,13 @@ function Post({
     return (
         <><div className="post">
             <div className="post_avatar">
-                <Avatar onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }} src={avatar} />
-                <p onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }) }}>{name}</p>
+                {postId !== "00000000-0000-0000-0000-000000000000" ?(
+                <><Avatar onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }); } } src={avatar} /><p onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }); } }>{name}</p></>
+                ):
+                (
+                    <><Avatar src={avatar} /><p>{name}</p></>
 
+            )}
                 <h5 >{createdDate}</h5>
 
             </div>
@@ -325,7 +329,7 @@ function Post({
 
 
                 )}
-
+                {postId !== "00000000-0000-0000-0000-000000000000" && (
                 <div className="post_footer">
                     <ChatBubbleOutlineIcon
                         onClick={toggleComments}
@@ -339,7 +343,7 @@ function Post({
                         onClick={handleOpen}
                         className="chat-icon"
                     />)}
-
+                    
                     <div className="vote_container">
 
 
@@ -410,11 +414,13 @@ function Post({
                                     text="DownVote"
                                     className="downvote"
                                     onClick={() => handleDownvoteClick(postId)} />)}
-                    </div>
+                        </div>
+                    
                 </div>
-                {showComments && <Comments postId={postId} />}
+                
+                )}
             </div>
-
+            {showComments && <Comments postId={postId} />}
         </div><Modal
             open={open}
             onClose={handleClose}

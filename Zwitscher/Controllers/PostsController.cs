@@ -794,6 +794,7 @@ namespace Zwitscher.Controllers
 
             if (posts == null || posts.Count == 0)
             {
+                
                 Dictionary<string, Object> result = new()
                 {
                     { "userID", Guid.Empty },
@@ -801,19 +802,20 @@ namespace Zwitscher.Controllers
                     { "user_username", "Team Zwitscher" },
                     { "user_profilePicture", "zwitscherlogo.png" },
                     { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
-                    { "rating", 1000 },
+                    { "rating", 69 },
                     { "commentCount", 0 },
                     { "currentUserVoted", false },
                     { "userVoteIsUpvote", null },
-                    { "mediaList", "[]" },
+                    { "mediaList", new List<String>() },
                     { "postText", "Folge einem User bevor du hier etwas siehst" },
                     { "retweetsPost", "" }
 
 
 
                 };
-               
-                return Json(result);
+                List<Dictionary<string, Object>> result_ = new();
+                result_.Add(result);
+                return Json(result_);
                 
 
             }
@@ -923,10 +925,14 @@ namespace Zwitscher.Controllers
                         .Include(p => p.retweets)
                         .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); 
 
-                        posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.Votes).ToList();
+                        posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
                     }
                 }
             }
+
+
+
+
             posts = posts.OrderByDescending(p => (p.Votes.ToList().FindAll(p => p.isUpVote == true).Count - p.Votes.ToList().FindAll(p => p.isUpVote == false).Count)).ToList();
 
 
@@ -941,11 +947,11 @@ namespace Zwitscher.Controllers
                     { "user_username", "Team Zwitscher" },
                     { "user_profilePicture", "zwitscherlogo.png" },
                     { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
-                    { "rating", 1000 },
+                    { "rating", 69 },
                     { "commentCount", 0 },
                     { "currentUserVoted", false },
                     { "userVoteIsUpvote", null },
-                    { "mediaList", "[]" },
+                    { "mediaList", new List<String>() },
                     { "postText", "Scheinbar noch keine Posts. Erstelle doch einen ;)" },
                     { "retweetsPost", "" }
 
@@ -953,7 +959,9 @@ namespace Zwitscher.Controllers
 
                 };
 
-                return Json(result);
+                List<Dictionary<string, Object>> result_ = new();
+                result_.Add(result);
+                return Json(result_);
 
 
             }
@@ -1052,11 +1060,11 @@ namespace Zwitscher.Controllers
                     { "user_username", "Team Zwitscher" },
                     { "user_profilePicture", "zwitscherlogo.png" },
                     { "createdDate", DateTime.Now.ToString("dd.MM.yyyy") },
-                    { "rating", 1000 },
+                    { "rating", 69 },
                     { "commentCount", 0 },
                     { "currentUserVoted", false },
                     { "userVoteIsUpvote", null },
-                    { "mediaList", "[]" },
+                    { "mediaList", new List<String>() },
                     { "postText", "Es gibt scheinbar noch keine öffentlichen Posts. Sei der erste" },
                     { "retweetsPost", "" }
 
@@ -1064,7 +1072,9 @@ namespace Zwitscher.Controllers
 
                 };
 
-                return Json(result);
+                List<Dictionary<string, Object>> result_ = new();
+                result_.Add(result);
+                return Json(result_);
 
 
             }
