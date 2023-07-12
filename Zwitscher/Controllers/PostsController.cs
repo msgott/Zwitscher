@@ -299,6 +299,7 @@ namespace Zwitscher.Controllers
                 .Include(post => post.Comments)
                 .Include(post => post.Media)
                 .Include(post => post.Votes)
+                .Include(post => post.retweets)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post != null)
             {
@@ -328,7 +329,16 @@ namespace Zwitscher.Controllers
                     }
                     _context.Media.Remove(m);
                 }
+
                 post.Media.Clear();
+
+                var temppost = _context.Post.Include(p => p.retweets).ToList().Find(p => p.retweetsID == post.Id);
+                if (temppost != null)
+                {
+                    temppost.retweets = null;
+                    _context.Update(temppost);
+                }
+                post.retweets = null;
                 _context.Post.Remove(post);
             }
 
