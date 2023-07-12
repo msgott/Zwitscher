@@ -38,6 +38,9 @@
         border-radius: 9px;
         border: 1px solid;
     }
+.PublicWrapper > input[type=checkbox] {
+    width:25px;
+}
 
 ::placeholder {
     color: var(--Light_TextColor);

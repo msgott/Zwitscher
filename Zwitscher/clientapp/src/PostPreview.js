@@ -15,7 +15,8 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import ZwitscherBox from "./ZwitscherBox";
 import ReZwitscherBox from "./ReZwitscherBox";
-
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
 function PostPreview({
     postId,
@@ -211,6 +212,20 @@ function PostPreview({
     const toggleComments = () => {
         setShowComments(!showComments);
     };
+    const responsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 3,
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 1,
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1,
+        },
+    };
 
     return (
         <><div className="post">
@@ -226,13 +241,30 @@ function PostPreview({
                     <div className="post_headerDescription"></div>
                     <p>{text}</p>
                 </div>
-                {image.endsWith("mp4") && (
-                    <video controls>
-                        <source src={image} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                )}
-                <img src={image} alt="" />
+                <>
+
+                    <div className="carousel-container">
+                        <Carousel
+                            responsive={responsive}
+                            
+                            containerClass="carousel">
+                            {image.map((image, index) => (
+                                <div key={`image-${index}`} className="carousel-item">
+                                    {image.endsWith("mp4") ? (
+                                        <video controls className="carousel-video">
+                                            <source src={"https://localhost:7160/Media/" + image} type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>) :
+                                        <img src={"https://localhost:7160/Media/" + image} alt={`Image ${index}`} />
+                                    }
+
+                                </div>
+                            ))}
+
+                        </Carousel>
+                    </div>
+
+                </>
                 {!isInRezwitscherBox && (
                 <div className="post_footer">
                     

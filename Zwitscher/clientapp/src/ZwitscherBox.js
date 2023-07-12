@@ -3,14 +3,16 @@ import "./ZwitscherBox.css";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import ImageIcon from "@mui/icons-material/Image";
+ import PublicIcon from "@mui/icons-material/Public";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 function ZwitscherBox() {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
+    const [zwitscherPublic, setZwitscherPublic] = useState(false);
     const [files, setFiles] = useState(Array.from([]));
 
-
+    
     const sendZwitscher = async (e) => {
         e.preventDefault();
         if (zwitscherMessage.length == 0) {
@@ -24,7 +26,7 @@ function ZwitscherBox() {
 
         var formdata = new FormData();
         formdata.append("TextContent", zwitscherMessage);
-        formdata.append("IsPublic", true);
+        formdata.append("IsPublic", zwitscherPublic);
 
         if (files != null) {
             files.map((file) => {
@@ -44,7 +46,7 @@ function ZwitscherBox() {
             .catch((err) => console.error(err));
         setZwitscherMessage("");
         setFiles(Array.from([]));
-        document.getElementById("files").value = null;
+        document.getElementById("fileselect").value = null;
 
     };
 
@@ -104,12 +106,23 @@ function ZwitscherBox() {
                         placeholder="Schreibe los..."
                         type="text"
                     />
+                    <br />
+                    <div className="PublicWrapper">
+                        <PublicIcon></PublicIcon>
+                    <br/>
+                    <input
+                        onChange={(e) => setZwitscherPublic(e.target.checked)}
+                        
+                        defaultChecked={false }
+                        type="checkbox"
+                        />
+                    </div>
                 </div>
 
                 <div className="zwitscherbox_footer">
                     {/*Image Input*/}
                     <div className="zwitscherbox_footerLeft">
-                    <label className="label_upload" for="fileselect">
+                    <label className="label_upload" >
                         <FileUploadIcon />
                         </label>
                         <input className ="zwitscherBox_imageInput" type="file" id="fileselect" name="fileselect[]" multiple="multiple" accept='image/png, image/gif, image/jpeg, video/mp4' onChange={handleFileChange} style={{display:'none' }}/>

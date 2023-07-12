@@ -14,7 +14,7 @@ export const SidebarData = [
     link: "/Zwitscher",
   },
   {
-    text: "Öffentlich",
+    text: "�ffentlich",
     icon: <GroupsIcon />,
     link: "/Zwitscher/public",
   },
@@ -22,11 +22,7 @@ export const SidebarData = [
     text: "Im Trend",
     icon: <TrendingUpIcon />,
     link: "/Zwitscher/trending",
-  },
-  {
-    text: "Neu",
-    icon: <FiberNewIcon />,
-    link: "/Zwitscher/new",
-  },
+  }
+  
 
 ];
