@@ -762,7 +762,7 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
-                        .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); ;
+                        .ToListAsync()).FindAll(p => p.UserId == usr.Id || p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); ;
 
                         posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
                     }

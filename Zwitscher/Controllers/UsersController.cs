@@ -1779,7 +1779,7 @@ namespace Zwitscher.Controllers
                     { "postID", postID },
                     { "user_username", user_username },
                     { "user_profilePicture", user_profilePicture },
-                    { "createdDate", createdDate },
+                    { "createdDate", createdDate.ToString("dd.MM.yyyy") },
                     { "rating", rating },
                     { "commentCount", commentCount },
                     { "currentUserVoted", currentUserVoted },
