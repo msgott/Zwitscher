@@ -217,5 +217,13 @@ h1 {
     }
 
 .statistics_profile {
-    margin-top: 350px;
+    display:flex;
+    justify-content: space-evenly;
+    margin-right: 35%;
+    margin-top: 50px;
 }
+
+.popup-container {
+    max-height: 200px;
+    overflow-y: auto;
+  }
