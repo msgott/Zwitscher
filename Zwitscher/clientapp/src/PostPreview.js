@@ -46,7 +46,7 @@ function PostPreview({
 
 
 
-    const { goToProfile, setGoToProfile } = useContext(goToProfileContext);
+    
     const [currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
     const [userVoteIsUpvote, setuserVoteIsUpvote] = useState(_userVoteIsUpvote === "true"? true : false);
     
