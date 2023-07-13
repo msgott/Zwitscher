@@ -46,7 +46,7 @@ function Comments({ postId, sessionData, postusername}) {
 
             // Handle the response if needed
         } catch (error) {
-            alert("Der Kommentar konnte nicht gelöscht werden");
+            alert("Der Kommentar konnte nicht geloescht werden");
 
         }
     };
