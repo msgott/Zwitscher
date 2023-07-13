@@ -1,11 +1,15 @@
 ﻿import React, { useContext, useEffect, useState } from "react";
 import "./Sidebar2.css";
+import datenschutz from "./Documents/Datenschutzrichtlinien.pdf";
+import impressum from "./Documents/Impressum.pdf";
 
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupsIcon from "@mui/icons-material/Groups";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
+import PolicyIcon from '@mui/icons-material/Policy';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -166,7 +170,30 @@ function Sidebar(theme) {
             </div>
             <div className="text">Support</div>
           </li>  
-      
+         {/*Datenschutz visable for all*/}      
+        <li 
+        className="row"
+        onClick={() => {
+          window.open(datenschutz, "_blank", "noreferrer")
+          
+        }}>
+          <div className="icon">
+            <PolicyIcon />
+          </div>
+          <div className="text">Datenschutz</div>
+        </li>  
+        {/*Impressum visable for all*/}   
+        <li 
+        className="row"
+        onClick={() => {
+          window.open(impressum, "_blank", "noreferrer")
+          
+        }}>
+          <div className="icon">
+            <MenuBookIcon />
+          </div>
+          <div className="text">Impressum</div>
+        </li>  
       </ul>
     </div>
   );
