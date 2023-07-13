@@ -25,11 +25,24 @@ function Sidebar() {
     
     fetchData();
   }, []);
+    
+    const navigate = useNavigate();
+    const handleProfileClick = (username) => {
+        // Check if the user is already on the profile page
+        if (window.location.pathname === `/profile/${username}`) {
+            // Reload the current profile page
+            window.location.reload();
+        } else {
+            // Navigate to the desired profile page
+            navigate(`/profile/${username}`);
+            window.location.reload();
+        }
+    };
   // Function to check if user is a moderator or administrator
   const isModeratorOrAdmin = () => {
     return data.RoleName === "Moderator" || data.RoleName === "Administrator";
     };
-    const navigate = useNavigate();
+    
 
   return (
     <div className="sidebar">
@@ -54,8 +67,8 @@ function Sidebar() {
         {data.Username !== "" && (
                   <li
 
-            className="row"
-                      onClick={() => { navigate('/profile', { state: { foreignUserObject: data.userID } }) }}
+                      className="row"
+                      onClick={() => { handleProfileClick(data.userID) }}
           >
             <div className="icon">
               <PermIdentityIcon />
