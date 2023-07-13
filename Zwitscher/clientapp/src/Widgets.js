@@ -128,7 +128,7 @@ function Widgets() {
                         </ul>
                     </div></>
             ) :
-                <div>
+                <div className= "Notification_widget">
                     <span>
                         Angemeldete Nutzer haben mehr Funktionen!
                     </span>

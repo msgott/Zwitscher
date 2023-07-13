@@ -142,24 +142,111 @@
     <script>
         const ctx = document.getElementById('myChart2');
 
+        const newUsersCountForJanuary = @Json.Serialize(ViewBag.NewUsersCountForJanuary);
+        const newUsersCountForFebruary = @Json.Serialize(ViewBag.NewUsersCountForFebruary);
+        const newUsersCountForMarch = @Json.Serialize(ViewBag.NewUsersCountForMarch);
+        const newUsersCountForApril = @Json.Serialize(ViewBag.NewUsersCountForApril);
+        const newUsersCountForMay = @Json.Serialize(ViewBag.NewUsersCountForMay);
+        const newUsersCountForJune = @Json.Serialize(ViewBag.NewUsersCountForJune);
+        const newUsersCountForJuly = @Json.Serialize(ViewBag.NewUsersCountForJuly);
+        const newUsersCountForAugust = @Json.Serialize(ViewBag.NewUsersCountForAugust);
+        const newUsersCountForSeptember = @Json.Serialize(ViewBag.NewUsersCountForSeptember);
+        const newUsersCountForOctober = @Json.Serialize(ViewBag.NewUsersCountForOctober);
+        const newUsersCountForNovember = @Json.Serialize(ViewBag.NewUsersCountForNovember);
+        const newUsersCountForDecember = @Json.Serialize(ViewBag.NewUsersCountForDecember);
+
+        const totalUsersTillFebruary = @Json.Serialize(ViewBag.TotalUsersTillFebruary);
+        const totalUsersTillMarch = @Json.Serialize(ViewBag.TotalUsersTillMarch);
+        const totalUsersTillApril = @Json.Serialize(ViewBag.TotalUsersTillApril);
+        const totalUsersTillMay = @Json.Serialize(ViewBag.TotalUsersTillMay);
+        const totalUsersTillJune = @Json.Serialize(ViewBag.TotalUsersTillJune);
+        const totalUsersTillJuly = @Json.Serialize(ViewBag.TotalUsersTillJuly);
+        const totalUsersTillAugust = @Json.Serialize(ViewBag.TotalUsersTillAugust);
+        const totalUsersTillSeptember = @Json.Serialize(ViewBag.TotalUsersTillSeptember);
+        const totalUsersTillOctober = @Json.Serialize(ViewBag.TotalUsersTillOctober);
+        const totalUsersTillNovember = @Json.Serialize(ViewBag.TotalUsersTillNovember);
+        const totalUsersTillDecember = @Json.Serialize(ViewBag.TotalUsersTillDecember);
+
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['January', 'February', 'March', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 datasets: [{
                     label: 'Neue Nutzer',
-                    data: [12, 19, 3, 5, 2, 3, 8, 10, 45, 80, 150, 180],
+                    data: [
+                        newUsersCountForJanuary,
+                        newUsersCountForFebruary,
+                        newUsersCountForMarch,
+                        newUsersCountForApril,
+                        newUsersCountForMay,
+                        newUsersCountForJune,
+                        newUsersCountForJuly,
+                        newUsersCountForAugust,
+                        newUsersCountForSeptember,
+                        newUsersCountForOctober,
+                        newUsersCountForNovember,
+                        newUsersCountForDecember
+                    ],
                     borderWidth: 1
                 }, {
                     label: 'Nutzer',
-                    data: [122, 141, 143, 148, 150, 153, 161, 171, 216, 296, 446, 626],
+                    data: [
+                        newUsersCountForJanuary,
+                        totalUsersTillFebruary,
+                        totalUsersTillMarch,
+                        totalUsersTillApril,
+                        totalUsersTillMay,
+                        totalUsersTillJune,
+                        totalUsersTillJuly,
+                        totalUsersTillAugust,
+                        totalUsersTillSeptember,
+                        totalUsersTillOctober,
+                        totalUsersTillNovember,
+                        totalUsersTillDecember
+                    ],
                     borderWidth: 1
                 }]
             },
             options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Users per Month',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        max: Math.max(
+                            Math.max(...[
+                                newUsersCountForJanuary,
+                                newUsersCountForFebruary,
+                                newUsersCountForMarch,
+                                newUsersCountForApril,
+                                newUsersCountForMay,
+                                newUsersCountForJune,
+                                newUsersCountForJuly,
+                                newUsersCountForAugust,
+                                newUsersCountForSeptember,
+                                newUsersCountForOctober,
+                                newUsersCountForNovember,
+                                newUsersCountForDecember,
+                                totalUsersTillFebruary,
+                                totalUsersTillMarch,
+                                totalUsersTillApril,
+                                totalUsersTillMay,
+                                totalUsersTillJune,
+                                totalUsersTillJuly,
+                                totalUsersTillAugust,
+                                totalUsersTillSeptember,
+                                totalUsersTillOctober,
+                                totalUsersTillNovember,
+                                totalUsersTillDecember
+                            ])
+                        ) * 1.1 // Increase the maximum value by 10%
                     }
                 }
             }

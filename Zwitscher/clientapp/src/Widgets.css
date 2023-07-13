@@ -82,3 +82,11 @@
 #dark .post_avatar{
   color:white;
 }
+
+#dark .Notification_widget{
+  color: white;
+}
+
+#dark .Notification_widget Button {
+  color: aquamarine;
+}

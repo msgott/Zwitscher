@@ -161,6 +161,97 @@ namespace Zwitscher.Controllers
             ViewBag.GenderStatisticFemale = Math.Round(GenderStatisticFemale, 2);
             ViewBag.GenderStatisticDiverse = Math.Round(GenderStatisticDiverse, 2);
 
+            // NEW USERS PER MONTH
+            int NewUsersJanuary = 1;
+            int NewUsersFebruary = 2;
+            int NewUsersMarch = 3;
+            int NewUsersApril = 4;
+            int NewUsersMay = 5;
+            int NewUsersJune = 6;
+            int NewUsersJuly = 7;
+            int NewUsersAugust = 8;
+            int NewUsersSeptember = 9;
+            int NewUsersOctober = 10;
+            int NewUsersNovember = 11;
+            int NewUsersDecember = 12;
+
+            // Get the user count for each specific month
+            int userCountJanuary = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersJanuary)
+                .Count();
+            ViewBag.NewUsersCountForJanuary = userCountJanuary;
+
+            int userCountFebruary = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersFebruary)
+                .Count();
+            ViewBag.NewUsersCountForFebruary = userCountFebruary;
+
+            int userCountMarch = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersMarch)
+                .Count();
+            ViewBag.NewUsersCountForMarch = userCountMarch;
+
+            int userCountApril = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersApril)
+                .Count();
+            ViewBag.NewUsersCountForApril = userCountApril;
+
+            int userCountMay = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersMay)
+                .Count();
+            ViewBag.NewUsersCountForMay = userCountMay;
+
+            int userCountJune = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersJune)
+                .Count();
+            ViewBag.NewUsersCountForJune = userCountJune;
+
+            int userCountJuly = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersJuly)
+                .Count();
+            ViewBag.NewUsersCountForJuly = userCountJuly;
+
+            int userCountAugust = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersAugust)
+                .Count();
+            ViewBag.NewUsersCountForAugust = userCountAugust;
+
+            int userCountSeptember = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersSeptember)
+                .Count();
+            ViewBag.NewUsersCountForSeptember = userCountSeptember;
+
+            int userCountOctober = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersOctober)
+                .Count();
+            ViewBag.NewUsersCountForOctober = userCountOctober;
+
+            int userCountNovember = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersNovember)
+                .Count();
+            ViewBag.NewUsersCountForNovember = userCountNovember;
+
+            int userCountDecember = _context.User
+                .Where(user => user.CreatedDate.Month == NewUsersDecember)
+                .Count();
+            ViewBag.NewUsersCountForDecember = userCountDecember;
+
+            // get the number of total users from the beginning of the year to a specific month
+
+            ViewBag.TotalUsersTillFebruary = userCountJanuary + userCountFebruary;
+            ViewBag.TotalUsersTillMarch = userCountJanuary + userCountFebruary + userCountMarch;
+            ViewBag.TotalUsersTillMay = userCountJanuary + userCountFebruary + userCountMarch + userCountApril;
+            ViewBag.TotalUsersTillApril = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay;
+            ViewBag.TotalUsersTillJune = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune;
+            ViewBag.TotalUsersTillJuly = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune + userCountJuly;
+            ViewBag.TotalUsersTillAugust = userCountJanuary + userCountFebruary + userCountMarch + userCountApril+  userCountMay + userCountJune + userCountJuly +  userCountAugust;
+            ViewBag.TotalUsersTillSeptember = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune + userCountJuly + userCountAugust + userCountSeptember;
+            ViewBag.TotalUsersTillOctober = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune + userCountJuly +  userCountAugust + userCountSeptember + userCountOctober;
+            ViewBag.TotalUsersTillNovember = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune + userCountJuly + userCountAugust + userCountSeptember + userCountOctober + userCountNovember;
+            ViewBag.TotalUsersTillDecember = userCountJanuary + userCountFebruary + userCountMarch + userCountApril + userCountMay + userCountJune + userCountJuly + userCountAugust + userCountSeptember + userCountOctober + userCountNovember + userCountDecember;
+
+
+
             return View();
         }
 
