@@ -58,10 +58,11 @@ function CommentForm({
             />
           </div>
           {/*<div className="error-msg">{error}</div>*/}
-        </form>
-        <button className="btn_post_comment" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
+          <button className="btn_post_comment" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
               Post
         </button>
+        </form>
+        
       </div>
     </div>
   );
