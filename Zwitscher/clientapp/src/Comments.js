@@ -11,7 +11,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
     timeStyle: "short",
 });
 
-function Comments({ postId, name }) {
+function Comments({ postId}) {
     const [data, setData] = useState([]);
     const [commentToEdit, setcommentToEdit] = useState();
     const [commentToEditText, setcommentToEditText] = useState("");

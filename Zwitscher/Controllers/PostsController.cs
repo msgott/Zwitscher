@@ -725,6 +725,7 @@ namespace Zwitscher.Controllers
         public async Task<ActionResult> PostsList()
         //Returns JSON of all Posts with regard for Admin and Moderator roles, User Following status and user Blocking status
         {
+            DateTime start = DateTime.UtcNow;
             if (_context.Post == null)
             {
                 return BadRequest();
@@ -739,6 +740,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
+                .AsSplitQuery()
                 .ToListAsync()).OrderByDescending(p=> p.CreatedDate).ToList();
             }
             else
@@ -762,6 +764,7 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
+                        .AsSplitQuery()
                         .ToListAsync()).FindAll(p => p.UserId == usr.Id || p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); ;
 
                         posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
@@ -781,6 +784,7 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
+                        .AsSplitQuery()
                         .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList(); ;
 
                     posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
@@ -815,6 +819,9 @@ namespace Zwitscher.Controllers
                 };
                 List<Dictionary<string, Object>> result_ = new();
                 result_.Add(result);
+                DateTime _end = DateTime.UtcNow;
+                TimeSpan _timeDiff = _end - start;
+                Console.WriteLine("API/Posts Dauer in Sekunden: " + Convert.ToInt32(_timeDiff.TotalSeconds));
                 return Json(result_);
                 
 
@@ -868,7 +875,9 @@ namespace Zwitscher.Controllers
                 };
                 results.Add(result);
             }
-
+            DateTime end = DateTime.UtcNow;
+            TimeSpan timeDiff = end - start;
+            Console.Write("API/Posts Dauer in Sekunden: "+Convert.ToInt32(timeDiff.TotalSeconds));
             return Json(results);
         }
         //----------------------------------------------------------------------------------------------------------------------
@@ -891,6 +900,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
+                .AsSplitQuery()
                 .ToListAsync()).OrderByDescending(p => p.CreatedDate).ToList();
                 
 
@@ -904,6 +914,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
+                .AsSplitQuery()
                 .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList();
 
                 if (HttpContext.Session.GetString("UserId") is not null)
@@ -923,6 +934,7 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
+                        .AsSplitQuery()
                         .ToListAsync()).FindAll(p => p.IsPublic == false && p.User.FollowedBy.Contains(usr) && !p.User.Blocking.Contains(usr) && !p.User.BlockedBy.Contains(usr)).OrderByDescending(p => p.CreatedDate).ToList(); 
 
                         posts = posts.Union(userSpecificPosts).OrderByDescending(p => p.CreatedDate).ToList();
@@ -1043,6 +1055,7 @@ namespace Zwitscher.Controllers
                         .ThenInclude(v => v.User)
                         .Include(u => u.Comments)
                         .Include(p => p.retweets)
+                        .AsSplitQuery()
                         .ToListAsync()).FindAll(p => p.IsPublic == true).OrderByDescending(p => p.CreatedDate).ToList();
 
 
@@ -1152,6 +1165,7 @@ namespace Zwitscher.Controllers
                 .ThenInclude(v => v.User)
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null || post.Id != id)
             {
