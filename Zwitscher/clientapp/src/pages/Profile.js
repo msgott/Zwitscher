@@ -16,16 +16,16 @@ import { ThemeContext } from "../AppZwitscher";
 import EditProfileDialog from "../EditProfileDialog";
 import Feed from "../Feed";
 import Post from "../Post";
-
+import { useParams } from 'react-router-dom';
 
 export const goToProfileContext = createContext(null);
 
 const Profile = (props) => {
 
     const { state } = useLocation();
-    const { foreignUserObject} = state;
+    const { profileUsername } = useParams();
     const navigate = useNavigate();
-    if (foreignUserObject == undefined) {
+    if (profileUsername == undefined) {
         navigate('/Zwitscher')
     }
     //console.log(foreignUserObject);
@@ -62,7 +62,7 @@ const Profile = (props) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch("https://localhost:7160/API/User?id=" + foreignUserObject);
+                const response = await fetch("https://localhost:7160/API/User?id=" + profileUsername);
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
@@ -108,7 +108,7 @@ const Profile = (props) => {
         const fetchUserFollowedBy = async () => {
             try {
                 // Fetch session data
-                var FollowedByResponse = await fetch("https://localhost:7160/API/Users/FollowedBy?UserID=" + foreignUserObject);
+                var FollowedByResponse = await fetch("https://localhost:7160/API/Users/FollowedBy?UserID=" + profileUsername);
                 var FollowedByJsonData = await FollowedByResponse.json();
                 setuserFollowedByData(FollowedByJsonData);
                 /*console.log(FollowedByJsonData);*/
@@ -129,7 +129,7 @@ const Profile = (props) => {
         const fetchUserFollows = async () => {
             try {
                 // Fetch session data
-                var FollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + foreignUserObject);
+                var FollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + profileUsername);
                 var FollowsJsonData = await FollowsResponse.json();
                 setuserFollowingData(FollowsJsonData);
                 /*console.log(FollowsJsonData);*/
@@ -197,7 +197,7 @@ const Profile = (props) => {
         const fetchUserFollows = async () => {
             try {
                 // Fetch session data
-                var userPostDataResponse = await fetch("https://localhost:7160/API/Users/Posts?id=" + foreignUserObject);
+                var userPostDataResponse = await fetch("https://localhost:7160/API/Users/Posts?id=" + profileUsername);
                 var userPostDataJsonData = await userPostDataResponse.json();
                 setuserPostData(userPostDataJsonData);
                 //console.log(userPostDataJsonData);
@@ -284,7 +284,7 @@ const Profile = (props) => {
     const unfollow = async () => {
         try {
             const response = await fetch(
-                "https://localhost:7160/API/Users/Following/Remove?userToUnfollowId=" + foreignUserObject,
+                "https://localhost:7160/API/Users/Following/Remove?userToUnfollowId=" + profileUsername,
 
                 {
                     method: "POST",
@@ -306,7 +306,7 @@ const Profile = (props) => {
     const follow = async () => {
         try {
             const response = await fetch(
-                "https://localhost:7160/API/Users/Following/Add?userToFollowId=" + foreignUserObject,
+                "https://localhost:7160/API/Users/Following/Add?userToFollowId=" + profileUsername,
                 {
                     method: "POST",
                     headers: {
@@ -327,7 +327,7 @@ const Profile = (props) => {
     const unblock = async () => {
         try {
             const response = await fetch(
-                "https://localhost:7160/API/Users/Blocking/Remove?userToUnblockId=" + foreignUserObject,
+                "https://localhost:7160/API/Users/Blocking/Remove?userToUnblockId=" + profileUsername,
 
                 {
                     method: "POST",
@@ -349,7 +349,7 @@ const Profile = (props) => {
     const block = async () => {
         try {
             const response = await fetch(
-                "https://localhost:7160/API/Users/Blocking/Add?userToBlockId=" + foreignUserObject,
+                "https://localhost:7160/API/Users/Blocking/Add?userToBlockId=" + profileUsername,
                 {
                     method: "POST",
                     headers: {
@@ -387,13 +387,13 @@ const Profile = (props) => {
                                     <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
                                 )
                                 }
-                                {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === foreignUserObject) ?
+                                {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === profileUsername) ?
                                     (<Button onClick={() => { unfollow() }}> Geflogt</Button>)
                                     :
                                     (<Button onClick={() => { follow() }}> Folgen</Button>)
 
                                     : ""}
-                                {(OwnuserBlockingData && !isOwnProfile()) ? OwnuserBlockingData.find(user => user.userID === foreignUserObject) ?
+                                {(OwnuserBlockingData && !isOwnProfile()) ? OwnuserBlockingData.find(user => user.userID === profileUsername) ?
                                     (<Button onClick={() => { unblock() }}> Geblockt</Button>)
                                     :
                                     (<Button onClick={() => { block() }}> Blocken</Button>)
@@ -405,7 +405,8 @@ const Profile = (props) => {
                                     <span>{followerCount}</span>
                                     <h4>Following</h4>
                                     <span>{followedCount}</span>
-                                    <h4>Posts:Auskommentiert</h4>
+                                    <h4>Posts</h4>
+                                    <span>{userPostData !== null ? userPostData.length:0}</span>
                                     {/*<span>{postCount}</span>*/}
                                 </div>
                                 <hr />

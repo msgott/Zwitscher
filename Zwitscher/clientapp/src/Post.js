@@ -22,6 +22,7 @@ import Profile from "./pages/Profile";
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
+
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
 function Post({
     userId,
@@ -270,7 +271,7 @@ function Post({
         <><div className="post">
             <div className="post_avatar">
                 {postId !== "00000000-0000-0000-0000-000000000000" ?(
-                <><Avatar onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }); } } src={avatar} /><p onClick={() => { navigate('/profile', { state: { foreignUserObject: userId } }); } }>{name}</p></>
+                    <><Avatar onClick={() => { navigate(`/profile/${userId}`); }} src={avatar} /><p onClick={() => { navigate(`/profile/${userId}`); } }>{name}</p></>
                 ):
                 (
                     <><Avatar src={avatar} /><p>{name}</p></>

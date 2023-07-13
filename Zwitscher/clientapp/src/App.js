@@ -15,12 +15,13 @@ function App() {
   return (
     <div>
     <Routes>
-      <Route path="/" element={<AppZwitscher />} />
-      <Route path="/public" element={<Public />} />
-      <Route path="/trending" element={<Trending />} />
-      <Route path="/new" element={<New />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/*" element={<AppZwitscher />} />
+      <Route path="public" element={<Public />} />
+      <Route path="trending" element={<Trending />} />
+      <Route path="new" element={<New />} />
+      <Route path="profile/:profileUsername" element={<Profile />} />
+
+      <Route path="dashboard" element={<Dashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     </div>
