@@ -6,21 +6,27 @@ import { FaEdit, FaHeart, FaRegHeart, FaReply, FaTrash } from "react-icons/fa";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import EditCommentDialog from "./EditCommentDialog";
+import CommentCommentDialog from "./CommentCommentDialog";
+import Comment from "./Comment"
+
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
 });
 
-function Comments({ postId}) {
+function Comments({ postId, sessionData, postusername}) {
     const [data, setData] = useState([]);
     const [commentToEdit, setcommentToEdit] = useState();
+    const [commentToComment, setcommentToComment] = useState();
     const [commentToEditText, setcommentToEditText] = useState("");
     const [isReplying, setIsReplying] = useState(false);
 
     const [EditCommentopen, setEditCommentOpen] = React.useState(false);
     const EditCommenthandleOpen = () => setEditCommentOpen(true);
     const EditCommenthandleClose = () => setEditCommentOpen(false);
-    
+    const [CommentCommentopen, setCommentCommentOpen] = React.useState(false);
+    const CommentCommenthandleOpen = () => setCommentCommentOpen(true);
+    const CommentCommenthandleClose = () => setCommentCommentOpen(false);
     
     async function deleteOwnComment(postId, commentId){
         try
@@ -51,27 +57,15 @@ function Comments({ postId}) {
         EditCommenthandleOpen();
         
     };
-    async function editOwnComment(commentId, text) {
-        try {
-            const response = await fetch(
-                "https://localhost:7160/API/Comments/Edit?id="+commentId+"&CommentText=" + text,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
 
-                    }),
-                }
-            ).then((response) => response.text()).then((result) => console.log(result));
+    function openCommentCommentModal(commentId) {
+        console.log(commentId);
+        setcommentToComment(commentId);
+        
+        CommentCommenthandleOpen();
 
-            // Handle the response if needed
-        } catch (error) {
-            alert("Der Kommentar konnte nicht geändert werden");
-
-        }
     };
+    
 
     /*Get data from the Database/API */
 
@@ -89,7 +83,7 @@ function Comments({ postId}) {
         };
 
         fetchData();
-    }, [postId]);
+    }, [postId,openCommentEditModal, openCommentCommentModal]);
     
     // Create Comment frontend logic CommentForm
 
@@ -98,50 +92,28 @@ function Comments({ postId}) {
 
 
             {/*Comment form with submit function*/}
-            <CommentForm postId={postId} onSubmit />
-
+            {(sessionData && sessionData.Username) !== "" && (
+                <CommentForm postId={postId} onSubmit />
+            )}
             {/*Shows the comment section and renders it*/}
             <div className="commentWrapper">
                 {data.map((comment) => (
-                    <div className="comment">
-                        <div className="comment-section">
-                            <div className="header" key={comment.commentId}>
-                                <span className="name">{comment.user_username}</span>
-                                <span className="date">{comment.createdDate}</span>
-                            </div>
-                            <div className="message" key={comment.commendId}>
-                                <p>{comment.commentText}</p>
-                            </div>
-                            <div className="footer">
-                                
-                                <IconBtn onClick={() => setIsReplying(prev => !prev)} isActive={isReplying} Icon={FaReply} />
-                                <IconBtn onClick={() => openCommentEditModal(comment.commentId, comment.commentText)} Icon={FaEdit} aria-label="Edit" />
-                                <IconBtn onClick={() => deleteOwnComment(postId, comment.commentId) } Icon={FaTrash} aria-label="Delete" color="danger" />
-                            </div>
-                        </div>
-                        {isReplying && (
-                            <div className="mt-1 ml-3">
-                                <CommentForm autoFocus onSubmit />
-                            </div>
-                        )}
-                    </div>
+                    <Comment
+                        commentId={comment.commentId}
+                        user_username={comment.user_username}
+                        createdDate={comment.createdDate}
+                        commentText={comment.commentText}
+                        parentpostId={comment.postId}
+                        parentcommentId={""}
+                        parentpostUsername={postusername}
+                        parentcommentUsername={""}
+                        sessionData={sessionData}
+
+                    />
+                    
                 ))}
             </div>
-            <Modal
-                open={EditCommentopen}
-                onClose={EditCommenthandleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                
-            >
-                <EditCommentDialog
-                    _commentId={commentToEdit}
-                    _commentText={commentToEditText}
-                    handleClose={EditCommenthandleClose}
-                />
-
-                
-            </Modal>
+            
         </>
     );
 }

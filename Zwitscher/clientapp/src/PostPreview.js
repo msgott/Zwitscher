@@ -268,9 +268,8 @@ function PostPreview({
                 {!isInRezwitscherBox && (
                 <div className="post_footer">
                     
-                    <><ChatBubbleOutlineIcon
-                            onClick={toggleComments}
-                            className="chat-icon" /><RetzitscherIcon
+                    <>
+                            <RetzitscherIcon
                                 onClick={() => { handleOpen(); } }
                                 className="chat-icon" /><div className="vote_container">
 
@@ -337,7 +336,7 @@ function PostPreview({
                     
                     </div>
                 )}
-                {showComments && <Comments postId={postId} />}
+                
             </div>
             
         </div><Modal

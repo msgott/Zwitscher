@@ -76,7 +76,8 @@ function Sidebar(theme) {
         })}
             */}
 
-        {/*Home*/}
+              {/*Home*/}
+              
         <li
           className={`row ${currentUrl === '/' ? 'active' : ''}`}
           onClick={() => { navigate('/', {state: { screen: theme.value}})}}
@@ -87,7 +88,8 @@ function Sidebar(theme) {
           <div className="text">Home</div>
         </li>
 
-        {/*�ffentlich*/}
+              {/*�ffentlich*/}
+              {data.Username !== "" && (
         <li
           className={`row ${currentUrl === '/public' ? 'active' : ''}`}
           onClick={() => { navigate('/public', {state: { screen: theme.value}})}}
@@ -97,7 +99,7 @@ function Sidebar(theme) {
           </div>
           <div className="text">Oeffentlich</div>
         </li>
-
+              )}
         {/*Im Trend*/}
         {/*pass current theme in different page - theme.value default 'light'*/}
         <li
@@ -137,7 +139,7 @@ function Sidebar(theme) {
             <div className="icon">
               <DashboardIcon />
             </div>
-            <div className="text">Dashboard</div>
+            <div className="text">Verwaltung</div>
           </li>
               )}
         {/*Support visable for all*/}      

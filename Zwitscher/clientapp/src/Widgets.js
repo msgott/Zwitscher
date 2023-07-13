@@ -59,55 +59,83 @@ function Widgets() {
         //document.getElementById("fileselect").value = null;
 
     };
+    //Session Data
+    const [sessionData, setSessionData] = useState(null);
 
+    useEffect(() => {
+        const fetchUserSession = async () => {
+            try {
+                // Fetch session data
+                var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+                var sessionJsonData = await sessionResponse.json();
+                setSessionData(sessionJsonData);
+
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserSession();
+
+    }, []);
 
 
     const navigate = useNavigate();
 
     return (
+
         <div className="widgets">
-            <div className="widgets_input">
-                
-                <input placeholder="Suche Nutzer" type="text" onChange={(e) => { handleSearchChange(e.target.value) } } />
-                
-            </div>
-            <div className="searchResults">
-                <ul>
-                    {userData.length==0 &&(
-                        <li key={1}>
-                            <div>
-                                <div className="post_avatar">
+            {(sessionData && sessionData.Username) !== "" ? (
+            <><div className="widgets_input">
 
-                                    <Avatar src={"https://localhost:7160/Media/zwitscherlogo.png"} /><p >{"Keine Nutzer gefunden :("}</p>
+                    <input placeholder="Suche Nutzer" type="text" onChange={(e) => { handleSearchChange(e.target.value); } } />
 
+                </div><div className="searchResults">
+                        <ul>
+                            {userData.length == 0 && (
+                                <li key={1}>
+                                    <div>
+                                        <div className="post_avatar">
 
-
-
-
-
-                                </div>
-                            </div>
-                        </li>
-                    
-                    )}
-                    {userData.map((user) => (
-                        <li key={user.userID}>
-                            <div>
-                                <div className="post_avatar">
-
-                                    <Avatar onClick={() => { navigate(`/profile/${user.userID}`);  }} src={"https://localhost:7160/Media/" + user.pbFileName} /><p onClick={() => { navigate(`/profile/${user.userID}`);  }}>{user.username}</p>
+                                            <Avatar src={"https://localhost:7160/Media/zwitscherlogo.png"} /><p>{"Keine Nutzer gefunden :("}</p>
 
 
 
 
 
 
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            )}
+                            {userData.map((user) => (
+                                <li key={user.userID}>
+                                    <div>
+                                        <div className="post_avatar">
+
+                                            <Avatar onClick={() => { navigate(`/profile/${user.userID}`); } } src={"https://localhost:7160/Media/" + user.pbFileName} /><p onClick={() => { navigate(`/profile/${user.userID}`); } }>{user.username}</p>
+
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div></>
+            ) :
+                <div>
+                    <span>
+                        Angemeldete Nutzer haben mehr Funktionen!
+                    </span>
+                    <Button onClick={() => { window.location.href = "https://localhost:7160/Auth"; } }>Anmelden</Button>
+                </div>
+        
+        }
         </div>
     
     );
