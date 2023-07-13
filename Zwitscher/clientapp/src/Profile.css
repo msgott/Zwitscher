@@ -254,6 +254,9 @@ h1 {
     width: 100%;
     align-items: center;
 }
+    #dark .statistics_profile{
+        color: var(--zwitscher-color-darkmode);
+    }
 
 .popup-container {
     max-height: 200px;

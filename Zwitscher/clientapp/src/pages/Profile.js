@@ -20,7 +20,7 @@ import { useParams } from 'react-router-dom';
 
 export const goToProfileContext = createContext(null);
 
-const Profile = (props) => {
+const Profile = () => {
 
     const { state } = useLocation();
     const { profileUsername } = useParams();
@@ -37,9 +37,7 @@ const Profile = (props) => {
 
 
 
-
-    // set the theme to 'light mode' in the beginning and have the opportunity to change theme
-    // depending on toggleTheme
+    //GET THEME 
     const location = useLocation();
     const screen = location.state?.screen;
 
@@ -385,7 +383,7 @@ const Profile = (props) => {
                                     <h1>{username}</h1>
                                     <br></br>
                                     <div className="statistics_profile">
-                                        <h4>Followers:</h4>
+                                        <h4>Followers</h4>
                                         <span>{followerCount}</span>
                                         <h4>Following</h4>
                                         <span>{followedCount}</span>

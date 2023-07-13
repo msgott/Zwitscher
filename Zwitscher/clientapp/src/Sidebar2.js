@@ -5,6 +5,7 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupsIcon from "@mui/icons-material/Groups";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import FiberNewIcon from "@mui/icons-material/FiberNew";
 
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -87,7 +88,7 @@ function Sidebar(theme) {
           <div className="text">Home</div>
         </li>
 
-        {/*�ffentlich*/}
+        {/*Oeffentlich*/}
         <li
           className={`row ${currentUrl === '/public' ? 'active' : ''}`}
           onClick={() => { navigate('/public', {state: { screen: theme.value}})}}
@@ -109,6 +110,18 @@ function Sidebar(theme) {
             </div>
             <div className="text">Im Trend</div>
           </li>
+
+        {/*Aktuell*/}
+        {/*pass current theme in different page - theme.value default 'light'*/}
+        <li
+            className={`row ${currentUrl === '/trending' ? 'active' : ''}`}
+            onClick={() => { navigate('/new', {state: { screen: theme.value}})}}
+          >
+          <div className="icon">
+              <FiberNewIcon />
+            </div>
+            <div className="text">Aktuell</div>
+          </li>  
 
 
         {/*Profile only visibale, if registered*/}

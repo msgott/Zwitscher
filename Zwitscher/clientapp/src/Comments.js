@@ -40,7 +40,7 @@ function Comments({ postId}) {
 
             // Handle the response if needed
         } catch (error) {
-            alert("Der Kommentar konnte nicht gelöscht werden");
+            alert("Der Kommentar konnte nicht geloescht werden");
 
         }
     };
@@ -68,7 +68,7 @@ function Comments({ postId}) {
 
             // Handle the response if needed
         } catch (error) {
-            alert("Der Kommentar konnte nicht geändert werden");
+            alert("Der Kommentar konnte nicht geaendert werden");
 
         }
     };
