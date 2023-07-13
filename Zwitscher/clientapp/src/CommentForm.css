@@ -1,0 +1,60 @@
+.commentform_area{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height:150px;
+}
+.form_button{
+    justify-content: center;
+}
+
+.form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn_post_comment{
+    display: flex;
+    margin-left: auto;
+    margin-right:2.5%;
+}
+.btn_post_comment:hover{
+    background-color: rgb(177, 255, 245);
+}
+    #dark .btn_post_comment{
+        background-color: var(--Dark_ButtonPrimaryColor) !important;
+        color: var(--Dark_TextColor) !important;
+    }
+    #dark .btn_post_comment:hover{
+        background-color: var(--Dark_Hover_ButtonPrimaryColor) !important;
+        color: var(--Dark_TextColor) !important;
+        transition: 200ms;
+    }
+
+
+
+.comment-form-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .message-input {
+    width: 95%;
+    resize: none;
+    height: 95px;
+    border-radius: 6px;
+    padding: 0.5em;
+    font-size: inherit;
+    font-family: inherit;
+    border: 2px solid black;
+    line-height: 1.4;
+    margin-left: 2.5%;
+  }
+    #dark .message-input{
+        background-color: #D1D1D1;
+    }
+  .message-input:focus {
+    border-color: black;
+    outline: none;
+  }

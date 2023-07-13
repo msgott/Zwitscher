@@ -20,7 +20,6 @@ function App() {
       <Route path="trending" element={<Trending />} />
       <Route path="new" element={<New />} />
       <Route path="profile/:profileUsername" element={<Profile />} />
-
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

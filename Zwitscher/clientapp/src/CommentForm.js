@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./CommentForm.css";
 
 function CommentForm({
   postId,
@@ -47,20 +48,24 @@ function CommentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-          <div class_name="comment-form-row" >
-              <textarea placeholder="Gebe einen Kommentar ein" 
-          autoFocus={autoFocus}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="message-input"
-        />
-              <button className="btn" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
-          Post
+    <div className="commentform_area">
+      <div className="form_button">
+        <form onSubmit={handleSubmit}>
+              <div class_name="comment-form-row" >
+                  <textarea placeholder="Gebe einen Kommentar ein" 
+              autoFocus={autoFocus}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="message-input"
+            />
+          </div>
+          {/*<div className="error-msg">{error}</div>*/}
+        </form>
+        <button className="btn_post_comment" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
+              Post
         </button>
       </div>
-      {/*<div className="error-msg">{error}</div>*/}
-    </form>
+    </div>
   );
 }
 

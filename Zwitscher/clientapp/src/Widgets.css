@@ -78,3 +78,7 @@
     list-style-type:none;
    
 }
+
+#dark .post_avatar{
+  color:white;
+}

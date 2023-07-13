@@ -34,27 +34,6 @@ button {
   margin-bottom: 0.5rem;
 }
 
-.comment-form-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.message-input {
-  flex-grow: 1;
-  resize: none;
-  height: 70px;
-  border-radius: 0.5em;
-  padding: 0.5em;
-  font-size: inherit;
-  font-family: inherit;
-  border: 2px solid hsl(235, 50%, 74%);
-  line-height: 1.4;
-}
-
-.message-input:focus {
-  border-color: hsl(235, 100%, 67%);
-  outline: none;
-}
 
 .mt-4 {
   margin-top: 1rem;
@@ -113,15 +92,15 @@ button {
   display: none;
 }
 
-.btn {
+.btn_post_comment {
   --hue: 235;
-  --color: hsl(var(--hue), 100%, 67%);
+  --color: var(--LightContrastColor);
   padding: 0.5em 1em;
   background: var(--color);
   border: none;
-  color: white;
+  color: black;
   border-radius: 0.5em;
-  font-size: 0.75em;
+  font-weight: 900 !important;
   cursor: pointer;
 }
 
@@ -131,12 +110,24 @@ button {
 }
 
 .btn.icon-btn {
+  border:none;
   background: none;
-  color: var(--color);
+  color: darkcyan;
   padding: 0.25em;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
+.btn.icon-btn:hover{
+  color: var(--LightContrastColor);
+}
+
+  #dark .btn.icon-btn{
+    color: #d1d1d1;
+  }
+  #dark .btn.icon-btn:hover{
+    color: var(--Dark_Hover_HeaderIconColor)
+  }
 
 .mr-1 {
   margin-right: 0.25em;
@@ -180,12 +171,15 @@ button {
 }
 
 .comment .header {
-  color: hsl(235, 50%, 67%);
+  color: black;
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.25rem;
   font-size: 0.75em;
 }
+  #dark .comment .header{
+    color: white;
+  }
 
 .comment .header .name {
   font-weight: bold;
