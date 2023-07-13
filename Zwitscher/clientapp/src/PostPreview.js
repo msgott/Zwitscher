@@ -248,7 +248,7 @@ function PostPreview({
                             responsive={responsive}
                             
                             containerClass="carousel">
-                            {image.map((image, index) => (
+                            {image && image.map((image, index) => (
                                 <div key={`image-${index}`} className="carousel-item">
                                     {image.endsWith("mp4") ? (
                                         <video controls className="carousel-video">
@@ -351,8 +351,8 @@ function PostPreview({
                         postId={postId}
                         name={name}
                         text={text}
-                        image={"https://localhost:7160/Media/" + image}
-                        avatar={"https://localhost:7160/Media/" + avatar}
+                        image={image}
+                        avatar={avatar}
                         rating={rating}
                         _currentUserVoted={_currentUserVoted}
                         _userVoteIsUpvote={_userVoteIsUpvote}

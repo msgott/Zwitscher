@@ -54,7 +54,7 @@ function EditCommentDialog({
             alert("Bitte Kommentartext eingeben");
             return;
         }
-        console.log(text);
+        //console.log(text);
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Comments/Edit?id=" + commentId + "&CommentText=" + text,
@@ -68,7 +68,7 @@ function EditCommentDialog({
                     }),
                 }
             ).then((response) => response.text()).then((result) => console.log(result));
-
+            handleClose();
             // Handle the response if needed
         } catch (error) {
             alert("Der Kommentar konnte nicht geändert werden");

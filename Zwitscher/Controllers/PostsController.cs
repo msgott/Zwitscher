@@ -1413,7 +1413,7 @@ namespace Zwitscher.Controllers
             List<Dictionary<string, Object>> results = new();
             List<Comment> comments = (await _context.Comment
                 .Include(c => c.User)
-                .ToListAsync<Comment>()).FindAll(c => c.PostId == post.Id);
+                .ToListAsync<Comment>()).FindAll(c => c.PostId == post.Id).OrderByDescending(c=> c.CreatedDate).ToList();
             foreach (Comment c in comments)
             {
 

@@ -3,6 +3,7 @@ import "./Post.css";
 import Comments from "./Comments";
 import Avatar from "@mui/material/Avatar";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 import RetzitscherIcon from "@mui/icons-material/Sync";
 import UpVote from "./Images/icons8-pfeil-50.png";
 import DownVote from "./Images/icons8-pfeil-50-down_not_filled.png";
@@ -37,7 +38,8 @@ function Post({
     _currentUserVoted,
     _userVoteIsUpvote,
     _retweetsPost,
-    theme
+    theme,
+    setFeedCounter
 }) {
 
     const [retweetsData, setRetweetsData] = useState();
@@ -84,7 +86,7 @@ function Post({
 
 
 
-    
+
     const [currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
     const [userVoteIsUpvote, setuserVoteIsUpvote] = useState(_userVoteIsUpvote === "true" ? true : false);
 
@@ -218,6 +220,27 @@ function Post({
     //  .then((result) => console.log(result))
     //  .catch((error) => console.log("error", error));
 
+    
+    const deletePost = async (postId) => {
+        try {
+            const response = await fetch(
+                `https://localhost:7160/API/Posts/Remove?id=${postId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                    }),
+                }
+            ).then((response) => response.text()).then((result) => console.log(result));
+            setFeedCounter(Math.random);
+            // Handle the response if needed
+        } catch (error) {
+            console.error("Error deleting post:", error);
+        }
+    };
     //Send updated vote to backend
     const updateVoteOnBackend = async (postId, isupvote) => {
         try {
@@ -271,15 +294,19 @@ function Post({
     return (
         <><div className="post">
             <div className="post_avatar">
-                {postId !== "00000000-0000-0000-0000-000000000000" ?(
-                    <><Avatar onClick={() => { navigate(`/profile/${userId}`,{ state: {screen: theme.value } }); }} src={avatar} /><p onClick={() => { navigate(`/profile/${userId}`,{ state: { screen: theme.value } }); } }>{name}</p></>
-                ):
-                (
-                    <><Avatar src={avatar} /><p>{name}</p></>
+                {postId !== "00000000-0000-0000-0000-000000000000" ? (
+                    <><Avatar onClick={() => { navigate(`/profile/${userId}`, { state: { screen: theme.value } }); }} src={avatar} /><p onClick={() => { navigate(`/profile/${userId}`, { state: { screen: theme.value } }); }}>{name}</p></>
+                ) :
+                    (
+                        <><Avatar src={avatar} /><p>{name}</p></>
 
-            )}
+                    )}
                 <h5 >{createdDate}</h5>
-
+                {sessionData.Username === name &&(
+                <DeleteIcon
+                        onClick={() => {deletePost(postId) } }
+                        className="chat-icon" />
+                )}
             </div>
             <div className="post_body">
                 <div className="post_header">
@@ -332,94 +359,95 @@ function Post({
 
                 )}
                 {postId !== "00000000-0000-0000-0000-000000000000" && (
-                <div className="post_footer">
-                    <ChatBubbleOutlineIcon
-                        onClick={toggleComments}
-                        className="chat-icon" > <p>{commentCount}</p></ChatBubbleOutlineIcon>
-                    {sessionData.Username === "" ?(
-                    <RetzitscherIcon
-                            onClick={()=>redirectToLogin()}
-                        className="chat-icon"
-                    />):
-                    (<RetzitscherIcon
-                        onClick={handleOpen}
-                        className="chat-icon"
-                    />)}
-                    
-                    <div className="vote_container">
+                    <div className="post_footer">
+                        <ChatBubbleOutlineIcon
+                            onClick={toggleComments}
+                            className="chat-icon" > <p>{commentCount}</p></ChatBubbleOutlineIcon>
+                        {sessionData.Username === "" ? (
+                            <RetzitscherIcon
+                                onClick={() => redirectToLogin()}
+                                className="chat-icon"
+                            />) :
+                            (<RetzitscherIcon
+                                onClick={handleOpen}
+                                className="chat-icon"
+                            />)}
+
+                        <div className="vote_container">
 
 
-                        {(currentUserVoted && userVoteIsUpvote) ?
-                            /*Upvote filled */
-                            sessionData.Username === "" ?
-                                (
-                                    <img
-                                        src={UpVote}
-                                        alt="Icon"
-                                        text="ClickedIcon"
-                                        className="upvote"
-                                        onClick={() => redirectToLogin()}
-                                    />
-                                )
+                            {(currentUserVoted && userVoteIsUpvote) ?
+                                /*Upvote filled */
+                                sessionData.Username === "" ?
+                                    (
+                                        <img
+                                            src={UpVote}
+                                            alt="Icon"
+                                            text="ClickedIcon"
+                                            className="upvote"
+                                            onClick={() => redirectToLogin()}
+                                        />
+                                    )
+                                    :
+                                    (
+                                        <img
+                                            src={VoteClicked}
+                                            alt="Icon"
+                                            text="ClickedIcon"
+                                            className="UpvoteFilled"
+                                            onClick={() => handleUpvoteClick(postId)}
+                                        />
+                                    )
+
                                 :
-                                (
-                                    <img
-                                        src={VoteClicked}
-                                        alt="Icon"
-                                        text="ClickedIcon"
-                                        className="UpvoteFilled"
-                                        onClick={() => handleUpvoteClick(postId)}
-                                    />
-                                )
-
-                            :
-                            /*Upvote NOT-filled */
-                            sessionData.Username === "" ? (<img
-                                src={UpVote}
-                                alt="Icon"
-                                text="UpVote"
-                                className="upvote"
-                                onClick={() => redirectToLogin()} />) : (<img
+                                /*Upvote NOT-filled */
+                                sessionData.Username === "" ? (<img
                                     src={UpVote}
                                     alt="Icon"
                                     text="UpVote"
                                     className="upvote"
-                                    onClick={() => handleUpvoteClick(postId)} />)}
-
-                        <span>{votes.rating}</span>
-
-                        {(currentUserVoted && !userVoteIsUpvote) ?
-                            /*Downvote filled */
-                            !userVoteIsUpvote &&
-                                sessionData.Username === "" ? (<img
-                                    src={DownVote}
-                                    alt="Icon"
-                                    text="UpVote"
-                                    className="downvote"
                                     onClick={() => redirectToLogin()} />) : (<img
-                                        src={VotedClickDown}
+                                        src={UpVote}
                                         alt="Icon"
                                         text="UpVote"
-                                        className="downvoteFilled"
-                                        onClick={() => handleDownvoteClick(postId)} />)
+                                        className="upvote"
+                                        onClick={() => handleUpvoteClick(postId)} />)}
 
-                            :
-                            /*Downvote NOT-filled */
-                            sessionData.Username === "" ? (<img
-                                src={DownVote}
-                                alt="Icon"
-                                text="DownVote"
-                                className="downvote"
-                                onClick={() => redirectToLogin()} />) : (<img
+                            <span>{votes.rating}</span>
+
+                            {(currentUserVoted && !userVoteIsUpvote) ?
+                                /*Downvote filled */
+                                !userVoteIsUpvote &&
+                                    sessionData.Username === "" ? (<img
+                                        src={DownVote}
+                                        alt="Icon"
+                                        text="UpVote"
+                                        className="downvote"
+                                        onClick={() => redirectToLogin()} />) : (<img
+                                            src={VotedClickDown}
+                                            alt="Icon"
+                                            text="UpVote"
+                                            className="downvoteFilled"
+                                            onClick={() => handleDownvoteClick(postId)} />)
+
+                                :
+                                /*Downvote NOT-filled */
+                                sessionData.Username === "" ? (<img
                                     src={DownVote}
                                     alt="Icon"
                                     text="DownVote"
                                     className="downvote"
-                                    onClick={() => handleDownvoteClick(postId)} />)}
+                                    onClick={() => redirectToLogin()} />) : (<img
+                                        src={DownVote}
+                                        alt="Icon"
+                                        text="DownVote"
+                                        className="downvote"
+                                        onClick={() => handleDownvoteClick(postId)} />)}
                         </div>
-                    
-                </div>
-                
+                        
+
+                    </div>
+
                 )}
             </div>
             {showComments && <Comments postId={postId} sessionData={sessionData} postusername={userName} />}
@@ -436,11 +464,12 @@ function Post({
                         name={name}
                         text={text}
                         image={image}
-                        avatar={"https://localhost:7160/Media/" + avatar}
+                        avatar={avatar}
                         rating={rating}
                         _currentUserVoted={_currentUserVoted}
                         _userVoteIsUpvote={_userVoteIsUpvote}
                         _handleClose={handleClose}
+                        setFeedCounter={setFeedCounter}
                     />
 
                 </Box>

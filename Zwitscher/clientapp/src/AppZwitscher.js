@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import Header from "./Header";
@@ -22,7 +22,7 @@ function AppZwitscher() {
   // depending on toggleTheme
 
   const location = useLocation();
-      console.log(location);
+      //console.log(location);
       const screen = location.state?.screen;
       const initialTheme = screen !== undefined ? screen : 'light';
 
@@ -31,7 +31,24 @@ function AppZwitscher() {
   const toggleTheme = () => {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
   };
+    const [sessionData, setSessionData] = useState(null);
 
+    useEffect(() => {
+        const fetchUserSession = async () => {
+            try {
+                // Fetch session data
+                var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+                var sessionJsonData = await sessionResponse.json();
+                setSessionData(sessionJsonData);
+
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserSession();
+
+    }, []);
 
   return (
     // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
@@ -42,8 +59,8 @@ function AppZwitscher() {
         </div>
         <div className="app">
           <Sidebar2 value = {theme} />
-          <Feed value = {theme} />
-          <Widgets />
+          <Feed value = {theme} sessionData = {sessionData}/>
+                  {/*<Widgets />*/}
         </div>
       </div>
     </ThemeContext.Provider>

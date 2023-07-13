@@ -17,7 +17,8 @@ function ReZwitscherBox({
     rating,
     _currentUserVoted,
     _userVoteIsUpvote,
-    _handleClose
+    _handleClose,
+    setFeedCounter
 }
 ) {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
@@ -45,12 +46,18 @@ function ReZwitscherBox({
             body: formdata,
             redirect: 'follow'
         };
-        fetch('https://localhost:7160/API/Posts/Add', requestOptions)
-            .then((res) => res.json())
-            .then((data) => console.log(data))
-            .catch((err) => console.error(err));
-        setZwitscherMessage("");
-        _handleClose();
+        try {
+            fetch('https://localhost:7160/API/Posts/Add', requestOptions)
+                .then((res) => res.json())
+                .then((data) => console.log(data))
+                .catch((err) => console.error(err));
+            setZwitscherMessage("");
+            _handleClose();
+            setFeedCounter(Math.random);
+        } catch (error){
+            console.error(error);
+        }
+        
         
 
     };
@@ -115,7 +122,7 @@ function ReZwitscherBox({
                     name={name}
                     text={text}
                     image={image}
-                    avatar={"https://localhost:7160/Media/" + avatar}
+                    avatar={avatar}
                     rating={rating}
                     _currentUserVoted={_currentUserVoted}
                     _userVoteIsUpvote={_userVoteIsUpvote}

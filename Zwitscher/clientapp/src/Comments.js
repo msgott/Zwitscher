@@ -27,7 +27,7 @@ function Comments({ postId, sessionData, postusername}) {
     const [CommentCommentopen, setCommentCommentOpen] = React.useState(false);
     const CommentCommenthandleOpen = () => setCommentCommentOpen(true);
     const CommentCommenthandleClose = () => setCommentCommentOpen(false);
-    
+    const [commentCounter, setCommentCounter] = useState(0);
     async function deleteOwnComment(postId, commentId){
         try
         {
@@ -80,35 +80,37 @@ function Comments({ postId, sessionData, postusername}) {
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
+            //console.log("rerender comments first ")
         };
-
+        
         fetchData();
-    }, [postId,openCommentEditModal, openCommentCommentModal]);
+    }, [commentCounter]);
     
     // Create Comment frontend logic CommentForm
-
+    
     return (
         <>
 
 
             {/*Comment form with submit function*/}
             {(sessionData && sessionData.Username) !== "" && (
-                <CommentForm postId={postId} onSubmit />
+                <CommentForm postId={postId} setCommentCounter={setCommentCounter} />
             )}
             {/*Shows the comment section and renders it*/}
             <div className="commentWrapper">
                 {data.map((comment) => (
                     <Comment
+                        key={comment.commentId}
                         commentId={comment.commentId}
                         user_username={comment.user_username}
                         createdDate={comment.createdDate}
                         commentText={comment.commentText}
-                        parentpostId={comment.postId}
+                        parentpostId={postId}
                         parentcommentId={""}
                         parentpostUsername={postusername}
                         parentcommentUsername={""}
                         sessionData={sessionData}
-
+                        setCommentCounter= {setCommentCounter}
                     />
                     
                 ))}

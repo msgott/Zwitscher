@@ -42,7 +42,7 @@ const Profile = () => {
     const screen = location.state?.screen;
 
     const [theme, setTheme] = useState(screen);
-    console.log("theme is: " +theme)
+    //console.log("theme is: " +theme)
 
     const toggleTheme = () => {
       setTheme((curr) => (curr === "light" ? "dark" : "light"));
@@ -54,29 +54,6 @@ const Profile = () => {
     /*const navigate = useNavigate();*/
     const [file, setFile] = useState(null);
     // Get all users information and session data from the current logged-in user
-
-    //User Data
-    const [userData, setUserData] = useState(null);
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch("https://localhost:7160/API/User?id=" + profileUsername);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    setUserData(data);
-                } else {
-                    console.log('Failed to fetch user data');
-                }
-            } catch (error) {
-                console.log('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
-
-
 
 
     //Session Data
@@ -98,6 +75,31 @@ const Profile = () => {
         fetchUserSession();
 
     }, []);
+    //User Data
+    const [userData, setUserData] = useState(null);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch("https://localhost:7160/API/User?id=" + profileUsername);
+                if (response.ok) {
+                    const data = await response.json();
+                    //console.log(data);
+                    setUserData(data);
+                } else {
+                    console.log('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.log('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+
+
+
+    
 
     //FollowedBy
     const [userFollowedByData, setuserFollowedByData] = useState(null);
@@ -145,15 +147,15 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchUserOwnFollows = async () => {
-            console.log(sessionData);
-            if (sessionData) {
+            //console.log(sessionData);
+            if (sessionData && sessionData.Username != "") {
 
                 try {
                     // Fetch session data
                     var OwnFollowsResponse = await fetch("https://localhost:7160/API/Users/Following?UserID=" + sessionData.userID);
                     var OwnFollowsJsonData = await OwnFollowsResponse.json();
                     setOwnuserFollowingData(OwnFollowsJsonData);
-                    console.log(OwnFollowsJsonData);
+                    //console.log(OwnFollowsJsonData);
 
                 } catch (error) {
                     console.error("Error fetching data:", error);
@@ -169,8 +171,8 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchUserOwnBlocking = async () => {
-            console.log(sessionData);
-            if (sessionData) {
+            //console.log(sessionData);
+            if (sessionData && sessionData.Username!="") {
 
                 try {
                     // Fetch session data
@@ -394,7 +396,7 @@ const Profile = () => {
                                         {/*Profile Buttons*/}
                                         <div className = "Profile_buttons">
                                             {isOwnProfile() == true && (
-                                                <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
+                                                <Button className="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
                                             )
                                             }
                                             {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === profileUsername) ?
@@ -433,6 +435,14 @@ const Profile = () => {
                                             createdDate={post.createdDate}
                                             commentCount={post.commentCount} />
                                     ))}
+                                    {(userPostData != null && userPostData.length == 0) && (
+
+                                        <div>
+                                            <span>
+Noch keine Posts oder keine öffentlichen Posts!
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
