@@ -42,7 +42,7 @@ function AppZwitscher() {
         </div>
         <div className="app">
           <Sidebar2 value = {theme} />
-          <Feed />
+          <Feed value = {theme} />
           <Widgets />
         </div>
       </div>

@@ -38,7 +38,7 @@ function Sidebar(theme) {
             window.location.reload();
         } else {
             // Navigate to the desired profile page
-            navigate(`/profile/${username}`);
+            navigate(`/profile/${username}`,{ state: { screen: theme.value } });
             window.location.reload();
         }
     };
@@ -115,8 +115,9 @@ function Sidebar(theme) {
         {data.Username !== "" && (
                   <li
 
-                      className="row"
+                      className={`row ${currentUrl === '/profile' ? 'active' : ''}`}
                       onClick={() => { handleProfileClick(data.userID) }}
+
           >
             <div className="icon">
               <PermIdentityIcon />
