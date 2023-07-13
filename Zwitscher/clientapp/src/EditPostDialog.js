@@ -73,14 +73,18 @@ function EditPostDialog({
             redirect: 'follow'
         };
 
-        fetch("https://localhost:7160/API/Posts/Edit", requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+        var response = fetch("https://localhost:7160/API/Posts/Edit", requestOptions);
+            
 
+        if (response.ok) {
+            
+            handleClose();
+            setFeedCounter(Math.random);
+        } else {
+            window.location.reload();
+        }
         
-        handleClose();
-        setFeedCounter(Math.random);
+        if (window.location.href.includes("/profile/")) { window.location.reload(); }
     };
     const navigate = useNavigate();
     

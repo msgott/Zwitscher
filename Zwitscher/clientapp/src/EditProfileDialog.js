@@ -118,7 +118,7 @@ function EditProfileDialog({
             setFile(e.target.files[0]);
         }
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
 
@@ -141,10 +141,8 @@ function EditProfileDialog({
         };
 
 
-        fetch("https://localhost:7160/API/Users/Edit?userID=" + userId + "&LastName=" + lastname + "&FirstName=" + firstname + "&Username=" + username + "&Password=" + password + "&Birthday=" + birthday + "&Biography=" + biography + "&Gender=" + gender, requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+        var response = await fetch("https://localhost:7160/API/Users/Edit?userID=" + userId + "&LastName=" + lastname + "&FirstName=" + firstname + "&Username=" + username + "&Password=" + password + "&Birthday=" + birthday + "&Biography=" + biography + "&Gender=" + gender, requestOptions)
+            
 
         if (file != null) {
 
@@ -157,14 +155,16 @@ function EditProfileDialog({
                 body: formdata,
                 redirect: 'follow'
             };
-            fetch('https://localhost:7160/API/Users/Media/Add', requestOptions)
-                .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((err) => console.error(err));
+            response = await fetch('https://localhost:7160/API/Users/Media/Add', requestOptions)
+                
 
         }
-        handleClose();
-        setuserCounter(Math.random);
+        if (response.ok) {
+            handleClose();
+            setuserCounter(Math.random);
+        } else {
+            window.location.reload();
+        }
     };
     const navigate = useNavigate();
     const  handleDelete = async () => {

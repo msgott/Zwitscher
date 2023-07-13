@@ -250,7 +250,9 @@ function Post({
                     }),
                 }
             ).then((response) => response.text()).then((result) => console.log(result));
+
             setFeedCounter(Math.random);
+            if (window.location.href.includes("/profile/")) { window.location.reload(); }
             // Handle the response if needed
         } catch (error) {
             console.error("Error deleting post:", error);
@@ -489,7 +491,7 @@ function Post({
                         _currentUserVoted={_currentUserVoted}
                         _userVoteIsUpvote={_userVoteIsUpvote}
                         _handleClose={handleClose}
-                        setFeedCounter={setFeedCounter}
+                        setFeedCounter={(e) => { setFeedCounter(e) }}
                     />
 
                 </Box>
@@ -503,12 +505,12 @@ function Post({
 
                 <Box sx={style}>
                     <EditPostDialog
-                        postId={postToEditId}                        
+                        postId={postToEditId}
                         postText={postToEditText}
                         postPublic={postToEditPublic}
                         postRetzwitscher={postToEditRetzwitscher}
                         handleClose={EditPosthandleClose}
-                        setFeedCounter={setFeedCounter}
+                        setFeedCounter={(e) => { setFeedCounter(e) }}
                     />
 
                 </Box>

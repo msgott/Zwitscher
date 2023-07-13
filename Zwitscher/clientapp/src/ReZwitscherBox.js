@@ -48,13 +48,17 @@ function ReZwitscherBox({
             redirect: 'follow'
         };
         try {
-            fetch('https://localhost:7160/API/Posts/Add', requestOptions)
-                .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((err) => console.error(err));
-            setZwitscherMessage("");
-            _handleClose();
-            setFeedCounter(Math.random);
+            var response = await fetch('https://localhost:7160/API/Posts/Add', requestOptions);
+            if (response.ok) {
+                setZwitscherMessage("");
+                _handleClose();
+                setFeedCounter(Math.random);
+            } else {
+                window.location.reload();
+            }
+                
+            
+            
         } catch (error){
             console.error(error);
         }
