@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import "./EditCommentDialog.css";
+import "./CommentCommentDialog.css";
 
 import Avatar from "@mui/material/Avatar";
 
@@ -8,16 +8,16 @@ import { Button } from "@mui/material";
 
 
 
-function EditCommentDialog({
+function CommentCommentDialog({
     _commentId,
-    _commentText,
+    
     handleClose
 }) {
     // Main File to load all the Components on the page (Header, Sidebar, Feed etc.)
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
     // depending on toggleTheme
-
+    //console.log("asda" + _commentId);
     const [theme, setTheme] = useState("light");
 
     const toggleTheme = () => {
@@ -36,7 +36,7 @@ function EditCommentDialog({
             try {
 
                 setCommentId(_commentId);
-                setCommentText(_commentText);
+                
 
 
             } catch (error) {
@@ -49,15 +49,15 @@ function EditCommentDialog({
 
 
 
-    async function editOwnComment(commentId, text) {
+    async function CommentComment(commentId, text) {
         if (!text) {
             alert("Bitte Kommentartext eingeben");
             return;
         }
-        console.log(text);
+        /*console.log(commentId);*/
         try {
-            const response = await fetch(
-                "https://localhost:7160/API/Comments/Edit?id=" + commentId + "&CommentText=" + text,
+            var response = await fetch(
+                "https://localhost:7160/API/Comments/Comment/Add?commentId=" + commentId + "&CommentText=" + text,
                 {
                     method: "POST",
                     headers: {
@@ -67,11 +67,12 @@ function EditCommentDialog({
 
                     }),
                 }
-            ).then((response) => response.text()).then((result) => console.log(result));
-
+            );
+            handleClose();
+            //alert(response.text());
             // Handle the response if needed
         } catch (error) {
-            alert("Der Kommentar konnte nicht geändert werden");
+            alert("Der Kommentar konnte nicht gesendet werden");
 
         }
     };
@@ -84,15 +85,15 @@ function EditCommentDialog({
 
                 <div >
 
-                    <label> Text:</label>
-                    <input type="text" id="CommentTextInput" placeholder="Kommentartext" onChange={(e) => { setCommentText(e.target.value) }} defaultValue={commentText}></input>
+                    <label> Kommentieren:</label>
+                    <input type="text" id="CommentTextInput" placeholder="Kommentiere den Kommentar" onChange={(e) => { setCommentText(e.target.value) }} defaultValue={commentText}></input>
 
                     <Button
-                        onClick={() => editOwnComment(commentId, commentText)}
+                        onClick={() => CommentComment(commentId, commentText)}
 
                         
                     >
-                        Speichern
+                        senden
                     </Button>
                 </div>
             </form>
@@ -101,4 +102,4 @@ function EditCommentDialog({
     );
 }
 
-export default EditCommentDialog;
+export default CommentCommentDialog;

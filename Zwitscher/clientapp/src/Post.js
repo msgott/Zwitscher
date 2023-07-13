@@ -354,10 +354,10 @@ function Post({
                             sessionData.Username === "" ?
                                 (
                                     <img
-                                        src={VoteClicked}
+                                        src={UpVote}
                                         alt="Icon"
                                         text="ClickedIcon"
-                                        className="UpvoteFilled"
+                                        className="upvote"
                                         onClick={() => redirectToLogin()}
                                     />
                                 )
@@ -392,10 +392,10 @@ function Post({
                             /*Downvote filled */
                             !userVoteIsUpvote &&
                                 sessionData.Username === "" ? (<img
-                                    src={VotedClickDown}
+                                    src={DownVote}
                                     alt="Icon"
                                     text="UpVote"
-                                    className="downvoteFilled"
+                                    className="downvote"
                                     onClick={() => redirectToLogin()} />) : (<img
                                         src={VotedClickDown}
                                         alt="Icon"
@@ -422,7 +422,7 @@ function Post({
                 
                 )}
             </div>
-            {showComments && <Comments postId={postId} />}
+            {showComments && <Comments postId={postId} sessionData={sessionData} postusername={userName} />}
         </div><Modal
             open={open}
             onClose={handleClose}

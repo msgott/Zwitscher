@@ -48,8 +48,8 @@ function CommentForm({
 
   return (
     <form onSubmit={handleSubmit}>
-          <div class_name="comment-form-row" style={{ 'border': '1px solid', 'border-radius': '5px', 'margin-bottom': '5px' }} >
-              <textarea placeholder="Gebe einen Kommentar ein" style={{ 'width': '100%', 'border': 'none', 'border-radius': '0', 'border-bottom': '1px solid' }}
+          <div class_name="comment-form-row" >
+              <textarea placeholder="Gebe einen Kommentar ein" 
           autoFocus={autoFocus}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
