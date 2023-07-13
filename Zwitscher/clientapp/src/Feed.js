@@ -5,8 +5,9 @@ import Post from "./Post";
 import { FaArrowCircleUp } from 'react-icons/fa';
 import { Button } from "@mui/material";
 function Feed({
-    userid
-}) {
+    userid,
+    
+}, theme) {
     const [postsData, setPostsData] = useState([]);
     const [visible, setVisible] = useState(false)
 
@@ -130,7 +131,10 @@ function Feed({
                     _userVoteIsUpvote={post.userVoteIsUpvote}
                     _retweetsPost={post.retweetsPost}
                     createdDate={post.createdDate}
-                    commentCount={post.commentCount} />
+                    commentCount={post.commentCount}
+                    theme = {theme}
+                />
+                    
             ))}
             <div className="scroll" onClick={scrollToTop} style={{ display: visible ? 'inline' : 'none' }}>
                 Nach Oben

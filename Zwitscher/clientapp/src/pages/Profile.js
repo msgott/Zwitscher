@@ -4,14 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
 import Modal from '@mui/material/Modal';
-import {
-
-    Routes,
-    Route,
-
-    useNavigate,
-    useLocation,
-} from "react-router-dom";
+import {Routes,Route,useNavigate,useLocation,} from "react-router-dom";
 
 import Header from "../Header";
 import Sidebar2 from "../Sidebar2";
@@ -27,7 +20,8 @@ import { useParams } from 'react-router-dom';
 
 export const goToProfileContext = createContext(null);
 
-const Profile = () => {
+const Profile = (props) => {
+
     const { state } = useLocation();
     const { profileUsername } = useParams();
     const navigate = useNavigate();
@@ -46,10 +40,14 @@ const Profile = () => {
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
     // depending on toggleTheme
-    const [theme, setTheme] = useState("light");
+    const location = useLocation();
+    const screen = location.state?.screen;
+
+    const [theme, setTheme] = useState(screen);
+    console.log("theme is: " +theme)
 
     const toggleTheme = () => {
-        setTheme((curr) => (curr === "light" ? "dark" : "light"));
+      setTheme((curr) => (curr === "light" ? "dark" : "light"));
     };
     // Navigate to the profile page if set to true. Follow goToProfileContext.Provider to understand
     // routing with React v18

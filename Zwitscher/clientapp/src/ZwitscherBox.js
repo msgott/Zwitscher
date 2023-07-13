@@ -103,7 +103,7 @@ function ZwitscherBox() {
                     <input
                         onChange={(e) => setZwitscherMessage(e.target.value)}
                         value={zwitscherMessage}
-                        placeholder="What's going on?"
+                        placeholder="Schreibe los..."
                         type="text"
                     />
                     <br />

@@ -36,7 +36,8 @@ function Post({
     commentCount,
     _currentUserVoted,
     _userVoteIsUpvote,
-    _retweetsPost
+    _retweetsPost,
+    theme
 }) {
 
     const [retweetsData, setRetweetsData] = useState();
@@ -271,7 +272,7 @@ function Post({
         <><div className="post">
             <div className="post_avatar">
                 {postId !== "00000000-0000-0000-0000-000000000000" ?(
-                    <><Avatar onClick={() => { navigate(`/profile/${userId}`); }} src={avatar} /><p onClick={() => { navigate(`/profile/${userId}`); } }>{name}</p></>
+                    <><Avatar onClick={() => { navigate(`/profile/${userId}`,{ state: {screen: theme.value } }); }} src={avatar} /><p onClick={() => { navigate(`/profile/${userId}`,{ state: { screen: theme.value } }); } }>{name}</p></>
                 ):
                 (
                     <><Avatar src={avatar} /><p>{name}</p></>

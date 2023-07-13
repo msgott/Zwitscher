@@ -8,9 +8,13 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import LoginIcon from "@mui/icons-material/LoginOutlined";
 import LogoutIcon from "@mui/icons-material/ExitToAppOutlined";
 import { ThemeContext } from "./AppZwitscher"; // Access ThemeContext from App function to have toggle in the header
+import {YellowContext} from "./AppZwitscher";
+
 
 function Header() {
   const { theme, toggleTheme } = useContext(ThemeContext);
+
+
 
   // Get authorization data from backend
   const [data, setData] = useState([]);

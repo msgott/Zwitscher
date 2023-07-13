@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Sidebar2.css";
 
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import HomeIcon from "@mui/icons-material/Home";
+import GroupsIcon from "@mui/icons-material/Groups";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 import { SidebarData } from "./SidebarData";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HelpIcon from '@mui/icons-material/Help';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ThemeContext } from "./AppZwitscher";
 
-function Sidebar() {
+function Sidebar(theme) {
   // Get the current session data from the User whos online
   const [data, setData] = useState([]);
 
@@ -34,7 +38,7 @@ function Sidebar() {
             window.location.reload();
         } else {
             // Navigate to the desired profile page
-            navigate(`/profile/${username}`);
+            navigate(`/profile/${username}`,{ state: { screen: theme.value } });
             window.location.reload();
         }
     };
@@ -44,12 +48,19 @@ function Sidebar() {
     };
     
 
+    // Active Sidebar
+    const location = useLocation();
+    const currentUrl = location.pathname;
+
+
   return (
     <div className="sidebar">
       <ul className="sidebarList">
         {/*Access this file SidebarData and go through it with a map function to build the sidebar without dashboard*/}
-        {SidebarData.map((val, key) => {
+       {/* {SidebarData.map((val, key) => {
+           
           return (
+
             <li
               key={key}
               className="row"
@@ -60,27 +71,65 @@ function Sidebar() {
               <div className="icon">{val.icon}</div>
               <div className="text">{val.text}</div>
             </li>
+            
           );
         })}
+            */}
+
+        {/*Home*/}
+        <li
+          className={`row ${currentUrl === '/' ? 'active' : ''}`}
+          onClick={() => { navigate('/', {state: { screen: theme.value}})}}
+        >
+          <div className="icon">
+            <HomeIcon />
+          </div>
+          <div className="text">Home</div>
+        </li>
+
+        {/*�ffentlich*/}
+        <li
+          className={`row ${currentUrl === '/public' ? 'active' : ''}`}
+          onClick={() => { navigate('/public', {state: { screen: theme.value}})}}
+        >
+          <div className="icon">
+            <GroupsIcon />
+          </div>
+          <div className="text">Oeffentlich</div>
+        </li>
+
+        {/*Im Trend*/}
+        {/*pass current theme in different page - theme.value default 'light'*/}
+        <li
+            className={`row ${currentUrl === '/trending' ? 'active' : ''}`}
+            onClick={() => { navigate('/trending', {state: { screen: theme.value}})}}
+          >
+          <div className="icon">
+              <TrendingUpIcon />
+            </div>
+            <div className="text">Im Trend</div>
+          </li>
+
 
         {/*Profile only visibale, if registered*/}
         {data.Username !== "" && (
                   <li
 
-                      className="row"
+                      className={`row ${currentUrl === '/profile' ? 'active' : ''}`}
                       onClick={() => { handleProfileClick(data.userID) }}
+
           >
             <div className="icon">
               <PermIdentityIcon />
             </div>
-            <div className="text">Profile</div>
+            <div className="text">Profil</div>
           </li>
         )}
 
         {/*Dashboard only visible, if the role is either Admin or Mod*/}
         {isModeratorOrAdmin() && (
           <li
-            className="row"
+            className={`row ${currentUrl === '/dashboard' ? 'active' : ''}`}
             onClick={() => {
               window.location.pathname = "/";
             }}
@@ -91,6 +140,7 @@ function Sidebar() {
             <div className="text">Dashboard</div>
           </li>
               )}
+        {/*Support visable for all*/}      
         <li 
           className="row"
           onClick={() => {
@@ -100,7 +150,7 @@ function Sidebar() {
               <HelpIcon />
             </div>
             <div className="text">Support</div>
-            </li>  
+          </li>  
       
       </ul>
     </div>
