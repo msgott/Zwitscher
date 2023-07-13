@@ -203,7 +203,7 @@ function EditProfileDialog({
     return (
         // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
         <>
-            // It matters here which component comes first. Flux model not mvc. 1.ThemeContext gives theme to all data/components/ underneath, 2. goToProfile all to the lower components and so on
+            
             <div Class="form-container">
                 <h1 Class="EditFormUsername">{username}</h1>
                 <img Class="EditFormAvatar" src={"/Media/" + pbFileName}></img>
