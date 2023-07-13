@@ -70,7 +70,7 @@ function Feed({
                     response = await fetch("https://localhost:7160/API/Users/Posts?id=" +userid? userid:sessionData.userID); // Replace with your API endpoint
                 }
 
-                console.log(response.text);
+                //console.log(response.text);
                 const jsonData = await response.json();
                 setPostsData(jsonData);
             } catch (error) {
@@ -109,7 +109,10 @@ function Feed({
             {postsData.length == 0 && (
 
                 <div className="Loading">
-                Loading feed Data...
+                    <div className="spinner-container">
+                        <div className="loading-spinner">
+                        </div>
+                    </div>
                 </div>
             )
             }

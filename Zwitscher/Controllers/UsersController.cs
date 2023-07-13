@@ -1338,7 +1338,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Following)
                 .Include(u => u.ProfilePicture)
                 .ToList()
-                .FindAll(m => m.Username.Contains(searchString) || m.FirstName.Contains(searchString) || m.LastName.Contains(searchString));
+                .FindAll(m => m.Username.Contains(searchString) /*|| m.FirstName.Contains(searchString) || m.LastName.Contains(searchString)*/);
             if (users == null)
             {
                 return NotFound();
