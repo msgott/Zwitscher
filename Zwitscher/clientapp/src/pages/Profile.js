@@ -28,6 +28,7 @@ const Profile = () => {
     if (profileUsername == undefined) {
         navigate('/Zwitscher')
     }
+    const [userCounter, setuserCounter] = useState(0);
     //console.log(foreignUserObject);
     //Modal stuff------------------------------------------------
     const [EditProfileOpen, setEditProfileOpen] = React.useState(false);
@@ -55,7 +56,7 @@ const Profile = () => {
     const [file, setFile] = useState(null);
     // Get all users information and session data from the current logged-in user
 
-
+    const [ProfileCounter, setProfileCounter] = useState(0);
     //Session Data
     const [sessionData, setSessionData] = useState(null);
 
@@ -94,7 +95,7 @@ const Profile = () => {
         };
 
         fetchUserData();
-    }, []);
+    }, [userCounter, ProfileCounter]);
 
 
 
@@ -200,7 +201,7 @@ const Profile = () => {
                 var userPostDataResponse = await fetch("https://localhost:7160/API/Users/Posts?id=" + profileUsername);
                 var userPostDataJsonData = await userPostDataResponse.json();
                 setuserPostData(userPostDataJsonData);
-                //console.log(userPostDataJsonData);
+                console.log(userPostDataJsonData);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -208,7 +209,7 @@ const Profile = () => {
         }
         fetchUserFollows();
 
-    }, []);
+    }, [ProfileCounter]);
 
     //Comments
     //const [userCommentData, setuserCommentData] = useState(null);
@@ -382,13 +383,17 @@ const Profile = () => {
                             <div className="Profile">
                                 <div className="profile_userbar">
                                     <img src={"/Media/" + (pbFileName !== "" ? pbFileName : "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
+                                    <div>
                                     <h1>{username}</h1>
+                                    <br/>
+                                        <h5>{userData.biography}</h5>
+                                    </div>
                                     <br></br>
                                     <div className="statistics_profile">
                                         <h4>Followers</h4>
-                                        <span>{followerCount}</span>
+                                        <span>{userData.followerCount}</span>
                                         <h4>Following</h4>
-                                        <span>{followedCount}</span>
+                                        <span>{userData.followedCount}</span>
                                         <h4>Posts</h4>
                                         <span>{userPostData !== null ? userPostData.length:0}</span>
                                         {/*<span>{postCount}</span>*/}
@@ -433,7 +438,10 @@ const Profile = () => {
                                             _userVoteIsUpvote={post.userVoteIsUpvote}
                                             _retweetsPost={post.retweetsPost}
                                             createdDate={post.createdDate}
-                                            commentCount={post.commentCount} />
+                                            commentCount={post.commentCount}
+                                            setFeedCounter={setProfileCounter}
+                                        />
+                                            
                                     ))}
                                     {(userPostData != null && userPostData.length == 0) && (
 
@@ -458,12 +466,14 @@ Noch keine Posts oder keine öffentlichen Posts!
                 onClose={EditProfilehandleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+
             >
 
 
                 <EditProfileDialog
                     userObject={userData}
                     handleClose={EditProfilehandleClose}
+                    setuserCounter={setuserCounter}
                 />
 
 

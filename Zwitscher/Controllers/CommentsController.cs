@@ -29,7 +29,7 @@ namespace Zwitscher.Controllers
         [Route("Comments")]
         public async Task<IActionResult> Index()
         {
-            var zwitscherContext = _context.Comment.Include(c => c.Post).Include(c => c.User);
+            var zwitscherContext = _context.Comment.Include(c => c.Post).Include(c => c.User).OrderByDescending(u => u.CreatedDate); 
             return View(await zwitscherContext.ToListAsync());
         }
 

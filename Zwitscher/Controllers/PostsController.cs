@@ -66,7 +66,7 @@ namespace Zwitscher.Controllers
                 .Include(p => p.Votes)
                 .Include(p => p.Comments)
                 .Include(p => p.Media)
-                .Include(p => p.retweets);
+                .Include(p => p.retweets).OrderByDescending(u => u.CreatedDate); 
 
 
             return View(await zwitscherContext.ToListAsync());

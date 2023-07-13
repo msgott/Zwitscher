@@ -293,6 +293,54 @@ namespace Zwitscher.Controllers
             byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
             return File(bytes, "text/csv", DateTime.Now + "UsersSortedByBlockedBy.csv");
         }
+        [HttpGet]
+        [Route("Download/Admins")]
+        public FileResult downloadAdmins()
+        {
+            string csvresult = "Username";
+            var users = _context.User.Include(u => u.Role).ToList().FindAll(u => u.Role.Name == "Administrator");
+            
+
+            foreach (var user in users)
+            {
+                csvresult += System.Environment.NewLine + user.Username;
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
+            return File(bytes, "text/csv", DateTime.Now + "Admins.csv");
+        }
+        [HttpGet]
+        [Route("Download/Mods")]
+        public FileResult downloadMods()
+        {
+            string csvresult = "Username";
+            var users = _context.User.Include(u => u.Role).ToList().FindAll(u => u.Role.Name == "Moderator");
+
+
+            foreach (var user in users)
+            {
+                csvresult += System.Environment.NewLine + user.Username;
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
+            return File(bytes, "text/csv", DateTime.Now + "Mods.csv");
+        }
+
+        [Route("Download/AllUsers")]
+        public FileResult downloadAllUsers()
+        {
+            string csvresult = "Username,Vorname,Nachname,CreatedDate,";
+            var users = _context.User.Include(u => u.Role).ToList();
+
+
+            foreach (var user in users)
+            {
+                csvresult += System.Environment.NewLine + user.Username+ ","+user.FirstName+ "," + user.LastName+ "," + user.CreatedDate;
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(csvresult);
+            return File(bytes, "text/csv", DateTime.Now + "AllUsers.csv");
+        }
     }
     
 }

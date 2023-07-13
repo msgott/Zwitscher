@@ -22,7 +22,8 @@ function ReZwitscherBox({
 }
 ) {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
-
+    const [zwitscherPublic, setZwitscherPublic] = useState(true);
+    
 
     const sendZwitscher = async (e) => {
         e.preventDefault();
@@ -37,7 +38,7 @@ function ReZwitscherBox({
 
         var formdata = new FormData();
         formdata.append("TextContent", zwitscherMessage);
-        formdata.append("IsPublic", true);
+        formdata.append("IsPublic", zwitscherPublic);
         formdata.append("retweetsID", postId);
 
        
@@ -47,13 +48,17 @@ function ReZwitscherBox({
             redirect: 'follow'
         };
         try {
-            fetch('https://localhost:7160/API/Posts/Add', requestOptions)
-                .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((err) => console.error(err));
-            setZwitscherMessage("");
-            _handleClose();
-            setFeedCounter(Math.random);
+            var response = await fetch('https://localhost:7160/API/Posts/Add', requestOptions);
+            if (response.ok) {
+                setZwitscherMessage("");
+                _handleClose();
+                setFeedCounter(Math.random);
+            } else {
+                window.location.reload();
+            }
+                
+            
+            
         } catch (error){
             console.error(error);
         }
@@ -115,7 +120,14 @@ function ReZwitscherBox({
                         type="text"
                         maxLength="281"
                     />
-                    
+                    <label>Oeffentlich</label>
+                    <input
+                        onChange={(e) => setZwitscherPublic(e.target.value)}
+                        checked={zwitscherPublic}
+                        
+                        type="checkbox"
+                       
+                    />
                 </div>
                 <PostPreview
                     postId={postId}

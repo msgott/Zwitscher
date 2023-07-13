@@ -60,7 +60,7 @@ function AppZwitscher() {
         <div className="app">
           <Sidebar2 value = {theme} />
           <Feed value = {theme} sessionData = {sessionData}/>
-                  {/*<Widgets />*/}
+                  <Widgets />
         </div>
       </div>
     </ThemeContext.Provider>

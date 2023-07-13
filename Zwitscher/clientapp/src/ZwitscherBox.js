@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./ZwitscherBox.css";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
@@ -12,7 +12,11 @@ function ZwitscherBox({ setfeedCounter }) {
     const [zwitscherPublic, setZwitscherPublic] = useState(false);
     const [files, setFiles] = useState(Array.from([]));
 
-    
+    const fileInputRef = useRef(null);
+
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
     const sendZwitscher = async (e) => {
         e.preventDefault();
         if (zwitscherMessage.length == 0) {
@@ -124,9 +128,9 @@ function ZwitscherBox({ setfeedCounter }) {
                     {/*Image Input*/}
                     <div className="zwitscherbox_footerLeft">
                     <label className="label_upload" >
-                        <FileUploadIcon />
+                            <FileUploadIcon onClick={handleImageClick} />
                         </label>
-                        <input className ="zwitscherBox_imageInput" type="file" id="fileselect" name="fileselect[]" multiple="multiple" accept='image/png, image/gif, image/jpeg, video/mp4' onChange={handleFileChange} style={{display:'none' }}/>
+                        <input ref={fileInputRef} className="zwitscherBox_imageInput" type="file" id="fileselect" name="fileselect[]" multiple="multiple" accept='image/png, image/gif, image/jpeg, video/mp4' onChange={handleFileChange} style={{display:'none' }}/>
                     </div>
                     {/*Submit all Inputs*/}
                     <Button
