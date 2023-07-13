@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
 
@@ -23,6 +24,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Comments
+        [Moderator]
         [HttpGet]
         [Route("Comments")]
         public async Task<IActionResult> Index()
@@ -32,6 +34,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Comments/Details/5
+        [Moderator]
         [HttpGet]
         [Route("Comments/Details")]
         public async Task<IActionResult> Details(Guid? id)
@@ -57,6 +60,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Comments/Create
+        [Moderator]
         [HttpGet]
         [Route("Comments/Create")]
         public IActionResult Create()
@@ -69,6 +73,7 @@ namespace Zwitscher.Controllers
         // POST: Comments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Moderator]
         [HttpPost]
         [Route("Comments/Create")]
         [ValidateAntiForgeryToken]
@@ -90,6 +95,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Comments/Edit/5
+        [Moderator]
         [HttpGet]
         [Route("Comments/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
@@ -115,6 +121,7 @@ namespace Zwitscher.Controllers
         // POST: Comments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Moderator]
         [HttpPost]
         [Route("Comments/Edit")]
         [ValidateAntiForgeryToken]
@@ -151,6 +158,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Comments/Delete/5
+        [Moderator]
         [HttpGet]
         [Route("Comments/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
@@ -173,6 +181,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Comments/Delete/5
+        [Moderator]
         [HttpPost]
         [Route("Comments/Delete")]
         [ValidateAntiForgeryToken]
@@ -222,6 +231,7 @@ namespace Zwitscher.Controllers
 
         //-----------------------------------------------MVC Comment Comment----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid commentID, Guid commentToRemoveId)
         {
@@ -234,7 +244,7 @@ namespace Zwitscher.Controllers
         }
 
 
-
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveCommentFromComment(Guid commentID, Guid commentToRemoveId) //Just for the MVC Frontend 
         {
