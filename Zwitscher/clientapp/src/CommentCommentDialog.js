@@ -10,7 +10,7 @@ import { Button } from "@mui/material";
 
 function CommentCommentDialog({
     _commentId,
-    
+    setsubCommentCounter,
     handleClose
 }) {
     // Main File to load all the Components on the page (Header, Sidebar, Feed etc.)
@@ -69,12 +69,14 @@ function CommentCommentDialog({
                 }
             );
             handleClose();
+            
             //alert(response.text());
             // Handle the response if needed
         } catch (error) {
             alert("Der Kommentar konnte nicht gesendet werden");
 
         }
+        setsubCommentCounter(Math.random);
     };
 
     return (

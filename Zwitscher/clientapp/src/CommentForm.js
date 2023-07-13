@@ -4,18 +4,18 @@ import "./CommentForm.css";
 function CommentForm({
   postId,
   autoFocus = false,
-  onSubmit,
-  initialValue = "",
+    setCommentCounter
+  
 }) {
-  const [message, setMessage] = useState(initialValue); // set values for the form/Default,Edit
+  const [message, setMessage] = useState(""); // set values for the form/Default,Edit
 
   // Function to submit the message (CommentText) including: Id,UserId,PostId, to the CommentController
   // to create a new comment and update the database
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     try {
       var requestOptions = {
         method: "POST",
-        redirect: "follow",
+        
         };
         if (message.length == 0) {
             alert('Bitte gebe einen Kommentartext ein')
@@ -28,14 +28,12 @@ function CommentForm({
           message,
         requestOptions
       )
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error));
+        
 
       if (response.ok) {
         // Comment added successfully
         console.log("Comment added successfully!");
-        onSubmit();
+          setCommentCounter(Math.random);
         // Clear the form after the submit
         setMessage("");
       } else {

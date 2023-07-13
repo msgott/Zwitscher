@@ -1726,9 +1726,10 @@ namespace Zwitscher.Controllers
                 userid = (Guid)id;
             }
             else userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
-
+            Guid _userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
             User u = await _dbContext.User
                 .Include(u => u.Posts)
+                .Include(u => u.FollowedBy)
                 .FirstAsync(p => p.Id == userid);
 
             if (u is null) return Unauthorized();
@@ -1741,7 +1742,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
                 .ToListAsync();
-            posts = posts.FindAll(p => p.UserId == userid);
+            posts = posts.FindAll(p => p.UserId == userid && (p.IsPublic==true || u.FollowedBy.Find(u => u.Id == _userid || p.UserId==_userid) != null)).OrderByDescending(p=>p.CreatedDate).ToList();
             if (posts == null)
             {
                 return NotFound();

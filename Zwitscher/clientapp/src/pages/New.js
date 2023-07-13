@@ -2,7 +2,7 @@
 import AppZwitscher from '../AppZwitscher';
 import { ThemeContext } from "../AppZwitscher";
 import {Routes,Route,useNavigate,useLocation} from "react-router-dom";
-import react, {useState} from 'react';
+import react, {useEffect, useState} from 'react';
 import Header from "../Header";
 import Sidebar2 from "../Sidebar2";
 import Feed from "../Feed";
@@ -15,11 +15,29 @@ function New() {
   const screen = location.state?.screen;
 
   const [theme, setTheme] = useState(screen);
-  console.log("theme is: " +theme)
+  //console.log("theme is: " +theme)
 
   const toggleTheme = () => {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
-};
+    };
+    const [sessionData, setSessionData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserSession = async () => {
+            try {
+                // Fetch session data
+                var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");
+                var sessionJsonData = await sessionResponse.json();
+                setSessionData(sessionJsonData);
+
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchUserSession();
+
+    }, []);
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
     <div className="beginning" id={theme}>
@@ -28,7 +46,7 @@ function New() {
       </div>
       <div className="app">
         <Sidebar2 value = {theme} />
-        <Feed />
+                  <Feed sessionData= {sessionData}/>
         <Widgets />
       </div>
     </div>

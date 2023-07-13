@@ -7,7 +7,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
-function ZwitscherBox() {
+function ZwitscherBox({ setfeedCounter }) {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
     const [zwitscherPublic, setZwitscherPublic] = useState(false);
     const [files, setFiles] = useState(Array.from([]));
@@ -47,7 +47,8 @@ function ZwitscherBox() {
         setZwitscherMessage("");
         setFiles(Array.from([]));
         document.getElementById("fileselect").value = null;
-
+        console.log("send post ausgeführt");
+        setfeedCounter(Math.random);
     };
 
     // Get all users information and session data from the current logged-in user

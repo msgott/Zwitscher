@@ -327,7 +327,7 @@ namespace Zwitscher.Controllers
 
             }
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
-            List<Comment> comments = c.commentedBy;
+            List<Comment> comments = c.commentedBy.OrderByDescending(c=>c.CreatedDate).ToList();
             foreach (Comment comment in comments)
             {
 

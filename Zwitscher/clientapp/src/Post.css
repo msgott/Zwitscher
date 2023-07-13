@@ -93,6 +93,16 @@
   color: white;
 }
 
+.chat-icon {
+    cursor: pointer;
+    font-size: 24px !important;
+    
+}
+
+.chat-icon:hover {
+    color: red;
+}
+
 .post_footer .vote_container {
     display: flex;
     margin-right: 10%;

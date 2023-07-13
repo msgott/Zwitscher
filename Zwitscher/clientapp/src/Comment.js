@@ -21,7 +21,8 @@ function Comment({
     parentpostUsername,
     parentcommentId,
     parentcommentUsername,
-    sessionData
+    sessionData,
+    setCommentCounter
 }) {
     
     const [data, setData] = useState([]);
@@ -32,47 +33,17 @@ function Comment({
 
     const [EditCommentopen, setEditCommentOpen] = React.useState(false);
     const EditCommenthandleOpen = () => setEditCommentOpen(true);
-    const EditCommenthandleClose = () => setEditCommentOpen(false);
+    const EditCommenthandleClose = () => { setEditCommentOpen(false); setCommentCounter(Math.random);  }
     const [CommentCommentopen, setCommentCommentOpen] = React.useState(false);
     const CommentCommenthandleOpen = () => setCommentCommentOpen(true);
-    const CommentCommenthandleClose = () => setCommentCommentOpen(false);
+    const CommentCommenthandleClose = () => {
+        setCommentCommentOpen(false);
+        
+        setCommentCounter(Math.random);
+        
+    }
+    const [subCommentCounter, setsubCommentCounter] = useState(0);
     
-    async function deleteOwnComment(postId, commentId){
-        try
-        {
-            if (parentcommentId === "") {
-                const response = await fetch(
-                    "https://localhost:7160/API/Posts/Comment/Remove?postId=" + parentpostId + "&commentId=" + commentId,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-
-                        }),
-                    }
-                ).then((response) => response.text()).then((result) => console.log(result));
-            } else {
-                const response = await fetch(
-                    "https://localhost:7160/API/Comments/Comment/Remove?commentId=" + parentcommentId + "&commentToRemoveId=" + commentId,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-
-                        }),
-                    }
-                ).then((response) => response.text()).then((result) => console.log(result));
-            }
-            // Handle the response if needed
-        } catch (error) {
-            alert("Der Kommentar konnte nicht gelöscht werden");
-
-        }
-    };
     function openCommentEditModal(commentId, text) {
         console.log("test");
         setcommentToEdit(commentId);
@@ -106,10 +77,49 @@ function Comment({
         };
 
         fetchData();
-
+        console.log("fetchdata in Comment.js ausgeführt");
         //console.log(data);
-    }, []);
-    
+    }, [subCommentCounter]);
+
+
+    async function deleteOwnComment(postId, commentId) {
+        try {
+            if (parentcommentId === "") {
+                const response = await fetch(
+                    "https://localhost:7160/API/Posts/Comment/Remove?postId=" + parentpostId + "&commentId=" + commentId,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+
+                        }),
+                    }
+                ).then((response) => response.text()).then((result) => console.log(result));
+                setCommentCounter(Math.random);
+            } else {
+                const response = await fetch(
+                    "https://localhost:7160/API/Comments/Comment/Remove?commentId=" + parentcommentId + "&commentToRemoveId=" + commentId,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+
+                        }),
+                    }
+                ).then((response) => response.text()).then((result) => console.log(result));
+                setCommentCounter(Math.random);
+            }
+            // Handle the response if needed
+
+        } catch (error) {
+            alert("Der Kommentar konnte nicht gelöscht werden");
+
+        }
+    };
     // Create Comment frontend logic CommentForm
 
     return (
@@ -147,7 +157,8 @@ function Comment({
                             parentcommentId={commentId}
                             parentpostUsername={""}
                             parentcommentUsername={user_username}
-                            sessionData = {sessionData}
+                            sessionData={sessionData}
+                            setCommentCounter={setsubCommentCounter}
                         />
 
                     ))}
@@ -181,7 +192,7 @@ function Comment({
             >
                 <CommentCommentDialog
                     _commentId={commentToComment}
-
+                    setsubCommentCounter={setsubCommentCounter }
                     handleClose={CommentCommenthandleClose} />
 
 
