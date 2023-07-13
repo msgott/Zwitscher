@@ -25,7 +25,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">NUMBER OF USERS</p>
+                        <p class="text-primary">ANZAHL NUTZER</p>
                         <span class="material-icons-outlined text-black">person_outline</span>
                     </div>
                     <span class="text-primary font-weight-bold">@ViewBag.TotalUsers</span>
@@ -33,7 +33,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">NUMBER OF NEW USERS - 14 DAYS</p>
+                        <p class="text-primary">ANZAHL NEUE NUTZER - 14 TAGEN</p>
                         @{
                             /*Whenever the amount of all users exceeds the amount of the previous 14 days, we will render
                             a trending up, otherwise we will render a trending down*/
@@ -45,7 +45,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">MODERATORS</p>
+                        <p class="text-primary">MODERATOREN</p>
                         <span class="material-icons-outlined text-violett">local_police</span>
                     </div>
                     <span class="text-primary font-weight-bold">@ViewBag.totalModerators</span>
@@ -70,7 +70,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">NEW ZWITSCHERS - 14 DAYS</p>
+                        <p class="text-primary">NEUE ZWITSCHERS - 14 TAGE</p>
                         @{
                             /*Whenever the amount of all posts exceeds the amount of the previous 14 days, we will render
                             a trending up, otherwise we will render a trending down*/
@@ -82,7 +82,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">AVG. ZWITSCHER RATE - 30 DAYS</p>
+                        <p class="text-primary">Ø ZWITSCHER RATE - 30 TAGE</p>
                         <span class="material-icons-outlined text-violett">functions</span>
                     </div>
                     <span class="text-primary font-weight-bold">@ViewBag.AveragePosts</span>
@@ -90,7 +90,7 @@
 
                 <div class="card">
                     <div class="card-inner">
-                        <p class="text-primary">BANNED USERS</p>
+                        <p class="text-primary">GESPERRTE NUTZER</p>
                         <span class="material-icons-outlined text-red">pan_tool</span>
                     </div>
                     <span class="text-primary font-weight-bold">@ViewBag.totalBanned</span>
@@ -101,14 +101,14 @@
 
                 <div class="charts-card">
                     <a style="float: right;" href="~/Download/UsersSortedByFollowedBy">csv</a>
-                    <p class="chart-title">MOST FAMOUS USER</p>
+                    <p class="chart-title">BELIEBTESTER NUTZER</p>
                     <p class="chart-name">@ViewData["mostLikedUser"]</p>
                     <div id="bar-chart"></div>
                 </div>
 
                 <div class="charts-card">
                     <a style="float: right;" href="~/Download/UsersSortedByBlockedBy">csv</a>
-                    <p class="chart-title">MOST HATED USER </p>
+                    <p class="chart-title">UNBELIEBTESTER NUTZER</p>
                     <p class="chart-name">@ViewData["mostHatedUser"]</p>
                     <div id="area-chart"></div>
                 </div>
@@ -147,11 +147,11 @@
             data: {
                 labels: ['January', 'February', 'March', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 datasets: [{
-                    label: 'New Users',
+                    label: 'Neue Nutzer',
                     data: [12, 19, 3, 5, 2, 3, 8, 10, 45, 80, 150, 180],
                     borderWidth: 1
                 }, {
-                    label: 'Users',
+                    label: 'Nutzer',
                     data: [122, 141, 143, 148, 150, 153, 161, 171, 216, 296, 446, 626],
                     borderWidth: 1
                 }]

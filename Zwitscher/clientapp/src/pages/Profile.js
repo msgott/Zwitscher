@@ -21,14 +21,9 @@ import Post from "../Post";
 export const goToProfileContext = createContext(null);
 
 const Profile = (props) => {
-    const location = useLocation();
-    console.log(location);
-    const data = location.state?.data;
-
-    
 
     const { state } = useLocation();
-    const { foreignUserObject,screen } = state;
+    const { foreignUserObject} = state;
     const navigate = useNavigate();
     if (foreignUserObject == undefined) {
         navigate('/Zwitscher')
@@ -45,10 +40,14 @@ const Profile = (props) => {
 
     // set the theme to 'light mode' in the beginning and have the opportunity to change theme
     // depending on toggleTheme
+    const location = useLocation();
+    const screen = location.state?.screen;
+
     const [theme, setTheme] = useState(screen);
+    console.log("theme is: " +theme)
 
     const toggleTheme = () => {
-        setTheme((curr) => (curr === "light" ? "dark" : "light"));
+      setTheme((curr) => (curr === "light" ? "dark" : "light"));
     };
     // Navigate to the profile page if set to true. Follow goToProfileContext.Provider to understand
     // routing with React v18

@@ -16,12 +16,11 @@ function App() {
     <div>
     <Routes>
       <Route path="/" element={<AppZwitscher />} />
-      <Route path="public" element={<Public />} />
-      <Route path="trending" element={<Trending />} />
-      <Route path="new" element={<New />} />
-      <Route path="profile/*" element={<Profile />} />
-      <Route path="dashboard" element={<Dashboard />} />
-      <Route path="/error" element={<h1>Error 404</h1>} />
+      <Route path="/public" element={<Public />} />
+      <Route path="/trending" element={<Trending />} />
+      <Route path="/new" element={<New />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     </div>
