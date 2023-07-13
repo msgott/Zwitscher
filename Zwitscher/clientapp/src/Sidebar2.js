@@ -114,7 +114,7 @@ function Sidebar(theme) {
         {/*Aktuell*/}
         {/*pass current theme in different page - theme.value default 'light'*/}
         <li
-            className={`row ${currentUrl === '/trending' ? 'active' : ''}`}
+            className={`row ${currentUrl === '/new' ? 'active' : ''}`}
             onClick={() => { navigate('/new', {state: { screen: theme.value}})}}
           >
           <div className="icon">
@@ -128,7 +128,7 @@ function Sidebar(theme) {
         {data.Username !== "" && (
                   <li
 
-                      className={`row ${currentUrl === '/profile' ? 'active' : ''}`}
+                      className={`row ${currentUrl === '/profile/'+ data.userID ? 'active' : ''}`}
                       onClick={() => { handleProfileClick(data.userID) }}
 
           >
