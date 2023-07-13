@@ -36,7 +36,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Role)
                 .Include(u => u.Following)
                 .Include(u => u.FollowedBy)
-                .Include(u => u.ProfilePicture);
+                .Include(u => u.ProfilePicture).OrderByDescending(u=>u.CreatedDate);
             return View(await zwitscherContext.ToListAsync());
         }
         [HttpGet]
@@ -1726,7 +1726,7 @@ namespace Zwitscher.Controllers
                 userid = (Guid)id;
             }
             else userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
-            Guid _userid = Guid.Parse(HttpContext.Session.GetString("UserId"));
+            
             User u = await _dbContext.User
                 .Include(u => u.Posts)
                 .Include(u => u.FollowedBy)
@@ -1742,7 +1742,7 @@ namespace Zwitscher.Controllers
                 .Include(u => u.Comments)
                 .Include(p => p.retweets)
                 .ToListAsync();
-            posts = posts.FindAll(p => p.UserId == userid && (p.IsPublic==true || u.FollowedBy.Find(u => u.Id == _userid || p.UserId==_userid) != null)).OrderByDescending(p=>p.CreatedDate).ToList();
+            posts = posts.FindAll(p => p.UserId == userid && (p.IsPublic==true || u.FollowedBy.Find(u => u.Id == userid) != null || p.UserId==userid)).OrderByDescending(p=>p.CreatedDate).ToList();
             if (posts == null)
             {
                 return NotFound();

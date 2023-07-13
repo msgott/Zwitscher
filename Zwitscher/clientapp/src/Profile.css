@@ -142,7 +142,14 @@ h1 {
 #dark h1 {
     color: var(--Dark_TextColor);
 }
+h5 {
+    margin-left:5px;
+    color: var(--Light_TextColor);
+}
 
+#dark h5 {
+    color: var(--Dark_TextColor);
+}
 .inputfiled_left {
     display: flex;
     align-self: flex-end;

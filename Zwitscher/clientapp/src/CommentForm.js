@@ -48,7 +48,7 @@ function CommentForm({
   return (
     <div className="commentform_area">
       <div className="form_button">
-        <form onSubmit={handleSubmit}>
+        
               <div class_name="comment-form-row" >
                   <textarea placeholder="Gebe einen Kommentar ein" 
               autoFocus={autoFocus}
@@ -58,10 +58,10 @@ function CommentForm({
             />
           </div>
           {/*<div className="error-msg">{error}</div>*/}
-          <button className="btn_post_comment" type="submit" style={{ 'right': '0', 'left': 'auto' }}>
+                  <button className="btn_post_comment" onClick={() => { handleSubmit() } } style={{ 'right': '0', 'left': 'auto' }}>
               Post
         </button>
-        </form>
+        
         
       </div>
     </div>

@@ -11,7 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 function EditProfileDialog({
     userObject,
-    handleClose
+    handleClose,
+    setuserCounter
 }) {
     //Modal stuff------------------------------------------------
     const [EditProfileDeleteOpen, setEditProfileDeleteOpen] = React.useState(false);
@@ -163,6 +164,7 @@ function EditProfileDialog({
 
         }
         handleClose();
+        setuserCounter(Math.random);
     };
     const navigate = useNavigate();
     const  handleDelete = async () => {

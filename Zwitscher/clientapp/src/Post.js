@@ -4,6 +4,7 @@ import Comments from "./Comments";
 import Avatar from "@mui/material/Avatar";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import RetzitscherIcon from "@mui/icons-material/Sync";
 import UpVote from "./Images/icons8-pfeil-50.png";
 import DownVote from "./Images/icons8-pfeil-50-down_not_filled.png";
@@ -22,6 +23,7 @@ import { Route, useNavigate } from "react-router-dom";
 import Profile from "./pages/Profile";
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import EditPostDialog from "./EditPostDialog";
 
 
 //The hard coded stuff from the Feed components will be entered here as props/ name,text etc.
@@ -40,6 +42,7 @@ function Post({
     _retweetsPost,
     theme,
     setFeedCounter
+    
 }) {
 
     const [retweetsData, setRetweetsData] = useState();
@@ -83,8 +86,20 @@ function Post({
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
-
+    const [EditPostopen, setEditPostopen] = React.useState(false);
+    const EditPosthandleOpen = (id, text, _public, retweets) => {
+        setpostToEditId(id);
+        setpostToEditText(text);
+        setpostToEditPublic(_public);
+        setpostToEditRetzwitscher(retweets);
+        setEditPostopen(true);
+    };
+    const EditPosthandleClose = () => setEditPostopen(false);
+    const [postToEditId, setpostToEditId] = useState("");
+    const [postToEditText, setpostToEditText] = useState("");
+    const [postToEditPublic, setpostToEditPublic] = useState(true);
+    const [postToEditRetzwitscher, setpostToEditRetzwitscher] = useState("");
+    
 
 
     const [currentUserVoted, setcurrentUserVoted] = useState(_currentUserVoted);
@@ -303,9 +318,14 @@ function Post({
                     )}
                 <h5 >{createdDate}</h5>
                 {sessionData.Username === name &&(
-                <DeleteIcon
-                        onClick={() => {deletePost(postId) } }
+                <><DeleteIcon
+                        onClick={() => { deletePost(postId); } }
                         className="chat-icon" />
+                        <EditIcon
+                            onClick={() => { EditPosthandleOpen(postId, text, true, _retweetsPost) }}
+                            className="chat-icon" 
+                        />
+                    </>       
                 )}
             </div>
             <div className="post_body">
@@ -473,7 +493,28 @@ function Post({
                     />
 
                 </Box>
-            </Modal></>
+            </Modal>
+            <Modal
+                open={EditPostopen}
+                onClose={EditPosthandleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box sx={style}>
+                    <EditPostDialog
+                        postId={postToEditId}                        
+                        postText={postToEditText}
+                        postPublic={postToEditPublic}
+                        postRetzwitscher={postToEditRetzwitscher}
+                        handleClose={EditPosthandleClose}
+                        setFeedCounter={setFeedCounter}
+                    />
+
+                </Box>
+            </Modal>
+
+        </>
     );
 }
 

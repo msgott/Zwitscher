@@ -22,7 +22,8 @@ function ReZwitscherBox({
 }
 ) {
     const [zwitscherMessage, setZwitscherMessage] = useState("");
-
+    const [zwitscherPublic, setZwitscherPublic] = useState(true);
+    
 
     const sendZwitscher = async (e) => {
         e.preventDefault();
@@ -37,7 +38,7 @@ function ReZwitscherBox({
 
         var formdata = new FormData();
         formdata.append("TextContent", zwitscherMessage);
-        formdata.append("IsPublic", true);
+        formdata.append("IsPublic", zwitscherPublic);
         formdata.append("retweetsID", postId);
 
        
@@ -115,7 +116,14 @@ function ReZwitscherBox({
                         type="text"
                         maxLength="281"
                     />
-                    
+                    <label>Oeffentlich</label>
+                    <input
+                        onChange={(e) => setZwitscherPublic(e.target.value)}
+                        checked={zwitscherPublic}
+                        
+                        type="checkbox"
+                       
+                    />
                 </div>
                 <PostPreview
                     postId={postId}
