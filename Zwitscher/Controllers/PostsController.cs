@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
 
@@ -55,6 +56,7 @@ namespace Zwitscher.Controllers
         //============================================= Base MVC Stuff for Index, Create, Edit, Delete =====================================================
 
         // GET: Posts
+        [Moderator]
         public async Task<IActionResult> Index()
         //Delivers View for Posts Listing
         {
@@ -71,6 +73,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Details/5
+        [Moderator]
         public async Task<IActionResult> Details(Guid? id)
         //Delivers View for Posts Details, Currently not used because of Popups
         {
@@ -95,6 +98,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Create
+        [Moderator]
         public IActionResult Create()
         //Delivers View for Posts Creation
         {
@@ -105,6 +109,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Create
+        [Moderator]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile[] files, [Bind("Id,TextContent,IsPublic,UserId,retweetsID")] Post post)
@@ -159,6 +164,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Edit/5
+        [Moderator]
         public async Task<IActionResult> Edit(Guid? id)
         //Delivers View for Posts Editing
         {
@@ -189,6 +195,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Edit/5
+        [Moderator]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, IFormFile[] files, [Bind("Id,CreatedDate,TextContent,IsPublic,UserId,retweetsID")] Post post)
@@ -262,6 +269,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Posts/Delete/5
+        [Moderator]
         public async Task<IActionResult> Delete(Guid? id)
         //Delivers View for Posts Deletion
         {
@@ -282,6 +290,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Posts/Delete/5
+        [Moderator]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -350,6 +359,7 @@ namespace Zwitscher.Controllers
 
         #region MVC Popup stuff
         //============================================= MVC Popup stuff =====================================================
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupPostDetails(Guid postID)
         //Delivers the PartialView for the Details Popup
@@ -381,7 +391,7 @@ namespace Zwitscher.Controllers
 
         }
 
-
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddMedia(Guid postID)
         //Delivers the PartialView for the Add Media Popup
@@ -405,6 +415,7 @@ namespace Zwitscher.Controllers
             return PartialView("PopupAddMedia", post);
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveMedia(Guid postID, Guid mediaToRemoveId)
         //Delivers the PartialView for the Remove Media Popup
@@ -432,6 +443,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddMediaToPost(Guid postID, IFormFile[] files)
         //Adds the Media to the post when the form from the Add Media Popup is submitted
@@ -514,6 +526,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveMediaFromPost(Guid postID, Guid mediaToRemoveId)
         //Removes the Media from the post when the form from the Remove Media Popup is submitted
@@ -581,6 +594,7 @@ namespace Zwitscher.Controllers
 
         //-----------------------------------------------MVC Post Comment----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid postID, Guid commentToRemoveId)
         //Delivers the PartialView for the Remove Comment Popup
@@ -597,7 +611,7 @@ namespace Zwitscher.Controllers
         }
 
 
-
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveCommentFromPost(Guid postID, Guid commentToRemoveId)
         //Removes the Comment from the post when the form from the Remove Comment Popup is submitted
@@ -651,6 +665,7 @@ namespace Zwitscher.Controllers
         }
         //-----------------------------------------------MVC User Vote----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveVote(Guid postID, Guid voteToRemoveId)
         //Delivers the PartialView for the Remove Comment Popup
@@ -667,7 +682,7 @@ namespace Zwitscher.Controllers
         }
 
 
-
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveVoteFromPost(Guid postID, Guid voteToRemoveId)
         //Removes the Comment from the vote when the form from the Remove Vote Popup is submitted

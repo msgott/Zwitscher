@@ -1,7 +1,7 @@
 .widgets {
-    display:flex;
+  display:flex;
   align-self: start;
-  width: 100%;
+  flex: 0.15;
   max-width:500px;
   padding: 10px;
   flex-direction:column;

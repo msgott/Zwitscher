@@ -25,9 +25,10 @@ namespace Zwitscher.Controllers
             _hubContext = hubContext;
         }
 
-        
+
 
         // GET: Users
+        [Moderator]
         [HttpGet]
         [Route("Users")]
         public async Task<IActionResult> Index()
@@ -50,6 +51,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users
+        [Moderator]
         [HttpGet]
         [Route("Users/List")]
         public async void ListAsync(string connectionId)
@@ -69,6 +71,7 @@ namespace Zwitscher.Controllers
 
 
         // GET: Users/Details/5
+        [Moderator]
         [HttpGet]
         [Route("Users/Details")]
         public async Task<IActionResult> Details(Guid? id)
@@ -104,6 +107,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Create
+        [Moderator]
         [HttpGet]
         [Route("Users/Create")]
         public IActionResult Create()
@@ -112,11 +116,12 @@ namespace Zwitscher.Controllers
             return View();
         }
 
-        
+
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Moderator]
         [HttpPost]
         [Route("Users/Create")]
         [ValidateAntiForgeryToken]
@@ -162,6 +167,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Edit/5
+        [Moderator]
         [HttpGet]
         [Route("Users/Edit")]
         //[Admin] //for Development deactivated
@@ -208,6 +214,7 @@ namespace Zwitscher.Controllers
         // POST: Users/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Moderator]
         [HttpPost]
         [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
@@ -283,6 +290,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Users/Delete/5
+        [Moderator]
         [HttpGet]
         [Route("Users/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
@@ -307,6 +315,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Users/Delete/5
+        [Moderator]
         [HttpPost]
         [Route("Users/Delete")]
         [ValidateAntiForgeryToken]
@@ -349,6 +358,7 @@ namespace Zwitscher.Controllers
 
         //-----------------------------------------------MVC User Details----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupUserDetails(Guid userID)
         {
@@ -397,6 +407,7 @@ namespace Zwitscher.Controllers
 
         //-----------------------------------------------MVC User ProfilePicture----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddMedia(Guid userID)
         {
@@ -408,6 +419,7 @@ namespace Zwitscher.Controllers
 
 
         }
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveMedia(Guid userID, Guid mediaToRemoveId)
         {
@@ -419,6 +431,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddMediaToUser(Guid userID, IFormFile file) //Just for the MVC Frontend 
         {
@@ -568,6 +581,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveMediaFromUser(Guid userID, Guid mediaToRemoveId) //Just for the MVC Frontend 
         {
@@ -610,6 +624,7 @@ namespace Zwitscher.Controllers
         }
         //-----------------------------------------------MVC User FollowedBy----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddFollowedBy( Guid userID)
         {
@@ -625,6 +640,7 @@ namespace Zwitscher.Controllers
 
             
         }
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveFollowedBy(Guid userID, Guid UserToRemoveId)
         {
@@ -636,6 +652,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddFollowedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
@@ -684,6 +701,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveFollowedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
@@ -733,6 +751,7 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Following----------------------------------------------------------------------
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddFollowing(Guid userID)
         {
@@ -748,6 +767,7 @@ namespace Zwitscher.Controllers
 
 
         }
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveFollowing(Guid userID, Guid UserToRemoveId)
         {
@@ -759,6 +779,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddFollowingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
@@ -807,6 +828,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveFollowingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
@@ -849,6 +871,7 @@ namespace Zwitscher.Controllers
         }
         //-----------------------------------------------MVC User BlockedBy----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddBlockedBy(Guid userID)
         {
@@ -864,6 +887,7 @@ namespace Zwitscher.Controllers
 
 
         }
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveBlockedBy(Guid userID, Guid UserToRemoveId)
         {
@@ -875,6 +899,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddBlockedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
@@ -916,6 +941,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveBlockedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
@@ -958,6 +984,7 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Blocking----------------------------------------------------------------------
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddBlocking(Guid userID)
         {
@@ -973,6 +1000,7 @@ namespace Zwitscher.Controllers
 
 
         }
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveBlocking(Guid userID, Guid UserToRemoveId)
         {
@@ -984,6 +1012,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> AddBlockingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
         {
@@ -1025,6 +1054,7 @@ namespace Zwitscher.Controllers
 
         }
 
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveBlockingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
         {
@@ -1067,7 +1097,8 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Edit), user);
         }
         //-----------------------------------------------MVC User Post----------------------------------------------------------------------
-        
+
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemovePost(Guid userID, Guid postToRemoveId)
         {
@@ -1120,6 +1151,7 @@ namespace Zwitscher.Controllers
         }
         //-----------------------------------------------MVC User Comment----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid userID, Guid commentToRemoveId)
         {
@@ -1132,7 +1164,7 @@ namespace Zwitscher.Controllers
         }
 
 
-
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveCommentFromUser(Guid userID, Guid commentToRemoveId) //Just for the MVC Frontend 
         {
@@ -1173,6 +1205,7 @@ namespace Zwitscher.Controllers
         }
         //-----------------------------------------------MVC User Vote----------------------------------------------------------------------
 
+        [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveVote(Guid userID, Guid voteToRemoveId)
         {
@@ -1185,7 +1218,7 @@ namespace Zwitscher.Controllers
         }
 
 
-
+        [Moderator]
         [HttpPost]
         public async Task<ActionResult> RemoveVoteFromUser(Guid userID, Guid voteToRemoveId) //Just for the MVC Frontend 
         {

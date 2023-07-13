@@ -22,6 +22,7 @@ namespace Zwitscher.Controllers
             _context = zwitscherContext;
         }
 
+        [User]
         public IActionResult Index()
         {
             if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
@@ -52,7 +53,7 @@ namespace Zwitscher.Controllers
             return View();
         }
 
-        //[Moderator]
+        [Moderator]
         [Route("")]
         public IActionResult Dashboard()
         {

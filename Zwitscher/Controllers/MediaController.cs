@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
 namespace Zwitscher.Controllers
@@ -22,6 +23,7 @@ namespace Zwitscher.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
         // GET: Media
+        [Moderator]
         [HttpGet]
         [Route("Media")]
         public async Task<ActionResult> Index()
@@ -32,6 +34,7 @@ namespace Zwitscher.Controllers
         }
 
         // GET: Media/Upload
+        [Moderator]
         [HttpGet]
         public ActionResult Upload()
         {
@@ -51,6 +54,7 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Media/Upload
+        [Moderator]
         [HttpPost]
         [Route("Media/Upload")]
         public async Task<IActionResult> Upload(IFormFile file)
@@ -82,6 +86,7 @@ namespace Zwitscher.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Moderator]
         [HttpGet]
         [Route("Media/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
@@ -103,6 +108,7 @@ namespace Zwitscher.Controllers
             return View(media);
         }
 
+        [Moderator]
         [HttpPost]
         [Route("Media/Delete")]
         [ValidateAntiForgeryToken]
