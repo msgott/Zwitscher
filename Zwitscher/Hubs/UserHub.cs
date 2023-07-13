@@ -10,6 +10,7 @@ namespace Zwitscher.Hubs
         Task<string> GetconnectionId();
         void RetrieveUserList();
         void RetrieveUser();
+        Task SendAsync(string method, string message);
     }
     public class UserHub : Hub<IUserClient>
     {
@@ -29,6 +30,11 @@ namespace Zwitscher.Hubs
         {
             string connectionId = Context.ConnectionId;
             return _context.User.ToListAsync().Result;
+        }
+
+        public async Task newComment(string json)
+        {
+            await Clients.All.SendAsync("newComment", json);
         }
     }
 }
