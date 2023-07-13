@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Zwitscher.Attributes;
 using Zwitscher.Data;
 using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
+    [Moderator]
     public class VotesController : Controller
     {
         private readonly ZwitscherContext _context;
