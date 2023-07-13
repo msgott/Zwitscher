@@ -36,6 +36,37 @@ body {
     overflow-y: auto;
 }
 
+.profile_userbar {
+    display: flex;
+    align-items: flex-start;
+}
+
+.profile_userbar >h1 {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+
+.EditProfileButton{
+    border: 2px solid Black;
+    padding: .2em .4em;
+    border-radius: .2em;
+    background-color: Black;
+    color: white;
+    width: 125px;
+    height: 50px;
+    transition: 0.6s;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: 140%; /*move button here*/
+    margin-left: 20px;
+}
+.EditProfileButton:hover{
+    background-color: #81ecec;
+    border: 2px solid #00cec9;
+}
+
 .sticky-sidebar {
     position: sticky;
     top: 0;
@@ -219,8 +250,9 @@ h1 {
 .statistics_profile {
     display:flex;
     justify-content: space-evenly;
-    margin-right: 35%;
-    margin-top: 50px;
+    height: 300px;
+    width: 100%;
+    align-items: center;
 }
 
 .popup-container {

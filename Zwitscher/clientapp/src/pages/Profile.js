@@ -380,35 +380,43 @@ const Profile = (props) => {
                         <div className="app">
                             <Sidebar2 className="sticky-sidebar" />
                             <div className="Profile">
+                                <div className="profile_userbar">
+                                    <img src={"/Media/" + (pbFileName !== "" ? pbFileName : "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
+                                    <h1>{username}</h1>
+                                    <br></br>
+                                    <div className="statistics_profile">
+                                        <h4>Followers:</h4>
+                                        <span>{followerCount}</span>
+                                        <h4>Following</h4>
+                                        <span>{followedCount}</span>
+                                        <h4>Posts</h4>
+                                        <span>{userPostData !== null ? userPostData.length:0}</span>
+                                        {/*<span>{postCount}</span>*/}
 
+                                        {/*Profile Buttons*/}
+                                        <div className = "Profile_buttons">
+                                            {isOwnProfile() == true && (
+                                                <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
+                                            )
+                                            }
+                                            {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === profileUsername) ?
+                                                (<Button onClick={() => { unfollow() }}> Geflogt</Button>)
+                                                :
+                                                (<Button onClick={() => { follow() }}> Folgen</Button>)
 
-                                <img src={"/Media/" + (pbFileName !== "" ? pbFileName : "real-placeholder.png")} style={{ width: '300px', height: '300px' }}></img>
-                                {isOwnProfile() == true && (
-                                    <Button Class="EditProfileButton" onClick={EditProfilehandleOpen}>Bearbeiten</Button>
-                                )
-                                }
-                                {(OwnuserFollowingData && !isOwnProfile()) ? OwnuserFollowingData.find(user => user.userID === profileUsername) ?
-                                    (<Button onClick={() => { unfollow() }}> Geflogt</Button>)
-                                    :
-                                    (<Button onClick={() => { follow() }}> Folgen</Button>)
+                                                : ""}
+                                            {(OwnuserBlockingData && !isOwnProfile()) ? OwnuserBlockingData.find(user => user.userID === profileUsername) ?
+                                                (<Button onClick={() => { unblock() }}> Geblockt</Button>)
+                                                :
+                                                (<Button onClick={() => { block() }}> Blocken</Button>)
+                                                : ""}
+                                        </div>
+                                    </div>
 
-                                    : ""}
-                                {(OwnuserBlockingData && !isOwnProfile()) ? OwnuserBlockingData.find(user => user.userID === profileUsername) ?
-                                    (<Button onClick={() => { unblock() }}> Geblockt</Button>)
-                                    :
-                                    (<Button onClick={() => { block() }}> Blocken</Button>)
-
-                                    : ""}
-                                <br></br>
-                                <div className="statistics_profile">
-                                    <h4>Followers:</h4>
-                                    <span>{followerCount}</span>
-                                    <h4>Following</h4>
-                                    <span>{followedCount}</span>
-                                    <h4>Posts</h4>
-                                    <span>{userPostData !== null ? userPostData.length:0}</span>
-                                    {/*<span>{postCount}</span>*/}
                                 </div>
+
+
+                                
                                 <hr />
                                 <div className="PostWrapper">
                                     {userPostData != null && userPostData.map((post) => (
