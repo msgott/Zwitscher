@@ -45,6 +45,7 @@ function Comment({
     const [subCommentCounter, setsubCommentCounter] = useState(0);
     
     function openCommentEditModal(commentId, text) {
+        //open the modal to edit a comment
         console.log("test");
         setcommentToEdit(commentId);
         setcommentToEditText(text)
@@ -53,6 +54,7 @@ function Comment({
     };
 
     function openCommentCommentModal(commentId) {
+        //open the modal to comment a comment
         console.log(commentId);
         setcommentToComment(commentId);
         
@@ -65,6 +67,7 @@ function Comment({
 
     useEffect(() => {
         const fetchData = async () => {
+            //fetches all Comments of a Comment
             try {
                 const response = await fetch(
                     `https://localhost:7160/API/Comments/Comments?id=${commentId}`
@@ -83,6 +86,7 @@ function Comment({
 
 
     async function deleteOwnComment(postId, commentId) {
+        //deletes a comment
         try {
             if (parentcommentId === "") {
                 const response = await fetch(

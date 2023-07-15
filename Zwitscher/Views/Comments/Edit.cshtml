@@ -76,16 +76,16 @@
                     </div>
                     <div class="col-md-8">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            
+
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="Comments-tab" data-bs-toggle="tab" data-bs-target="#Comments" type="button" role="tab" aria-controls="home" aria-selected="true">Kommentare</button>
                             </li>
-                           
+
 
 
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            
+
                             <div class="tab-pane fade show active" id="Comments" role="tabpanel" aria-labelledby="Comments-tab">
                                 <table class="table">
                                     <thead>
@@ -137,56 +137,56 @@
                                 </table>
 
                             </div>
-                           
+
+                        </div>
                     </div>
                 </div>
+
+                <div>
+                    <a asp-action="Index">Zurück</a>
+                </div>
             </div>
-
-            <div>
-                <a asp-action="Index">Zurück</a>
-            </div>
-        </div>
-        <script type="text/javascript">
+            <script type="text/javascript">
 
 
 
+                //JS Methods for Opening PartialViews / Modals for different Actions
+                //-------------------------------------------Comment-------------------------------------
 
-            //-------------------------------------------Comment-------------------------------------
+                const openRemoveCommentModal = function (commentToRemoveId) {
 
-            const openRemoveCommentModal = function (commentToRemoveId) {
-
-                var id = "@Html.DisplayFor(item => item.Id)";
-                var removeid = commentToRemoveId;
-                $.ajax({
-                    type: "POST",
-                    url: "/Comments/PopupRemoveComment",
-                    data: {
-                        "commentID": id,
-                        "commentToRemoveId": removeid
-                    },
-                    success: function (response) {
-                        $("#partialModal").find(".modal-body").html(response);
-                        $("#partialModal").modal('show');
-                    },
-                    failure: function (response) {
-                        alert(response.responseText);
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-            };
+                    var id = "@Html.DisplayFor(item => item.Id)";
+                    var removeid = commentToRemoveId;
+                    $.ajax({
+                        type: "POST",
+                        url: "/Comments/PopupRemoveComment",
+                        data: {
+                            "commentID": id,
+                            "commentToRemoveId": removeid
+                        },
+                        success: function (response) {
+                            $("#partialModal").find(".modal-body").html(response);
+                            $("#partialModal").modal('show');
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                };
 
 
 
-            //-------------------------------------------Shared-------------------------------------
-            const closeModal = function () {
+                //-------------------------------------------Shared-------------------------------------
+                const closeModal = function () {
 
-                $("#partialModal").modal('hide');
+                    $("#partialModal").modal('hide');
 
-            };
+                };
 
-        </script>
+            </script>
 </body>
 @section Scripts {
     @{

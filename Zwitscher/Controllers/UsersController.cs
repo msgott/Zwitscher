@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -15,23 +16,27 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
-    public class UsersController : Controller //Controller for Users --> Shoud be used for Admins only
+    public class UsersController : Controller //Controller Class for dealing with User Objects
     {
         private readonly ZwitscherContext _dbContext;
         private readonly IHubContext<UserHub> _hubContext;
         public UsersController(ZwitscherContext dbcontext, IHubContext<UserHub> hubContext)
         {
-            _dbContext = dbcontext;
-            _hubContext = hubContext;
+            _dbContext = dbcontext; //Dependency Injection of DBContext
+            _hubContext = hubContext; //Dependency Injection of SignalR Hubcontext
         }
 
 
+        #region Base MVC Stuff for Index, Create, Edit, Delete
+        //============================================= Base MVC Stuff for Index, Create, Edit, Delete =====================================================
 
         // GET: Users
         [Moderator]
         [HttpGet]
         [Route("Users")]
         public async Task<IActionResult> Index()
+        //HTTP Get Index endpoint
+        //Serves the View for the User Index page
         {
             var zwitscherContext = _dbContext.User
                 .Include(u => u.Role)
@@ -43,6 +48,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Users2")]
         public JsonResult JSONtest()
+        //HTTP Get Test endpoint
+        //Not in Use
+        //Just for test purposes
+        //serves all Users as Json
         {
             Console.WriteLine("called Endpoint");
             List<User> temp = _dbContext.User.ToList();
@@ -55,6 +64,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Users/List")]
         public async void ListAsync(string connectionId)
+        //HTTP Get Test endpoint
+        //Not in Use
+        //Just for test purposes
+        //serves all Users with some Relationships as Json
         {
 
             //var customContext = _context.User.Include(u => u.Role);
@@ -75,6 +88,9 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Users/Details")]
         public async Task<IActionResult> Details(Guid? id)
+        //HTTP Get Details endpoint
+        //takes id
+        //serves user Details view
         {
             if (id == null || _dbContext.User == null)
             {
@@ -111,6 +127,8 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Users/Create")]
         public IActionResult Create()
+        //HTTP Get Create endpoint
+        //serves user Create view
         {
             ViewData["RoleID"] = new SelectList(_dbContext.Role, "Id", "Name");
             return View();
@@ -119,13 +137,16 @@ namespace Zwitscher.Controllers
 
 
         // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Moderator]
         [HttpPost]
         [Route("Users/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        //HTTP User Create endpoint
+        //Routed to /Users/Create
+        //Takes a a file and a Binded CommentObject from MVC View
+        //Creates a new User with the given Properties
+        
         {
             ModelState.Remove("file");
             if (ModelState.IsValid)
@@ -172,12 +193,16 @@ namespace Zwitscher.Controllers
         [Route("Users/Edit")]
         //[Admin] //for Development deactivated
         public async Task<IActionResult> Edit(Guid? id)
+        //HTTP Get User Edit endpoint
+        //Routed to /Users/Edit
+        //Takes a id
+        //serves the user edit View based on giben id
         {
             //Role Based Authentication for Mod and Admin
             //if (HttpContext.Session.GetString("RoleName") != "Moderator" && HttpContext.Session.GetString("RoleName") != "Administrator") return Unauthorized();
             //id based Authentication
             //if (Guid.Parse(HttpContext.Session.GetString("UserId")) != id) return Unauthorized();
-            
+
 
             if (id == null || _dbContext.User == null)
             {
@@ -212,13 +237,16 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [Moderator]
         [HttpPost]
         [Route("Users/Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, string oldPW, IFormFile file, [Bind("Id,LastName,FirstName,Gender,Username,Password,Birthday,Biography,isLocked,RoleID")] User user)
+        //HTTP Post User Edit endpoint
+        //Routed to /Users/Edit
+        //Takes a id, a old password string for getting around the nessecity of changing the password every time, a file for a profile picture and a bindet edited user Object
+        //Edits the User with the id using the given Properties
         {
 
             if (id != user.Id)
@@ -294,6 +322,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Users/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
+        //HTTP Get User Delete endpoint
+        //Routed to /Users/Delete
+        //Takes an id
+        //serves the user delete view
         {
             if (id == null || _dbContext.User == null)
             {
@@ -320,6 +352,10 @@ namespace Zwitscher.Controllers
         [Route("Users/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
+        //HTTP Post User Delete endpoint
+        //Routed to /Users/Delete
+        //Takes a id
+        //Deletes the User with the id
         {
             if (_dbContext.User == null)
             {
@@ -355,12 +391,15 @@ namespace Zwitscher.Controllers
         {
           return (_dbContext.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
+#endregion
+        #region MVC PartialViews and Actions
         //-----------------------------------------------MVC User Details----------------------------------------------------------------------
+        // Each of the following Method either opens a Modal for the operation in the Methods name or accepts the submitted Valus of one of the Popups and executes the Action
 
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupUserDetails(Guid userID)
+        // see region MVC PartialViews an Actions
         {
             if (userID == Guid.Empty || _dbContext.User == null)
             {
@@ -410,6 +449,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddMedia(Guid userID)
+        // see region MVC PartialViews an Actions
         {
 
             var user = await _dbContext.User.Include(u => u.ProfilePicture).FirstOrDefaultAsync(user => user.Id == userID);
@@ -422,6 +462,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveMedia(Guid userID, Guid mediaToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.ProfilePicture).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -433,7 +474,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> AddMediaToUser(Guid userID, IFormFile file) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddMediaToUser(Guid userID, IFormFile file)
+        // see region MVC PartialViews an Actions
         {
 
             if (file == null || _dbContext.User == null)
@@ -583,7 +625,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveMediaFromUser(Guid userID, Guid mediaToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveMediaFromUser(Guid userID, Guid mediaToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             User user = await _dbContext.User.Include(u => u.ProfilePicture).FirstAsync(p => p.Id == userID);
             var media = await _dbContext.Media
@@ -627,8 +670,9 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddFollowedBy( Guid userID)
+        // see region MVC PartialViews an Actions
         {
-           
+
             var user = await _dbContext.User.Include(u => u.FollowedBy).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
             List<User> tempList = user!.FollowedBy;
@@ -643,6 +687,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveFollowedBy(Guid userID, Guid UserToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.FollowedBy).FirstOrDefaultAsync(user => user.Id == userID);
               
@@ -654,7 +699,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> AddFollowedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddFollowedByToUser(Guid userID, Guid userToAddId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToAddId == Guid.Empty || _dbContext.User == null)
@@ -703,7 +749,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveFollowedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveFollowedByFromUser(Guid userID, Guid userToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -754,8 +801,9 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddFollowing(Guid userID)
+        // see region MVC PartialViews an Actions
         {
-            
+
             var user = await _dbContext.User.Include(u => u.Following).FirstOrDefaultAsync(user => user.Id == userID);
             //can send some data also.  
             List<User> tempList = user!.Following;
@@ -770,6 +818,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveFollowing(Guid userID, Guid UserToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.Following).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -781,7 +830,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> AddFollowingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddFollowingToUser(Guid userID, Guid userToAddId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToAddId == Guid.Empty || _dbContext.User == null)
@@ -830,7 +880,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveFollowingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveFollowingFromUser(Guid userID, Guid userToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -874,6 +925,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddBlockedBy(Guid userID)
+        // see region MVC PartialViews an Actions
         {
 
             var user = await _dbContext.User.Include(u => u.BlockedBy).FirstOrDefaultAsync(user => user.Id == userID);
@@ -890,6 +942,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveBlockedBy(Guid userID, Guid UserToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.BlockedBy).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -901,7 +954,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> AddBlockedByToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddBlockedByToUser(Guid userID, Guid userToAddId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToAddId == Guid.Empty || _dbContext.User == null)
@@ -943,7 +997,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveBlockedByFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveBlockedByFromUser(Guid userID, Guid userToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -987,6 +1042,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupAddBlocking(Guid userID)
+        // see region MVC PartialViews an Actions
         {
 
             var user = await _dbContext.User.Include(u => u.Blocking).FirstOrDefaultAsync(user => user.Id == userID);
@@ -1003,6 +1059,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveBlocking(Guid userID, Guid UserToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.Blocking).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -1014,7 +1071,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> AddBlockingToUser(Guid userID, Guid userToAddId) //Just for the MVC Frontend 
+        public async Task<ActionResult> AddBlockingToUser(Guid userID, Guid userToAddId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToAddId == Guid.Empty || _dbContext.User == null)
@@ -1056,7 +1114,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveBlockingFromUser(Guid userID, Guid userToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveBlockingFromUser(Guid userID, Guid userToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (userToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -1101,6 +1160,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemovePost(Guid userID, Guid postToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -1113,7 +1173,8 @@ namespace Zwitscher.Controllers
         
 
         [HttpPost]
-        public async Task<ActionResult> RemovePostFromUser(Guid userID, Guid postToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemovePostFromUser(Guid userID, Guid postToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (postToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -1154,6 +1215,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid userID, Guid commentToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -1166,7 +1228,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveCommentFromUser(Guid userID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveCommentFromUser(Guid userID, Guid commentToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (commentToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -1208,6 +1271,7 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveVote(Guid userID, Guid voteToRemoveId)
+        // see region MVC PartialViews an Actions
         {
             var user = await _dbContext.User.Include(u => u.Posts).FirstOrDefaultAsync(user => user.Id == userID);
 
@@ -1220,7 +1284,8 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveVoteFromUser(Guid userID, Guid voteToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveVoteFromUser(Guid userID, Guid voteToRemoveId)
+        // see region MVC PartialViews an Actions
         {
 
             if (voteToRemoveId == Guid.Empty || _dbContext.User == null)
@@ -1255,12 +1320,17 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Edit), user);
         }
 
-
-        //-----------------------------------------------API---------------------------------------------------------------------
+        #endregion
+        #region API
+        //============================================= API =====================================================
         // GET: API/User?id..
         [HttpGet]
         [Route("API/User")]
         public async Task<ActionResult> Profile(Guid? id)
+        //HTTP Get single user API endpoint
+        //Routed to /API/User
+        //Takes a id
+        //if a user is found with the id it returns its values as JSON
         {
             if (id == null || _dbContext.User == null)
             {
@@ -1312,6 +1382,10 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("API/Users/Edit")]
         public async Task<IActionResult> EditUser([Bind("userID,LastName,FirstName,Username,Password,Birthday,Biography,Gender")]Guid userID, string LastName, string FirstName, string Username, string Password, string Birthday, string? Biography,int Gender) //Only works while logged in!
+        //HTTP Post edit user API endpoint
+        //Routed to /API/Users/Edit
+        //Takes all editable properties of User Model as Model Binded parameters
+        //returns HTTP Result Codes depending on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -1360,6 +1434,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("API/Users/Search")]
         public async Task<ActionResult> SearchUser(string searchString)
+        //HTTP Get search user API endpoint
+        //Routed to /API/Users/Search
+        //Takes a string with the typed in search request
+        //searches for Users thats username contains the searchString and returns results as Json
         {
             if (_dbContext.User == null)
             {
@@ -1420,6 +1498,9 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("API/Users")]
         public async Task<ActionResult> UsersList()
+        //HTTP Get User List API endpoint
+        //Routed to /API/Users
+        //returns every User Object currently saved
         {
             if (_dbContext.User == null)
             {
@@ -1476,7 +1557,11 @@ namespace Zwitscher.Controllers
 
         [HttpGet]
         [Route("API/Users/Following")]
-        public async Task<ActionResult> GetFollowedUsers(Guid? UserID) //Only works while logged in!
+        public async Task<ActionResult> GetFollowedUsers(Guid? UserID)
+        //HTTP Get user Followed users API endpoint
+        //Routed to /API/Users/Following
+        //Takes a id
+        //returns the followed Users of a User as JSON
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1545,7 +1630,11 @@ namespace Zwitscher.Controllers
 
         [HttpGet]
         [Route("API/Users/FollowedBy")]
-        public async Task<ActionResult> GetFollowedByUsers(Guid? UserID) //Only works while logged in!
+        public async Task<ActionResult> GetFollowedByUsers(Guid? UserID)
+        //HTTP Get user Followed By users API endpoint
+        //Routed to /API/Users/FollowedBy
+        //Takes a id
+        //returns the FollowedBy Users of a User as JSON
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1611,7 +1700,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Following/Add")]
-        public async Task<ActionResult> AddFollowingToUser1(Guid userToFollowId) //Only works while logged in!
+        public async Task<ActionResult> AddFollowingToUser1(Guid userToFollowId)
+        //HTTP Post user add Following user API endpoint
+        //Routed to /API/Users/Following/Add
+        //Takes a id of the user to be added 
+        //Only works while logged in
+        //returns HTTP Result codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1646,7 +1740,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Following/Remove")]
-        public async Task<ActionResult> RemoveFollowingToUser1(Guid userToUnfollowId) //Only works while logged in!
+        public async Task<ActionResult> RemoveFollowingToUser1(Guid userToUnfollowId)
+        //HTTP Post user remove Following user API endpoint
+        //Routed to /API/Users/Following/Remove
+        //Takes a id of the user to be removed
+        //Only works while logged in
+        //returns HTTP Result codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1683,7 +1782,11 @@ namespace Zwitscher.Controllers
 
         [HttpGet]
         [Route("API/Users/Blocking")]
-        public async Task<ActionResult> GetBlockedUsers() //Only works while logged in!
+        public async Task<ActionResult> GetBlockedUsers()
+        //HTTP Get users blocked users API endpoint
+        //Routed to /API/Users/Blocking
+        //Only works while logged in
+        //returns all of the currently logged in user blocked users
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1745,10 +1848,15 @@ namespace Zwitscher.Controllers
         }
         [HttpGet]
         [Route("API/Users/Posts")]
-        public async Task<ActionResult> GetUsersPosts(Guid? id) 
+        public async Task<ActionResult> GetUsersPosts(Guid? id)
+        //HTTP Get users Posts API endpoint
+        //Routed to /API/Users/Posts
+        //Takes a id
+        //Only works while logged in
+        //returns JSON of all the Users post using the id
         {
-            
-           
+
+
             if (_dbContext.User == null)
             {
                 return BadRequest();
@@ -1831,7 +1939,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Blocking/Add")]
-        public async Task<ActionResult> AddBlockingToUser1(Guid userToBlockId) //Only works while logged in!
+        public async Task<ActionResult> AddBlockingToUser1(Guid userToBlockId)
+        //HTTP Post users add blocking API endpoint
+        //Routed to /API/Users/Blocking/Add
+        //Takes a id of the user to be blocked
+        //Only works while logged in
+        //returns HTTP Result Codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1866,7 +1979,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Blocking/Remove")]
-        public async Task<ActionResult> RemoveBlockingToUser1(Guid userToUnblockId) //Only works while logged in!
+        public async Task<ActionResult> RemoveBlockingToUser1(Guid userToUnblockId)
+        //HTTP Post users remove blocking API endpoint
+        //Routed to /API/Users/Blocking/Remove
+        //Takes a id of the user to be unblocked
+        //Only works while logged in
+        //returns HTTP Result Codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")))) is null) return Unauthorized();
@@ -1903,6 +2021,11 @@ namespace Zwitscher.Controllers
         [HttpDelete]
         [Route("API/Users/Remove")]
         public async Task<IActionResult> DeletePost(Guid id)
+        //HTTP Delete users API endpoint
+        //Routed to /API/Users/Remove
+        //Takes a id of the user to be removed
+        //Only works while logged in
+        //returns HTTP Result Codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -2000,7 +2123,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Media/Add")]
-        public async Task<ActionResult> AddMediaToUser1(Guid userID, IFormFile file) 
+        public async Task<ActionResult> AddMediaToUser1(Guid userID, IFormFile file)
+        //HTTP Add media to user API endpoint
+        //Routed to /API/Users/Media/Add
+        //Takes a id of the user to be added to and a file to be added
+        //Only works while logged in
+        //returns HTTP Result Codes based on succession
         {
 
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
@@ -2140,7 +2268,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Users/Media/Remove")]
-        public async Task<ActionResult> RemoveMediaFromUser1(Guid userID, Guid mediaToRemoveId) 
+        public async Task<ActionResult> RemoveMediaFromUser1(Guid userID, Guid mediaToRemoveId)
+        //HTTP Remove media from user API endpoint
+        //Routed to /API/Users/Media/Remove
+        //Takes a id of the user to be removed from to and a file id
+        //Only works while logged in
+        //returns HTTP Result Codes based on succession
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _dbContext.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -2176,8 +2309,13 @@ namespace Zwitscher.Controllers
            
             return Ok();
         }
-
+        #endregion
+        #region Helper Methods
+        //============================================= Helper Methods =====================================================
         private void RecursiveDelete(Comment parent)
+            //not an Endpoint
+            //takes a Comment object
+            //Deletes the comment and all of its child Comments recursively
         {
             if (parent.commentedBy != null && parent.commentedBy.Count > 0)
             {
@@ -2193,7 +2331,7 @@ namespace Zwitscher.Controllers
 
             _dbContext.Remove(parent);
         }
-
+        #endregion
 
     }
 

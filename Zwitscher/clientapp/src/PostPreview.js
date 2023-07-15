@@ -59,6 +59,7 @@ function PostPreview({
 
     useEffect(() => {
         const fetchData = async () => {
+            //gets the session data
             try {
                 const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
                 const jsonData = await response.json();
@@ -182,6 +183,7 @@ function PostPreview({
 
     //Send updated vote to backend
     const updateVoteOnBackend = async (postId, isupvote) => {
+         //Updates votes for a post on backend
         try {
             const response = await fetch(
                 `https://localhost:7160/API/Posts/Vote?postId=${postId}&IsUpVote=${isupvote}`,
@@ -203,11 +205,13 @@ function PostPreview({
     };
     //redirect to Login page
     const redirectToLogin = () => {
+         //Redirects user to login page
         window.location.replace("Auth");
     };
 
     //Open Comment section
     const [showComments, setShowComments] = useState(false);
+
 
     const toggleComments = () => {
         setShowComments(!showComments);

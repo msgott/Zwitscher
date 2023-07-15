@@ -25,8 +25,9 @@ namespace Zwitscher.Data
         public DbSet<Zwitscher.Models.Media> Media { get; set; } = default!;
         public DbSet<Zwitscher.Models.Vote> Vote { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+            //Overwritten Method for defining custom Relationships between Models
         {
-            //Users
+            //Users Relationships
             modelBuilder.Entity<User>()
                 .HasMany(u => u.FollowedBy)
                 .WithMany(u => u.Following)
@@ -58,13 +59,13 @@ namespace Zwitscher.Data
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
 
-            //Comments
+            //Comments Relationships
             modelBuilder.Entity<Comment>()
                 .HasOne(u => u.commentsComment)
                 .WithMany(u => u.commentedBy)
                 .OnDelete(DeleteBehavior.ClientCascade);
 
-            //Posts
+            //Posts Relationships
             modelBuilder.Entity<Media>()
                 .HasOne(u => u.Post)
                 .WithMany(u => u.Media)
@@ -78,7 +79,7 @@ namespace Zwitscher.Data
                 .WithMany(u => u.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Votes
+            //Votes Relationships
             modelBuilder.Entity<Vote>()
             .HasIndex(v => new { v.UserId, v.PostId })
             .IsUnique();

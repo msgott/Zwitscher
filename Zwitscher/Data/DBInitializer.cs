@@ -4,8 +4,14 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Data
 {
-    public class DBInitializer //Class for Seeding the Database using hardcoded Dummy Data
+    public class DBInitializer
+    //Class for Seeding the Database using hardcoded Dummy Data
+    //----------------------------------------------------------------------------
+    //Not Used and Out of Date
+    //----------------------------------------------------------------------------
     {
+        #region Seeding Database
+        //============================================= Seeding Database =====================================================
         private static ZwitscherContext context;
         public static void Initialize(ZwitscherContext _context) //Defines Dummy Data and uses DBcontext to write to Database
         {
@@ -156,5 +162,6 @@ namespace Zwitscher.Data
             }
             context.SaveChanges();
         }
+        #endregion
     }
 }

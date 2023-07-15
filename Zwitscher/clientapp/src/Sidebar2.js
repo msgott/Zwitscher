@@ -21,7 +21,8 @@ function Sidebar(theme) {
   // Get the current session data from the User whos online
   const [data, setData] = useState([]);
 
-  useEffect(() => {
+    useEffect(() => {
+      //gets the session data
     const fetchData = async () => {
       try {
         const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint

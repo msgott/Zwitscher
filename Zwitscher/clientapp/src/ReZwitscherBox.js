@@ -26,6 +26,7 @@ function ReZwitscherBox({
     
 
     const sendZwitscher = async (e) => {
+        //Creates a Rezwitscher
         e.preventDefault();
         if (zwitscherMessage.length == 0) {
             alert("Gebe bitte eine Textnachricht ein");
@@ -74,6 +75,7 @@ function ReZwitscherBox({
 
     useEffect(() => {
         const fetchData = async () => {
+            //Gets all the User Objects and the Session data
             try {
                 // Fetch users data
                 const usersResponse = await fetch("https://localhost:7160/API/Users");

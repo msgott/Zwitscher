@@ -14,22 +14,26 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
-    public class CommentsController : Controller
+    public class CommentsController : Controller //Controller Class for dealing with Comments Objects
     {
         private readonly ZwitscherContext _context;
 
         public CommentsController(ZwitscherContext context)
         {
-            _context = context;
+            _context = context; //Dependency Injection of DBContext
         }
-
+        #region Base MVC Stuff for Index, Create, Edit, Delete
+        //============================================= Base MVC Stuff for Index, Create ,Edit, Delete =====================================================
         // GET: Comments
         [Moderator]
         [HttpGet]
         [Route("Comments")]
+        //HTTP Get Index endpoint
+        //Routed to /Comments
+        //Serves the View for the Comment Index page
         public async Task<IActionResult> Index()
         {
-            var zwitscherContext = _context.Comment.Include(c => c.Post).Include(c => c.User).OrderByDescending(u => u.CreatedDate); 
+            var zwitscherContext = _context.Comment.Include(c => c.Post).Include(c => c.User).OrderByDescending(u => u.CreatedDate);
             return View(await zwitscherContext.ToListAsync());
         }
 
@@ -38,6 +42,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Comments/Details")]
         public async Task<IActionResult> Details(Guid? id)
+        //HTTP Get Details endpoint
+        //Routed to /Comments/Details
+        //Takes a commentId as input
+        //Serves the View for the Comment Details page if the id was found
         {
             if (id == null || _context.Comment == null)
             {
@@ -55,7 +63,7 @@ namespace Zwitscher.Controllers
                 return NotFound();
             }
             ViewData["commentedBy"] = comment.commentedBy;
-            
+
             return View(comment);
         }
 
@@ -64,6 +72,9 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Comments/Create")]
         public IActionResult Create()
+        //HTTP Get Create endpoint
+        //Routed to /Comments/Create
+        //Serves the View for the Comment Create page
         {
             ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id");
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id");
@@ -71,13 +82,16 @@ namespace Zwitscher.Controllers
         }
 
         // POST: Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Moderator]
         [HttpPost]
         [Route("Comments/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,PostId,CommentText")] Comment comment)
+        //HTTP Comment Create endpoint
+        //Routed to /Comments/Create
+        //Takes a Binded CommentObject from MVC View
+        //Creates a new Comment with the given Properties
+
         {
             ModelState.Remove("Post");
             ModelState.Remove("User");
@@ -99,6 +113,12 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Comments/Edit")]
         public async Task<IActionResult> Edit(Guid? id)
+        //HTTP Get Edit endpoint
+        //Routed to /Comments/Edit
+        //Takes a commentId
+        //Serves the Comment Edit View based on given Id
+        //serves Edit Comment View
+
         {
             if (id == null || _context.Comment == null)
             {
@@ -126,6 +146,12 @@ namespace Zwitscher.Controllers
         [Route("Comments/Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,UserId,PostId,CreatedDate,CommentText")] Comment comment)
+        //HTTP Post Edit endpoint
+        //Routed to /Comments/Edit
+        //Takes a edited comment Object
+        //Updates the comment based on given comment Object
+        //Redirects user to comment index view if Edition was successful
+
         {
             if (id != comment.Id)
             {
@@ -162,6 +188,11 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Comments/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
+        //HTTP Get Delete endpoint
+        //Routed to /Comments/Delete
+        //Takes a commentId
+        //Deletes the comment based on the given id
+        //serves Delete Comment View
         {
             if (id == null || _context.Comment == null)
             {
@@ -186,28 +217,36 @@ namespace Zwitscher.Controllers
         [Route("Comments/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
+        //HTTP Post Delete endpoint
+        //Routed to /Comments/Delete
+        //Takes a commentId
+        //Deletes the comment based on the given id
+        //Redirects User to comment Index after Deletion
         {
             if (_context.Comment == null)
             {
                 return Problem("Entity set 'ZwitscherContext.Comment'  is null.");
             }
-            var comment =  _context.Comment
-                .Include (c => c.Post)
+            var comment = _context.Comment
+                .Include(c => c.Post)
                 .Include(c => c.User)
-                .Include(c => c.commentedBy)                
+                .Include(c => c.commentedBy)
                 .FirstOrDefault(c => c.Id == id);
             if (comment != null)
             {
-                
+
                 RecursiveDelete(comment);
-                
+
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private void RecursiveDelete(Comment parent)
+        //Helper function
+        //Not an Endpoint
+        //deletes a given Comment and all of its child Comments recursively
         {
             if (parent.commentedBy != null && parent.commentedBy.Count > 0)
             {
@@ -224,16 +263,27 @@ namespace Zwitscher.Controllers
             _context.Remove(parent);
         }
 
-        private bool CommentExists(Guid id)
-        {
-          return (_context.Comment?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
 
-        //-----------------------------------------------MVC Comment Comment----------------------------------------------------------------------
+        private bool CommentExists(Guid id)
+        //Helper function
+        //Not an Endpoint
+        //takes commentId
+        //Checks if a comment exist based on given id and returns result
+        {
+            return (_context.Comment?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        #endregion
+
+        #region MVC Comment Comment
+        //============================================= MVC Comment Comment =====================================================
+
 
         [Moderator]
         [HttpPost]
         public async Task<IActionResult> PopupRemoveComment(Guid commentID, Guid commentToRemoveId)
+        //HTTP Post Endpoint for serving the PartialView for the RemoveComment modal
+        //takes commentId and the id of the comment to be removed
+        //servers Partialview
         {
             var comment = await _context.Comment.FirstOrDefaultAsync(c => c.Id == commentID);
 
@@ -246,7 +296,11 @@ namespace Zwitscher.Controllers
 
         [Moderator]
         [HttpPost]
-        public async Task<ActionResult> RemoveCommentFromComment(Guid commentID, Guid commentToRemoveId) //Just for the MVC Frontend 
+        public async Task<ActionResult> RemoveCommentFromComment(Guid commentID, Guid commentToRemoveId)
+        //HTTP Post Endpoint for deleting child comment after PopupRemoveComment was submitted
+        //takes commentId and the id of the comment to be removed
+        //deletes Comment
+        //redirects user to parents edit view
         {
 
             if (commentToRemoveId == Guid.Empty || _context.Post == null)
@@ -279,14 +333,20 @@ namespace Zwitscher.Controllers
                  .FirstOrDefaultAsync(p => p.Id == commentID);
             ViewData["PostId"] = new SelectList(_context.Post, "Id", "Id", comment.PostId);
             ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", comment.UserId);
-            
+
             return RedirectToAction(nameof(Edit), comment);
         }
+        #endregion
+        #region API
         //---------------------------------------------API------------------------------------------------
         [HttpPost]
         [Route("API/Comments/Edit")]
-        
-        public async Task<IActionResult> EditComment(Guid id, string CommentText )
+        public async Task<IActionResult> EditComment(Guid id, string CommentText)
+        //HTTP Post Edit API endpoint
+        //Routed to API/Comments/Edit
+        //Takes a commentId and a new CommentText
+        //Edits the comment with the given Properties
+        //Return HTTP Resultcodes based on result
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -307,7 +367,7 @@ namespace Zwitscher.Controllers
 
             }
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
-            
+
             if (c.UserId != userID) return Unauthorized();
 
             c.CommentText = CommentText;
@@ -321,6 +381,11 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("API/Comments/Comments")]
         public async Task<ActionResult> CommentsList(Guid? id)
+        //HTTP Get Comments API endpoint
+        //Routed to API/Comments/Comments
+        //Takes a commentId 
+        //Searches for child comments of Comment with the given id and returns it as json
+        //Return HTTP Resultcodes based on result
         {
             if (id == null || _context.Comment == null)
             {
@@ -337,7 +402,7 @@ namespace Zwitscher.Controllers
 
             }
             List<Dictionary<string, Object>> results = new List<Dictionary<string, Object>>();
-            List<Comment> comments = c.commentedBy.OrderByDescending(c=>c.CreatedDate).ToList();
+            List<Comment> comments = c.commentedBy.OrderByDescending(c => c.CreatedDate).ToList();
             foreach (Comment comment in comments)
             {
 
@@ -370,7 +435,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Comments/Comment/Add")]
-        public async Task<ActionResult> AddCommentToComment(Guid? commentId, string CommentText = "") //Only works while logged in!
+        public async Task<ActionResult> AddCommentToComment(Guid? commentId, string CommentText = "")
+        //HTTP Post Add Comment to Comment API endpoint
+        //Routed to API/Comments/Comment/Add
+        //Takes a commentId and a commentText
+        //Appends a new comment to the comment with the given id
+        //Return HTTP Resultcodes based on result
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -408,7 +478,12 @@ namespace Zwitscher.Controllers
 
         [HttpPost]
         [Route("API/Comments/Comment/Remove")]
-        public async Task<ActionResult> RemoveCommentFromComment1(Guid commentId, Guid commentToRemoveId) //Only works while logged in!
+        public async Task<ActionResult> RemoveCommentFromComment1(Guid commentId, Guid commentToRemoveId)
+        //HTTP Post Remove Comment from Comment API endpoint
+        //Routed to API/Comments/Comment/Remove
+        //Takes a commentId and a id of the child comment to be removed
+        //Deletes the comment with commentToRemoveId from comment with commentId
+        //Return HTTP Resultcodes based on result
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
@@ -429,7 +504,7 @@ namespace Zwitscher.Controllers
 
             }
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
-            
+
             var comment = _context.Comment
                 .Include(c => c.Post)
                 .Include(c => c.User)
@@ -445,12 +520,8 @@ namespace Zwitscher.Controllers
             }
 
             await _context.SaveChangesAsync();
-            
-            
 
-            
-            
-            
+
 
 
             return Ok();
@@ -458,29 +529,34 @@ namespace Zwitscher.Controllers
 
         [HttpDelete]
         [Route("API/Comments/Remove")]
-        public async Task<ActionResult> RemoveComment1(Guid commentToRemoveId) //Only works while logged in!
+        public async Task<ActionResult> RemoveComment1(Guid commentToRemoveId)
+        //HTTP Delete Remove Comment API endpoint
+        //Routed to API/Comments/Remove
+        //Takes a a id of the comment to be removed
+        //Deletes the comment the id 
+        //Return HTTP Resultcodes based on result
         {
             if (HttpContext.Session.GetString("UserId") is null) return Unauthorized();
             if ((await _context.User.FindAsync(Guid.Parse(HttpContext.Session.GetString("UserId")!))) is null) return Unauthorized();
-            if ( _context.Comment == null)
+            if (_context.Comment == null)
             {
                 return BadRequest();
             }
 
 
-            
+
             Guid userID = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
             var comment = _context.Comment
                 .Include(c => c.Post)
                 .Include(c => c.User)
                 .Include(c => c.commentedBy)
-                .Include(c=>c.commentsComment)
+                .Include(c => c.commentsComment)
                 .FirstOrDefault(c => c.Id == commentToRemoveId);
             if (comment is null) return BadRequest();
             if (comment != null)
             {
-                if (comment.UserId != userID ) return Unauthorized();
+                if (comment.UserId != userID) return Unauthorized();
                 RecursiveDelete(comment);
 
             }
@@ -496,6 +572,7 @@ namespace Zwitscher.Controllers
 
             return Ok();
         }
+        #endregion
     }
 
 }

@@ -18,6 +18,7 @@ function ZwitscherBox({ setfeedCounter }) {
         fileInputRef.current.click();
     };
     const sendZwitscher = async (e) => {
+        //Creates a Zwitscher Post
         e.preventDefault();
         if (zwitscherMessage.length == 0) {
             alert("Gebe bitte eine Textnachricht ein");
@@ -62,6 +63,7 @@ function ZwitscherBox({ setfeedCounter }) {
 
     useEffect(() => {
         const fetchData = async () => {
+            //gets all users and session data
             try {
                 // Fetch users data
                 const usersResponse = await fetch("https://localhost:7160/API/Users");
@@ -94,6 +96,7 @@ function ZwitscherBox({ setfeedCounter }) {
     
 
     const handleFileChange = (e) => {
+        //Updates files const based on selected Files
         if (e.target.files) {
             setFiles(Array.from(e.target.files));
         }

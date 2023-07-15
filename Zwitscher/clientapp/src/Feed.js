@@ -14,6 +14,7 @@ function Feed({
     const [feedCounter, setFeedCounter] = useState(0);
 
     const toggleVisible = () => {
+        //toggles the visibility of the "nach oben" button
         const scrolled = document.getElementById("feed").scrollTop;
 
 
@@ -26,6 +27,7 @@ function Feed({
     };
 
     const scrollToTop = () => {
+        //scrolls to the top of the feed
         document.getElementById("feed").scrollTo({
             top: 0,
             behavior: 'smooth'

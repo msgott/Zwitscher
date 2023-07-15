@@ -33,6 +33,7 @@ function EditCommentDialog({
 
     useEffect(() => {
         const setdefaultValues = async () => {
+            //sets the deafult values for edit modal
             try {
 
                 setCommentId(_commentId);
@@ -50,6 +51,7 @@ function EditCommentDialog({
 
 
     async function editOwnComment(commentId, text) {
+        //edits a comment
         if (!text) {
             alert("Bitte Kommentartext eingeben");
             return;

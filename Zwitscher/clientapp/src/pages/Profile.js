@@ -274,15 +274,18 @@ const Profile = () => {
 
 
     const handleFileChange = (e) => {
+        //sets file const based on selected file
         if (e.target.files) {
             setFile(e.target.files[0]);
         }
     };
     const isOwnProfile = () => {
         return sessionData.userID === userID;
+        //checks if user is on own profile
     };
 
     const unfollow = async () => {
+        //unfollows a user
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Users/Following/Remove?userToUnfollowId=" + profileUsername,
@@ -305,6 +308,7 @@ const Profile = () => {
     };
 
     const follow = async () => {
+        //follows a user
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Users/Following/Add?userToFollowId=" + profileUsername,
@@ -326,6 +330,7 @@ const Profile = () => {
     };
 
     const unblock = async () => {
+         //unblocks a user
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Users/Blocking/Remove?userToUnblockId=" + profileUsername,
@@ -348,6 +353,7 @@ const Profile = () => {
     };
 
     const block = async () => {
+        //blocks a user
         try {
             const response = await fetch(
                 "https://localhost:7160/API/Users/Blocking/Add?userToBlockId=" + profileUsername,

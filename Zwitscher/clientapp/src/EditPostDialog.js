@@ -51,6 +51,7 @@ function EditPostDialog({
        
     };
     const handleSubmit = (e) => {
+        //Edits a Post
         e.preventDefault();
 
         if(Text === "") alert("Bitte gebe einen Text ein.")

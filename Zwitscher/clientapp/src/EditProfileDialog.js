@@ -61,6 +61,7 @@ function EditProfileDialog({
 
     useEffect(() => {
         const setdefaultValues = async () => {
+             //sets the default values for the Edit modal
             try {
                 if (userObject != undefined) {
 
@@ -119,12 +120,12 @@ function EditProfileDialog({
         }
     };
     const handleSubmit = async (e) => {
+        //edits a User Object
         e.preventDefault();
 
 
 
-        // Prevent the default form submission behavior
-        // Perform any necessary actions here, such as saving the form data or making API calls
+        
         var requestOptions = {
             method: 'POST',
             //body: JSON.stringify({

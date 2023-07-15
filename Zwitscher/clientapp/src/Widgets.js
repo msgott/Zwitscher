@@ -10,6 +10,7 @@ function Widgets() {
     const [searchText, setsearchText] = useState("");
     const [userData, setUserData] = useState([]);
     useEffect(() => {
+        //either gets all Users or the Search result for the search request
         const fetchUserData = async () => {
             try {
                 var response;
@@ -35,6 +36,7 @@ function Widgets() {
 
 
     const searchUser = async (e) => {
+        //Not in use
         e.preventDefault();
         
         //fetch('https://localhost:7160/API/Posts/Add', requestOptions)
@@ -47,7 +49,8 @@ function Widgets() {
 
     };
 
-    const handleSearchChange =  (text) => {
+    const handleSearchChange = (text) => {
+        
         setsearchText(text);
 
         //fetch('https://localhost:7160/API/Posts/Add', requestOptions)
@@ -64,6 +67,7 @@ function Widgets() {
 
     useEffect(() => {
         const fetchUserSession = async () => {
+            //gets session data
             try {
                 // Fetch session data
                 var sessionResponse = await fetch("https://localhost:7160/Api/UserDetails");

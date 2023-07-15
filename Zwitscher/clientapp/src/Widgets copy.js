@@ -9,6 +9,7 @@ import {
 } from "react-twitter-embed";
 
 function Widgets() {
+    //Not in use!
   return (
     <div>
       <div className="widgets">

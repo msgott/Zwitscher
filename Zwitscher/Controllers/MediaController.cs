@@ -10,23 +10,30 @@ using Zwitscher.Models;
 namespace Zwitscher.Controllers
 {
 
-    public class MediaController : Controller
+    public class MediaController : Controller 
+        //Controller Class for mainly handling Media Objects
+        //Note: All of the real API Endpoints are in the other controllers
     {
 
-
+        
         private readonly ZwitscherContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
-
+        #region Base MVC Stuff for Index, Create, Edit, Delete
+        //============================================= Base MVC Stuff for Index, Upload, Delete =====================================================
         public MediaController(ZwitscherContext context, IWebHostEnvironment hostingEnvironment)
+        //Injecting needed contexts
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
-        // GET: Media
+        
+
         [Moderator]
         [HttpGet]
         [Route("Media")]
         public async Task<ActionResult> Index()
+        //HTTP Get Index endpoint
+        //Serves the View for the Media Index page
         {
             var zwitscherContext = _context.Media;
             Console.WriteLine("Media Index");
@@ -37,6 +44,8 @@ namespace Zwitscher.Controllers
         [Moderator]
         [HttpGet]
         public ActionResult Upload()
+        //HTTP Get Index endpoint
+        //Serves the View for the Media Upload when in MVC Frontend
         {
             Console.WriteLine("Media Upload");
             return View();
@@ -45,6 +54,10 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Media2/{imageName}")]
         public ActionResult GetImage(string imageName)
+        //HTTP Get endpoint for returning an Image
+        //just for test purposes and not anymore needed because files are now static
+        //currently not used
+        //Serves an Image
         {
             Console.WriteLine(Directory.GetFiles("Media")[0]);
             Console.WriteLine(System.IO.File.Exists(Directory.GetFiles("Media")[0]));
@@ -58,6 +71,10 @@ namespace Zwitscher.Controllers
         [HttpPost]
         [Route("Media/Upload")]
         public async Task<IActionResult> Upload(IFormFile file)
+        //HTTP Post endpoint for uploading an Image
+        //Takes the Image as parameter
+        //only single Image supported
+        //redirects client after Upload to media Index view
         {
             if (file != null && file.Length > 0)
             {
@@ -90,6 +107,9 @@ namespace Zwitscher.Controllers
         [HttpGet]
         [Route("Media/Delete")]
         public async Task<IActionResult> Delete(Guid? id)
+        //HTTP Get endpoint for deleting an Image
+        //Takes the mediaId as parameter
+        //serves the View if the requested id was found
         {
             if (id == null || _context.Media == null)
             {
@@ -113,6 +133,9 @@ namespace Zwitscher.Controllers
         [Route("Media/Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
+        //HTTP Post endpoint for deleting an Image
+        //Takes the mediaId as parameter
+        //redirects client to Media index view
         {
             if (_context.Media == null)
             {
@@ -150,4 +173,5 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Index));
         }
     }
+    #endregion
 }

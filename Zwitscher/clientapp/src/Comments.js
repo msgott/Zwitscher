@@ -28,7 +28,8 @@ function Comments({ postId, sessionData, postusername}) {
     const CommentCommenthandleOpen = () => setCommentCommentOpen(true);
     const CommentCommenthandleClose = () => setCommentCommentOpen(false);
     const [commentCounter, setCommentCounter] = useState(0);
-    async function deleteOwnComment(postId, commentId){
+    async function deleteOwnComment(postId, commentId) {
+        //Deletes a Comment
         try
         {
             const response = await fetch(
@@ -51,6 +52,7 @@ function Comments({ postId, sessionData, postusername}) {
         }
     };
     function openCommentEditModal(commentId, text) {
+        //Opens the Modal to edit a comment
         console.log("test");
         setcommentToEdit(commentId);
         setcommentToEditText(text)
@@ -59,6 +61,7 @@ function Comments({ postId, sessionData, postusername}) {
     };
 
     function openCommentCommentModal(commentId) {
+        //Opens the Modal to comment a comment
         console.log(commentId);
         setcommentToComment(commentId);
         
@@ -71,6 +74,7 @@ function Comments({ postId, sessionData, postusername}) {
 
     useEffect(() => {
         const fetchData = async () => {
+            //fetches all Comments of a Post
             try {
                 const response = await fetch(
                     `https://localhost:7160/API/Posts/Comments?id=${postId}`

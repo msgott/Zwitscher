@@ -87,6 +87,7 @@ namespace Zwitscher.Models
         public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 
         public override string ToString()
+            //Overwritten to String method for easily displaying full name
         {
             return FirstName + " " + LastName;
         }

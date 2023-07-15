@@ -6,6 +6,7 @@ using Zwitscher.Models;
 namespace Zwitscher.Hubs
 {
     public interface IUserClient
+        //Client interface for possible SignalR Client
     {
         Task<string> GetconnectionId();
         void RetrieveUserList();
@@ -13,6 +14,9 @@ namespace Zwitscher.Hubs
         Task SendAsync(string method, string message);
     }
     public class UserHub : Hub<IUserClient>
+    //Client for SignalRHub 
+    //Not in use
+    //Was for Apps notification but didnt work as intended
     {
         private readonly ZwitscherContext _context;
         public UserHub(ZwitscherContext context)
@@ -33,6 +37,7 @@ namespace Zwitscher.Hubs
         }
 
         public async Task newComment(string json)
+            //Just for Testing Purposes
         {
             await Clients.All.SendAsync("newComment", json);
         }

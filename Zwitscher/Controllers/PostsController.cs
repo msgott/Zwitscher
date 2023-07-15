@@ -15,7 +15,7 @@ using Zwitscher.Models;
 
 namespace Zwitscher.Controllers
 {
-    public class PostsController : Controller
+    public class PostsController : Controller //Controller Class for dealing with Posts Objects
     {
         private readonly ZwitscherContext _context;
         #region Helping Actions
@@ -355,8 +355,6 @@ namespace Zwitscher.Controllers
             return RedirectToAction(nameof(Index));
         }
         #endregion
-
-
         #region MVC Popup stuff
         //============================================= MVC Popup stuff =====================================================
         [Moderator]

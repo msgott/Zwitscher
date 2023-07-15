@@ -88,6 +88,7 @@ function Post({
     const handleClose = () => setOpen(false);
     const [EditPostopen, setEditPostopen] = React.useState(false);
     const EditPosthandleOpen = (id, text, _public, retweets) => {
+        //Opens the Edit modal
         setpostToEditId(id);
         setpostToEditText(text);
         setpostToEditPublic(_public);
@@ -114,6 +115,7 @@ function Post({
 
     useEffect(() => {
         const fetchData = async () => {
+            //gets the session Data in context of current user session
             try {
                 const response = await fetch("https://localhost:7160/Api/UserDetails"); // Replace with your API endpoint
                 const jsonData = await response.json();
@@ -142,6 +144,7 @@ function Post({
 
     useEffect(() => {
         const fetchData = async () => {
+            //gets all Users
             try {
                 const response = await fetch("https://localhost:7160/API/Users"); // Replace with your API endpoint
                 const jsonData = await response.json();
@@ -237,6 +240,7 @@ function Post({
 
     
     const deletePost = async (postId) => {
+        //deletes a Post
         try {
             const response = await fetch(
                 `https://localhost:7160/API/Posts/Remove?id=${postId}`,
@@ -260,6 +264,7 @@ function Post({
     };
     //Send updated vote to backend
     const updateVoteOnBackend = async (postId, isupvote) => {
+        //Update Votes for Post in backend
         try {
             const response = await fetch(
                 `https://localhost:7160/API/Posts/Vote?postId=${postId}&IsUpVote=${isupvote}`,
